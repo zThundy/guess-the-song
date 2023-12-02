@@ -7,7 +7,7 @@ function User() {
   const users = [
     { name: "User #1", points: 0 },
     { name: "User #2", points: 0 },
-    { name: "User #3", points: 0 },
+    { name: "User #3", points: 0, self: true },
     { name: "User #4", points: 0 },
     { name: "User #5", points: 0 },
     { name: "User #6", points: 0 },
@@ -20,7 +20,7 @@ function User() {
   return (
     <>
       {users.map((user) => (
-        <div className="user">
+        <div className={user.self ? "user self" : "user"}>
           <Avatar className="avatar">
             <Person fontSize="large" />
           </Avatar>

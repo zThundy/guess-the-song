@@ -8,18 +8,24 @@
   background-color: rgb(255, 174, 94);
   padding: 1rem 1rem;
   margin: .5rem;
-  cursor: pointer;
   transition: all .1s ease-in-out;
 }
 
 .user:hover {
-  background-color: rgb(255, 197, 139);
+  background-color: rgb(255, 189, 124);
   transition: all .1s ease-in-out;
+}
+
+.self {
+  background-color: rgb(255, 213, 171);
+}
+
+.self:hover {
+  background-color: rgb(255, 227, 200);
 }
 
 .user .avatar {
   position: relative;
-  cursor: pointer;
   justify-self: flex-end;
 
   margin: 0 1rem 0 0;
