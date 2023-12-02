@@ -75,7 +75,7 @@ function MainForm() {
       <div className="formContainer animate">
         <h1>Welcome 👋</h1>
         <div className="buttonsFormContainer">
-          <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>Join a game</StyledButtonPrimary>
+          <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>Play</StyledButtonPrimary>
           <StyledButtonSecondary variant="outlined" endIcon={<Launch />}>Account</StyledButtonSecondary>
         </div>
       </div>
@@ -88,7 +88,7 @@ function MainForm() {
       >
         <h1>Welcome 👋</h1>
         <div className="buttonsFormContainer">
-          <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>Join a game</StyledButtonPrimary>
+          <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>Play</StyledButtonPrimary>
           <StyledButtonSecondary variant="outlined" endIcon={<Launch />}>Account</StyledButtonSecondary>
         </div>
       </motion.div>

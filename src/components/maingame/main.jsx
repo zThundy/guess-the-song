@@ -2,8 +2,8 @@ import "./main.css";
 
 import { useState } from "react";
 
-import LobbyGame from "../lobbygame/main.jsx";
-import JoinGame from "../joingame/main.jsx";
+import LobbyGame from "./lobbygame/main.jsx";
+import JoinGame from "./joingame/main.jsx";
 import Header from "../maingameheader/main.jsx";
 
 import { motion } from 'framer-motion'

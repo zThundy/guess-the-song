@@ -20,7 +20,7 @@ function MainGameHeader({ started }) {
         <ArrowBack fontSize="inherit" />
       </IconButton>
 
-      <span className="title">{ started ? "🎵 Lobby #233" : "Waiting for game..." }</span>
+      <span className="title">{ started ? "🎵 Lobby #233" : "⌛️ Waiting for game..." }</span>
 
       <Avatar className={ started ? "avatar" : "avatar gray" }>
         { started ? <Person fontSize="large" /> : <DoDisturb fontSize="large" /> }

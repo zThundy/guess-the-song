@@ -1,6 +1,6 @@
 import "./main.css";
 
-import Users from "../users/main.jsx";
+import Users from "../../../users/main.jsx";
 
 function GameBar() {
   return (

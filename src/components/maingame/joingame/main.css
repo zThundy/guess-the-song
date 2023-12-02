@@ -14,9 +14,8 @@
 
 .joinOrCreateButtons {
   position: relative;
-  top: 2rem;
   width: 50%;
-  height: 20%;
+  height: 15%;
   display: flex;
   flex-direction: row;
 }
@@ -28,7 +27,7 @@
 .joinOrCreateListOfLobbies {
   position: relative;
   width: 80%;
-  height: 70%;
+  height: 80%;
   display: flex;
   flex-direction: row;
   background-color: white;
