@@ -20,6 +20,8 @@ function MainGameHeader() {
         <ArrowBack fontSize="inherit" />
       </IconButton>
 
+      <span className="title">🎵 Lobby #233</span>
+
       <Avatar className="avatar">
         <Person fontSize="large" />
       </Avatar>

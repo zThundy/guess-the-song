@@ -15,6 +15,13 @@
   cursor: pointer;
 }
 
+.header .title {
+  position: relative;
+  font-size: 1.5rem;
+  justify-self: center;
+  align-self: center;
+}
+
 .header .avatar {
   position: relative;
   cursor: pointer;
