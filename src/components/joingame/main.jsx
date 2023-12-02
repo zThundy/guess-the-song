@@ -20,7 +20,7 @@ const StyledButtonPrimary = styled(Button)({
     // rotate background gradient
     backgroundPosition: 'left',
     transition: "all .2s ease",
-    boxShadow: '0 4px 8px 1px rgba(0, 0, 0, .8)',
+    boxShadow: '0 4px 8px 1px rgba(0, 0, 0, .6)',
     fontSize: '0rem',
     "& .MuiButton-endIcon": {
       transition: "all .2s ease",
@@ -56,7 +56,7 @@ function JoinGame() {
           <StyledButtonPrimary variant="contained" endIcon={<Login />}>Join a game</StyledButtonPrimary>
         </div>
         <div className="joinOrCreateListOfLobbies">
-          
+
         </div>
       </div>
     </>
