@@ -1,13 +1,27 @@
 .container {
   background-color: white;
-  width: 85%;
-  height: 85%;
+  width: 95%;
+  height: 90%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   border-radius: 1rem;
   font-size: 1.5rem;
   box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
-  align-items: center;
   z-index: 4;
+}
+
+.gameContainer {
+  background-color: white;
+  width: 98%;
+  height: 100%;
+  margin: 1rem auto;
+  display: flex;
+  flex-direction: row;
+  border-radius: 1rem;
+  font-size: 1.5rem;
+  /* box-shadow: 0 0 .5rem 0 rgba(0, 0, 0, 0.2); */
+  z-index: 4;
+  overflow: auto;
+  justify-content: space-between;
 }

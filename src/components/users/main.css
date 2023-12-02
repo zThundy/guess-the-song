@@ -1,0 +1,35 @@
+.user {
+  display: flex;
+  flex-direction: row;
+  /* justify-content: space-between; */
+  height: fit-content;
+  width: calc(100% - 3rem);
+  border-radius: 1rem;
+  background-color: rgb(255, 174, 94);
+  padding: 1rem 1rem;
+  margin: .5rem;
+  cursor: pointer;
+  transition: all .1s ease-in-out;
+}
+
+.user:hover {
+  background-color: rgb(255, 197, 139);
+  transition: all .1s ease-in-out;
+}
+
+.user .avatar {
+  position: relative;
+  cursor: pointer;
+  justify-self: flex-end;
+
+  margin: 0 1rem 0 0;
+  width: 4rem;
+  height: 4rem;
+  background-color: rgb(255, 169, 84);
+}
+
+.user .userData {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}

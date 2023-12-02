@@ -1,6 +1,8 @@
 import "./main.css";
 
 import Header from "../maingameheader/main.jsx";
+import Sidebar from "../gamebar/main.jsx";
+import Game from "../game/main.jsx";
 
 import { motion } from 'framer-motion'
 
@@ -14,6 +16,10 @@ function MainGame() {
       exit={{ x: -3000, opacity: 1 }}
     >
       <Header />
+      <div className="gameContainer">
+        <Sidebar />
+        <Game />
+      </div>
     </motion.div>
   )
 }

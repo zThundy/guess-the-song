@@ -1,0 +1,8 @@
+.gameContentContainer {
+  position: relative;
+  width: calc(70% - .4rem);
+  height: 100%;
+  background: rgb(204,102,0);
+  background: linear-gradient(318deg, rgba(204,102,0,1) 0%, rgba(255,171,43,1) 36%, rgba(255,200,111,1) 100%);
+  border-radius: 1rem;
+}
