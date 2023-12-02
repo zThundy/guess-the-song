@@ -1,0 +1,13 @@
+.container {
+  background-color: white;
+  width: 85%;
+  height: 85%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  border-radius: 1rem;
+  font-size: 1.5rem;
+  box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
+  align-items: center;
+  z-index: 4;
+}

@@ -1,0 +1,75 @@
+
+
+<svg viewbox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style type="text/css">
+      .wave {
+        animation: wave 15s linear infinite;
+      }
+
+      .wave1 {
+        animation: wave1 18s linear infinite;
+      }
+
+      .wave2 {
+        animation: wave2 21s linear infinite;
+      }
+
+      .wave3 {
+        animation: wave3 23s linear infinite;
+      }
+
+      @keyframes wave {
+        0% {
+          transform: translateX(0%);
+        }
+
+        100% {
+          transform: translateX(100%);
+        }
+      }
+
+      @keyframes wave1 {
+        0% {
+          transform: scaleY(1.2) translateX(0%);
+        }
+
+        100% {
+          transform: scaleY(1.2) translateX(100%);
+        }
+      }
+
+      @keyframes wave2 {
+        0% {
+          transform: scaleY(.8) translateX(0%);
+        }
+
+        100% {
+          transform: scaleY(.8) translateX(100%);
+        }
+      }
+
+      @keyframes wave3 {
+        0% {
+          transform: scaleY(.6) translateX(0%);
+        }
+
+        100% {
+          transform: scaleY(.6) translateX(100%);
+        }
+      }
+    </style>
+    <path id='sineWave' fill="rgb(255, 169, 84)" fill-opacity=".8" d="M0,256L48,218.7C96,181,192,107,288,74.7C384,43,480,53,576,101.3C672,149,768,235,864,240C960,245,1056,171,1152,170.7C1248,171,1344,245,1392,282.7L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    <path id='sineWave1' fill="rgb(255, 169, 84)" fill-opacity=".6" d="M0,256L48,218.7C96,181,192,107,288,74.7C384,43,480,53,576,101.3C672,149,768,235,864,240C960,245,1056,171,1152,170.7C1248,171,1344,245,1392,282.7L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    <path id='sineWave2' fill="rgb(255, 169, 84)" fill-opacity=".4" d="M0,256L48,218.7C96,181,192,107,288,74.7C384,43,480,53,576,101.3C672,149,768,235,864,240C960,245,1056,171,1152,170.7C1248,171,1344,245,1392,282.7L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    <path id='sineWave3' fill="rgb(255, 169, 84)" fill-opacity=".2" d="M0,256L48,218.7C96,181,192,107,288,74.7C384,43,480,53,576,101.3C672,149,768,235,864,240C960,245,1056,171,1152,170.7C1248,171,1344,245,1392,282.7L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+  </defs>
+  <use class="wave" href="#sineWave" />
+  <use class="wave" x="-100%" href="#sineWave" />
+  <use class="wave1" href="#sineWave1" />
+  <use class="wave1" x="-80%" href="#sineWave1" />
+  <use class="wave2" href="#sineWave2" />
+  <use class="wave2" x="-60%" href="#sineWave2" />
+  <use class="wave3" href="#sineWave3" />
+  <use class="wave3" x="-40%" href="#sineWave3" />
+</svg>
