@@ -1,12 +1,15 @@
 import "./main.css";
 
+import { useState } from "react";
+
+import LobbyGame from "../lobbygame/main.jsx";
+import JoinGame from "../joingame/main.jsx";
 import Header from "../maingameheader/main.jsx";
-import Sidebar from "../gamebar/main.jsx";
-import Game from "../game/main.jsx";
 
 import { motion } from 'framer-motion'
 
 function MainGame() {
+  const [started] = useState(false);
 
   return (
     <motion.div
@@ -15,11 +18,8 @@ function MainGame() {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -3000, opacity: 1 }}
     >
-      <Header />
-      <div className="gameContainer">
-        <Sidebar />
-        <Game />
-      </div>
+      <Header started={started} />
+      { started ? <LobbyGame started={started} /> : <JoinGame started={started} /> }
     </motion.div>
   )
 }

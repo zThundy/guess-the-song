@@ -19,8 +19,8 @@ function User() {
 
   return (
     <>
-      {users.map((user) => (
-        <div className={user.self ? "user self" : "user"}>
+      {users.map((user, id) => (
+        <div className={user.self ? "user self" : "user"} key={id}>
           <Avatar className="avatar">
             <Person fontSize="large" />
           </Avatar>

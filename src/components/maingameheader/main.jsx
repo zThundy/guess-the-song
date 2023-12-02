@@ -1,11 +1,11 @@
 import "./main.css";
 
 import { IconButton, Avatar } from "@mui/material";
-import { ArrowBack, Person } from '@mui/icons-material';
+import { ArrowBack, Person, DoDisturb } from '@mui/icons-material';
 
 import { useNavigate } from "react-router-dom";
 
-function MainGameHeader() {
+function MainGameHeader({ started }) {
   const navigate = useNavigate();
 
   const handleBackButton = (event) => {
@@ -20,10 +20,10 @@ function MainGameHeader() {
         <ArrowBack fontSize="inherit" />
       </IconButton>
 
-      <span className="title">🎵 Lobby #233</span>
+      <span className="title">{ started ? "🎵 Lobby #233" : "Waiting for game..." }</span>
 
-      <Avatar className="avatar">
-        <Person fontSize="large" />
+      <Avatar className={ started ? "avatar" : "avatar gray" }>
+        { started ? <Person fontSize="large" /> : <DoDisturb fontSize="large" /> }
       </Avatar>
     </div>
   )
