@@ -25,7 +25,8 @@
   margin: 0 1rem 0 0;
   width: 4rem;
   height: 4rem;
-  background-color: rgb(255, 169, 84);
+  color: black;
+  background-color: white;
 }
 
 .user .userData {
