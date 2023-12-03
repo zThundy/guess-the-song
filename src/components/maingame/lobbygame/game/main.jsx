@@ -59,7 +59,15 @@ function Game() {
       <div className="gameContent">
         <StyledLinearProgress variant="determinate" color="secondary" value={Number(progress)} />
 
-        <img src={"/assets/vinyl" + generatedNumber + ".png"} alt="vinyl" className="vinyl" />
+        <div className="vinylContainer">
+          <img src={"/assets/vinyl" + generatedNumber + ".png"} alt="vinyl" className="vinyl" />
+          <div className="notes" style={{ animation: "popout 5s ease-in-out infinite 1s" }}>🎵</div>
+          <div className="notes" style={{ animation: "popout2 5s ease-in-out infinite 1.5s" }}>🎵</div>
+          <div className="notes" style={{ animation: "popout3 5s ease-in-out infinite 2s" }}>🎵</div>
+          <div className="notes" style={{ animation: "popout4 5s ease-in-out infinite 2.5s" }}>🎵</div>
+          <div className="notes" style={{ animation: "popout5 5s ease-in-out infinite 3s" }}>🎵</div>
+          <div className="notes" style={{ animation: "popout6 5s ease-in-out infinite 3.5s" }}>🎵</div>
+        </div>
 
         <Grid container className="choicesContainer">
           <Grid item xs={12}>

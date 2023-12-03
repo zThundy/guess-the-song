@@ -2,7 +2,110 @@
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
+    }
+}
+
+@keyframes popout {
+    0% {
+        transform: scale(0) rotate(0deg) translate(0, 0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(0) rotate(120deg) translate(110px, 50px);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) rotate(240deg) translate(150px, 100px);
+        opacity: 0;
+    }
+}
+
+@keyframes popout2 {
+    0% {
+        transform: scale(0) rotate(0deg) translate(0, 0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(0) rotate(120deg) translate(-110px, 50px);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) rotate(240deg) translate(-150px, 100px);
+        opacity: 0;
+    }
+}
+
+@keyframes popout3 {
+    0% {
+        transform: scale(0) rotate(0deg) translate(0, 0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(0) rotate(60deg) translate(90px, 0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) rotate(280deg) translate(120px, -80px);
+        opacity: 0;
+    }
+}
+
+@keyframes popout4 {
+    0% {
+        transform: scale(0) rotate(-110deg) translate(0, 0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1) rotate(-170deg) translate(0, 0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.1) rotate(-210deg) translate(0, -60px);
+        opacity: 0;
+    }
+}
+
+@keyframes popout5 {
+    0% {
+        transform: scale(0) rotate(-110deg) translate(0, 0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1) rotate(-170deg) translate(0, 0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.1) rotate(-210deg) translate(-120px, -160px);
+        opacity: 0;
+    }
+}
+
+@keyframes popout6 {
+    0% {
+        transform: scale(0) rotate(-0) translate(0, 0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1) rotate(-60deg) translate(0, 0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.1) rotate(-170deg) translate(120px, -160px);
+        opacity: 0;
     }
 }
