@@ -21,6 +21,43 @@ const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
   },
 }));
 
+const StyledButtonPrimary = styled(Button)({
+  fontWeight: 'bold',
+  fontSize: '1rem',
+  boxShadow: '0 9px 0 0 rgba(190,100,0, .8)',
+  transition: "all .1s ease",
+  position: "relative",
+  borderRadius: '1rem',
+  bottom: '9px',
+  ":hover": {
+    background: "rgb(255, 123, 0)",
+    transition: "all .2s ease",
+    boxShadow: '0 0 0 0 rgba(190, 100, 0, 1)',
+    bottom: '0px',
+  },
+});
+
+function Notes() {
+  const notes = [
+    // <div className="notes" style={{ animation: "popout 5s ease-in-out infinite 1s" }}>🎵</div>,
+    // <div className="notes" style={{ animation: "popout2 5s ease-in-out infinite 1.5s" }}>🎵</div>,
+    // <div className="notes" style={{ animation: "popout3 5s ease-in-out infinite 2s" }}>🎵</div>,
+    // <div className="notes" style={{ animation: "popout4 5s ease-in-out infinite 2.5s" }}>🎵</div>,
+    // <div className="notes" style={{ animation: "popout5 5s ease-in-out infinite 3s" }}>🎵</div>,
+    // <div className="notes" style={{ animation: "popout6 5s ease-in-out infinite 3.5s" }}>🎵</div>
+  ]
+
+  for (var i = 0; i < 30; i++) {
+    notes.push(<div className="notes" style={{ animation: "popout" + ((i % 6) + 1) + " 5s ease-in-out infinite " + i + "s", transform: "rotate(" + Math.floor(Math.random() * 361) + "deg)" }}>🎵</div>)
+  }
+
+  return (
+    <>
+      {notes}
+    </>
+  )
+}
+
 function Game() {
   const [guessed, setGuessed] = useState("0");
   const [maxSeconds] = useState(10);
@@ -61,40 +98,35 @@ function Game() {
 
         <div className="vinylContainer">
           <img src={"/assets/vinyl" + generatedNumber + ".png"} alt="vinyl" className="vinyl" />
-          <div className="notes" style={{ animation: "popout 5s ease-in-out infinite 1s" }}>🎵</div>
-          <div className="notes" style={{ animation: "popout2 5s ease-in-out infinite 1.5s" }}>🎵</div>
-          <div className="notes" style={{ animation: "popout3 5s ease-in-out infinite 2s" }}>🎵</div>
-          <div className="notes" style={{ animation: "popout4 5s ease-in-out infinite 2.5s" }}>🎵</div>
-          <div className="notes" style={{ animation: "popout5 5s ease-in-out infinite 3s" }}>🎵</div>
-          <div className="notes" style={{ animation: "popout6 5s ease-in-out infinite 3.5s" }}>🎵</div>
+          <Notes />
         </div>
 
         <Grid container className="choicesContainer">
           <Grid item xs={12}>
-            <Button
+            <StyledButtonPrimary
               variant="contained"
               className={"choiceButton " + (guessed === "1" ? "guessed" : "")}
               data-guess="1"
-              onClick={handleGuess}>a</Button>
+              onClick={handleGuess}>Justin beaber</StyledButtonPrimary>
           </Grid>
           <Grid item xs={12}>
-            <Button
+            <StyledButtonPrimary
               variant="contained"
               className={"choiceButton " + (guessed === "2" ? "guessed" : "")}
               data-guess="2"
-              onClick={handleGuess}>b</Button>
-            <Button
+              onClick={handleGuess}>Maroon 5</StyledButtonPrimary>
+            <StyledButtonPrimary
               variant="contained"
               className={"choiceButton " + (guessed === "3" ? "guessed" : "")}
               data-guess="3"
-              onClick={handleGuess}>c</Button>
+              onClick={handleGuess}>Ed Sheeran</StyledButtonPrimary>
           </Grid>
           <Grid item xs={12}>
-            <Button
+            <StyledButtonPrimary
               variant="contained"
               className={"choiceButton " + (guessed === "4" ? "guessed" : "")}
               data-guess="4"
-              onClick={handleGuess}>f</Button>
+              onClick={handleGuess}>Alan Walker</StyledButtonPrimary>
           </Grid>
         </Grid>
       </div>
