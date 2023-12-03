@@ -17,6 +17,7 @@ const StyledButtonPrimary = styled(Button)({
   transition: "all .1s ease",
   position: "relative",
   borderRadius: '1rem',
+  color: "white",
   width: '100%',
   margin: '1rem 0rem 3rem 0rem',
   ":hover": {
@@ -61,8 +62,6 @@ function MainForm() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log(location);
-
   const handleJoinGame = (event) => {
     event.preventDefault();
     setTimeout(() => {
@@ -76,7 +75,7 @@ function MainForm() {
         <h1>Welcome 👋</h1>
         <div className="buttonsFormContainer">
           <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>Play</StyledButtonPrimary>
-          <StyledButtonSecondary variant="outlined" endIcon={<Launch />}>Account</StyledButtonSecondary>
+          <StyledButtonSecondary variant="outlined" color="secondary" endIcon={<Launch />}>Account</StyledButtonSecondary>
         </div>
       </div>
       :
@@ -89,7 +88,7 @@ function MainForm() {
         <h1>Welcome 👋</h1>
         <div className="buttonsFormContainer">
           <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>Play</StyledButtonPrimary>
-          <StyledButtonSecondary variant="outlined" endIcon={<Launch />}>Account</StyledButtonSecondary>
+          <StyledButtonSecondary variant="outlined" color="secondary" endIcon={<Launch />}>Account</StyledButtonSecondary>
         </div>
       </motion.div>
     )

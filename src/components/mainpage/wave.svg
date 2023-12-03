@@ -67,9 +67,9 @@
   <use class="wave" href="#sineWave" />
   <use class="wave" x="-100%" href="#sineWave" />
   <use class="wave1" href="#sineWave1" />
-  <use class="wave1" x="-80%" href="#sineWave1" />
+  <use class="wave1" x="-120%" href="#sineWave1" />
   <use class="wave2" href="#sineWave2" />
-  <use class="wave2" x="-60%" href="#sineWave2" />
+  <use class="wave2" x="-140%" href="#sineWave2" />
   <use class="wave3" href="#sineWave3" />
-  <use class="wave3" x="-40%" href="#sineWave3" />
+  <use class="wave3" x="-160%" href="#sineWave3" />
 </svg>

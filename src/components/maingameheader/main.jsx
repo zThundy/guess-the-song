@@ -1,7 +1,7 @@
 import "./main.css";
 
-import { IconButton, Avatar } from "@mui/material";
-import { ArrowBack, Person, DoDisturb } from '@mui/icons-material';
+import { IconButton } from "@mui/material";
+import { ArrowBack } from '@mui/icons-material';
 
 import { useNavigate } from "react-router-dom";
 
@@ -21,10 +21,6 @@ function MainGameHeader({ started }) {
       </IconButton>
 
       <span className="title">{ started ? "🎵 Lobby #233" : "⌛️ Waiting for game..." }</span>
-
-      <Avatar className={ started ? "avatar" : "avatar gray" }>
-        { started ? <Person fontSize="large" /> : <DoDisturb fontSize="large" /> }
-      </Avatar>
     </div>
   )
 }
