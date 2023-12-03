@@ -4,6 +4,7 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  user-select: none;
 }
 
 @media screen and (max-width: 1200px) {

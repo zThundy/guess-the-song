@@ -6,7 +6,7 @@ import { Button, Grid, LinearProgress, styled } from "@mui/material";
 
 const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
-  borderRadius: 5,
+  borderRadius: 4,
   width: "90%",
   margin: "0 auto 2rem auto",
   backgroundColor: "white",
@@ -26,6 +26,7 @@ function Game() {
   const [maxSeconds] = useState(10);
   const [secondsLeft, setSecondsLeft] = useState(maxSeconds - 3);
   const [started, setStarted] = useState(false);
+  const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
 
   const handleGuess = (e) => {
     if (guessed !== "0") return;
@@ -35,12 +36,10 @@ function Game() {
   }
 
   useEffect(() => {
-    console.log("started", started);
     var msLeft = secondsLeft * 1000;
     const step = 10;
     const interval = setInterval(() => {
       if (!started) return;
-      console.log("msLeft", msLeft)
       if (msLeft <= 0) {
         clearInterval(interval);
         return;
@@ -60,7 +59,7 @@ function Game() {
       <div className="gameContent">
         <StyledLinearProgress variant="determinate" color="secondary" value={Number(progress)} />
 
-        <img src="/assets/vinyl.png" alt="vinyl" className="vinyl" />
+        <img src={"/assets/vinyl" + generatedNumber + ".png"} alt="vinyl" className="vinyl" />
 
         <Grid container className="choicesContainer">
           <Grid item xs={12}>
