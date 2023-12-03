@@ -4,6 +4,7 @@ import { Button, styled } from '@mui/material';
 import { Add, Login } from '@mui/icons-material';
 
 const StyledButtonPrimary = styled(Button)({
+  color: "white",
   background: "radial-gradient(circle, rgba(255,167,51,1) 0%, rgba(255,167,51,1) 50%, rgba(255,167,51,1) 100%)",
   fontWeight: 'bold',
   padding: '1rem',

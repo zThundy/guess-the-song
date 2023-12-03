@@ -48,7 +48,7 @@ function Notes() {
   ]
 
   for (var i = 0; i < 30; i++) {
-    notes.push(<div className="notes" style={{ animation: "popout" + ((i % 6) + 1) + " 5s ease-in-out infinite " + i + "s", transform: "rotate(" + Math.floor(Math.random() * 361) + "deg)" }}>🎵</div>)
+    notes.push(<div className="notes" style={{ animation: "popout" + ((i % 6) + 1) + " 5s ease-in-out infinite " + i + "s" }}>🎵</div>)
   }
 
   return (
