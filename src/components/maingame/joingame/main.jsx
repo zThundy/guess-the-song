@@ -3,6 +3,8 @@ import "./main.css";
 import { Button, styled } from '@mui/material';
 import { Add, Login } from '@mui/icons-material';
 
+import Lobbies from "./lobbies/main";
+
 const StyledButtonPrimary = styled(Button)({
   color: "white",
   background: "radial-gradient(circle, rgba(255,167,51,1) 0%, rgba(255,167,51,1) 50%, rgba(255,167,51,1) 100%)",
@@ -65,7 +67,7 @@ function JoinGame() {
           <StyledButtonPrimary variant="contained" endIcon={<Login />} onClick={handleJoinGame}>Join a game</StyledButtonPrimary>
         </div>
         <div className="joinOrCreateListOfLobbies">
-
+          <Lobbies />
         </div>
       </div>
     </>

@@ -1,0 +1,79 @@
+.lobbyContainer {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  width: calc(100% - 1rem);
+  background-color: rgba(255, 200, 112, 1);
+  border-radius: .6rem;
+  margin: .3rem auto .3rem auto;
+}
+
+.lobbyContainer > * {
+  margin: 1rem;
+}
+
+.lobbyTextContainer {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: calc(100% - 12rem);
+  border-radius: 1rem;
+  margin: .6rem auto .6rem auto;
+  padding: .4rem;
+  user-select: none;
+}
+
+.lobbyTextContainer .name {
+  font-size: 1.2rem;
+  text-align: left;
+  display: inline-flex;
+}
+
+.lobbyTextContainer .genere {
+  font-size: .8rem;
+  text-align: left;
+  padding-left: 2rem;
+}
+
+.lobbyTextContainer .category {
+  font-size: .8rem;
+  text-align: left;
+  padding-left: 2rem;
+}
+
+.lobbyTextContainer .players {
+  font-size: .8rem;
+  text-align: left;
+  padding-left: 2rem;
+}
+
+.name img {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: .4rem;
+  display: inline-flex;
+  animation: spin 5s linear infinite;
+}
+
+.joinButtonContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background-color: rgb(255, 174, 94);
+  height: fit-content;
+}
+
+.joinButtonContainer .joinButton {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.joinButtonContainer .joinLockedIcon {
+  font-size: 1.5rem;
+  padding: auto;
+  margin: .6rem;
+}

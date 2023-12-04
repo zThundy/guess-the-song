@@ -9,7 +9,7 @@ import Header from "../maingameheader/main.jsx";
 import { motion } from 'framer-motion'
 
 function MainGame() {
-  const [started] = useState(true);
+  const [started] = useState(false);
 
   return (
     <motion.div

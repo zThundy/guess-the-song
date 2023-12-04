@@ -1,7 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Fuzzy+Bubbles:wght@700&display=swap');
 
-
 body {
-    font-family: 'Fuzzy Bubbles', sans-serif;
-    overflow: hidden;
+  font-family: 'Fuzzy Bubbles', sans-serif;
+  overflow: hidden;
+}
+
+/* restyle scrollbar */
+::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f100;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 144, 34, 0.9);
+  border-radius: 1rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 169, 83, 0.9);
 }
