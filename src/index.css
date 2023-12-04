@@ -7,7 +7,7 @@ body {
 
 /* restyle scrollbar */
 ::-webkit-scrollbar {
-  width: 0.5rem;
+  width: 0.6rem;
 }
 
 ::-webkit-scrollbar-track {
@@ -17,6 +17,7 @@ body {
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 144, 34, 0.9);
   border-radius: 1rem;
+  border: 2px solid white;
 }
 
 ::-webkit-scrollbar-thumb:hover {

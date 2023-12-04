@@ -1,9 +1,11 @@
 import "./main.css";
 
+import Lobbies from "./lobbies/main";
+
 import { Button, styled } from '@mui/material';
 import { Add, Login } from '@mui/icons-material';
 
-import Lobbies from "./lobbies/main";
+import { useNavigate } from "react-router-dom";
 
 const StyledButtonPrimary = styled(Button)({
   color: "white",
@@ -50,9 +52,13 @@ const StyledButtonPrimary = styled(Button)({
   }
 });
 
-function JoinGame() {
+function JoinGame({ status }) {
+  const navigate = useNavigate();
+
   const handleCreateGame = () => {
-    console.log("create game");
+    setTimeout(() => {
+      navigate("/create");
+    }, 200);
   }
 
   const handleJoinGame = () => {
@@ -60,17 +66,15 @@ function JoinGame() {
   }
 
   return (
-    <>
-      <div className="joinOrCreateContainer">
-        <div className="joinOrCreateButtons">
-          <StyledButtonPrimary variant="contained" endIcon={<Add />} onClick={handleCreateGame}>Create a game</StyledButtonPrimary>
-          <StyledButtonPrimary variant="contained" endIcon={<Login />} onClick={handleJoinGame}>Join a game</StyledButtonPrimary>
-        </div>
-        <div className="joinOrCreateListOfLobbies">
-          <Lobbies />
-        </div>
+    <div className="joinOrCreateContainer">
+      <div className="joinOrCreateButtons">
+        <StyledButtonPrimary variant="contained" endIcon={<Add />} onClick={handleCreateGame}>Create a game</StyledButtonPrimary>
+        <StyledButtonPrimary variant="contained" endIcon={<Login />} onClick={handleJoinGame}>Join a game</StyledButtonPrimary>
       </div>
-    </>
+      <div className="joinOrCreateListOfLobbies">
+        <Lobbies />
+      </div>
+    </div>
   );
 }
 

@@ -1,0 +1,14 @@
+.createRightContainer {
+  position: relative;
+  width: 40%;
+  height: 100%;
+  margin-left: .2rem;
+  background: rgb(255, 200, 112);
+  background: linear-gradient(126deg, rgba(255, 227, 112, 1) 0%, rgba(255, 213, 112, 1) 36%, rgba(255, 200, 112, 1) 100%);
+  border-radius: .5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  overflow: auto;
+}

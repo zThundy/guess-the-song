@@ -3,7 +3,7 @@
 import Sidebar from "./gamebar/main.jsx";
 import Game from "./game/main.jsx";
 
-function LobbyGame({ started }) {
+function LobbyGame({ status }) {
   return (
     <>
       <div className="gameContainer">

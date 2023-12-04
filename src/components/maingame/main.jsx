@@ -9,7 +9,7 @@ import Header from "../maingameheader/main.jsx";
 import { motion } from 'framer-motion'
 
 function MainGame() {
-  const [started] = useState(false);
+  const [status] = useState("lobby"); // lobby, game, create
 
   return (
     <motion.div
@@ -18,8 +18,8 @@ function MainGame() {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -3000, opacity: 1 }}
     >
-      <Header started={started} />
-      { started ? <LobbyGame started={started} /> : <JoinGame started={started} /> }
+      <Header status={status} />
+      { status === "game" ? <LobbyGame started={status} /> : <JoinGame started={status} /> }
     </motion.div>
   )
 }

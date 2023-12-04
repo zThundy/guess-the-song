@@ -5,12 +5,12 @@ import { ArrowBack } from '@mui/icons-material';
 
 import { useNavigate } from "react-router-dom";
 
-function MainGameHeader({ started }) {
+function MainGameHeader({ status }) {
   const navigate = useNavigate();
 
   const handleBackButton = (event) => {
     setTimeout(() => {
-      navigate("/", { state: { shouldAnimate: true } });
+      navigate(-1, { state: { shouldAnimate: true } });
     }, 300);
   }
 
@@ -20,7 +20,9 @@ function MainGameHeader({ started }) {
         <ArrowBack fontSize="inherit" />
       </IconButton>
 
-      <span className="title">{ started ? "🎵 Lobby #233" : "⌛️ Waiting for game..." }</span>
+      { status === "game" ? <span className="title">🎵 Lobby #233</span> : "" }
+      { status === "lobby" ? <span className="title">⌛️ Waiting for game...</span> : "" }
+      { status === "create" ? <span className="title">➕ Create a new lobby</span> : "" }
     </div>
   )
 }
