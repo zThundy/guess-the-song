@@ -5,7 +5,7 @@
   margin-left: .2rem;
   background: rgb(255, 200, 112);
   background: linear-gradient(126deg, rgba(255, 227, 112, 1) 0%, rgba(255, 213, 112, 1) 36%, rgba(255, 200, 112, 1) 100%);
-  border-radius: .5rem;
+  border-radius: 0 .5rem .5rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
