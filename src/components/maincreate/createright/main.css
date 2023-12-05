@@ -17,3 +17,7 @@
   overflow: auto;
   overflow: hidden;
 }
+
+.createRightTitle {
+  padding-top: 1.5rem;
+}

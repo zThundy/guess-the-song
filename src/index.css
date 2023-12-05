@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Fuzzy+Bubbles:wght@700&display=swap');
 
+*{
+  font-family: 'Fuzzy Bubbles', sans-serif;
+}
+
 body {
   font-family: 'Fuzzy Bubbles', sans-serif;
   overflow: hidden;

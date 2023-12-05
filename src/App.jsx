@@ -18,6 +18,12 @@ const theme = createTheme({
       main: "rgb(204,102,0)",
     },
   },
+  typography: {
+    fontFamily: [
+      'Fuzzy Bubbles',
+      'sans-serif',
+    ].join(','),
+  },
 });
 
 function App() {
