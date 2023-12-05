@@ -1,56 +1,68 @@
+@import url("./category.css");
+@import url("./genere.css");
+
 .createLeftContainer {
   position: relative;
   width: 90%;
   height: 100%;
   margin: .5rem auto;
-  background: rgb(255, 200, 112);
+  /* background: rgb(255, 200, 112); */
   background: linear-gradient(126deg, rgba(255, 200, 112, 1) 0%, rgba(255, 213, 112, 1) 36%, rgba(255, 227, 112, 1) 100%);
   border-radius: .5rem 0 0 .5rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
   overflow: hidden;
+  user-select: none;
 }
 
-.createSelectCategory {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  align-items: left;
-  justify-content: left;
-  overflow-x: auto;
-  margin-right: auto;
-  min-width: 0;
-}
 
-.createSelectCategory .category {
-  position: relative;
-  width: 200px;
-  height: 200px;
+
+.categoryScrollButtonRight {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 2rem;
+  height: 2rem;
+  background: #000;
+  border-radius: 50%;
+  cursor: pointer;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #fff;
-  background: #000;
-  border-radius: .5rem;
-  cursor: pointer;
-  margin: 1rem;
-}
-
-.createSelectCategory .categoryIcon {
-  position: absolute;
-}
-
-.categoryIcon svg {
   transition: all .1s ease-in-out;
-  font-size: 6rem;
-  color: rgba(255, 255, 255, 0.3);
 }
 
-/* on hover category change size of svg */
-.category:hover .categoryIcon svg {
-  font-size: 7rem;
+.categoryScrollButtonRight svg {
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.categoryScrollButtonRight:hover {
+  background: #fff;
+}
+
+.categoryScrollButtonLeft {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 2rem;
+  height: 2rem;
+  background: #000;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .1s ease-in-out;
+}
+
+.categoryScrollButtonLeft svg {
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.categoryScrollButtonLeft:hover {
+  background: #fff;
 }

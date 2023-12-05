@@ -1,79 +1,112 @@
 import "./main.css";
 
-import { MusicNote, Videocam, Movie, SportsEsports, HourglassBottom } from "@mui/icons-material";
+import { MusicNote, Videocam, Movie, SportsEsports, HourglassBottom, ArrowLeft, ArrowRight } from "@mui/icons-material";
 
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
+
+const _categories = [
+  {
+    name: "Music",
+    icon: <MusicNote />
+  },
+  {
+    name: "Movies",
+    icon: <Videocam />
+  },
+  {
+    name: "TV Shows",
+    icon: <Movie />
+  },
+  {
+    name: "Video Games",
+    icon: <SportsEsports />
+  },
+  {
+    name: "Coming soon...",
+    icon: <HourglassBottom />
+  }
+]
+
+const _generes = [
+  {
+    name: "Rock",
+    icon: <MusicNote />
+  },
+  {
+    name: "Pop",
+    icon: <MusicNote />
+  },
+  {
+    name: "Jazz",
+    icon: <MusicNote />
+  },
+  {
+    name: "Classical",
+    icon: <MusicNote />
+  },
+  {
+    name: "Hip Hop",
+    icon: <MusicNote />
+  },
+  {
+    name: "Rap",
+    icon: <MusicNote />
+  },
+  {
+    name: "Country",
+    icon: <MusicNote />
+  },
+  {
+    name: "Metal",
+    icon: <MusicNote />
+  },
+  {
+    name: "Japanese",
+    icon: <MusicNote />
+  },
+  {
+    name: "Korean",
+    icon: <MusicNote />
+  },
+]
+
+// function ScrollButtons({ showScrollButtons }) {
+//   if (showScrollButtons) {
+//     return (
+//       <>
+//         <div className="categoryScrollButtonRight">
+//           <ArrowRight />
+//         </div>
+//         <div className="categoryScrollButtonLeft">
+//           <ArrowLeft />
+//         </div>
+//       </>
+//     )
+//   } else {
+//     return null;
+//   }
+// }
 
 function CreateLobbyLeft() {
-  const [categories, setCategories] = useState([
-    {
-      name: "Music",
-      icon: <MusicNote />
-    },
-    {
-      name: "Movies",
-      icon: <Videocam />
-    },
-    {
-      name: "TV Shows",
-      icon: <Movie />
-    },
-    {
-      name: "Video Games",
-      icon: <SportsEsports />
-    },
-    {
-      name: "Coming soon...",
-      icon: <HourglassBottom />
-    }
-  ]);
+  const [categories, setCategories] = useState(_categories);
+  const [generes, setGeneres] = useState(_generes);
+  // const [showScrollButtons, setShowScrollButtons] = useState(false);
+  const genereRef = useRef(null);
+  const categoryRef = useRef(null);
 
-  const [generes, setGeneres] = useState([
-    {
-      name: "Rock",
-      icon: <MusicNote />
-    },
-    {
-      name: "Pop",
-      icon: <MusicNote />
-    },
-    {
-      name: "Jazz",
-      icon: <MusicNote />
-    },
-    {
-      name: "Classical",
-      icon: <MusicNote />
-    },
-    {
-      name: "Hip Hop",
-      icon: <MusicNote />
-    },
-    {
-      name: "Rap",
-      icon: <MusicNote />
-    },
-    {
-      name: "Country",
-      icon: <MusicNote />
-    },
-    {
-      name: "Metal",
-      icon: <MusicNote />
-    },
-    {
-      name: "Japanese",
-      icon: <MusicNote />
-    },
-    {
-      name: "Korean",
-      icon: <MusicNote />
-    },
-  ]);
-  
+  const handleScrollCategory = (e) => {
+    categoryRef.current.scrollLeft += e.deltaY;
+  }
+
+  const handleScrollGenere = (e) => {
+    var currentScroll = Number((genereRef.current.style.right).split("px")[0]);
+    currentScroll += e.deltaY;
+    genereRef.current.style.right = currentScroll + "px";
+  }
+
   return (
     <div className="createLeftContainer">
-      <div className="createSelectCategory">
+      <div className="createSelectCategory" onWheel={handleScrollCategory} ref={categoryRef}>
         {
           categories.map((category, index) => {
             return (
@@ -88,16 +121,23 @@ function CreateLobbyLeft() {
             )
           })
         }
+        {
+        /*
+          <ScrollButtons
+            showScrollButtons={showScrollButtons}
+          />
+        */
+        }
       </div>
-      <div className="createSelectCategory">
+      <div className="createSelectGenere" onWheel={handleScrollGenere} ref={genereRef}>
         {
           generes.map((genere, index) => {
             return (
-              <div className="category" key={index}>
-                <div className="categoryIcon">
+              <div className="genere" key={index}>
+                <div className="genereIcon">
                   {genere.icon}
                 </div>
-                <div className="createCategoryName">
+                <div className="createGenereName">
                   {genere.name}
                 </div>
               </div>

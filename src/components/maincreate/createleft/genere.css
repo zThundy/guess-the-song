@@ -1,0 +1,40 @@
+.createSelectGenere {
+  /* position in top left of container */
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  overflow: auto;
+  width: fit-content;
+}
+
+.createSelectGenere .genere {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  background: #000;
+  border-radius: .5rem;
+  cursor: pointer;
+  margin: 1rem;
+}
+
+.createSelectGenere .genereIcon {
+  position: absolute;
+}
+
+.genereIcon svg {
+  transition: all .1s ease-in-out;
+  font-size: 6rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* on hover genere change size of svg */
+.genere:hover .genereIcon svg {
+  font-size: 7rem;
+}
