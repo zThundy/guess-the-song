@@ -1,0 +1,66 @@
+.createButtonsContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 10%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.createButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0 auto;
+  padding: .8rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.createButton svg {
+  padding-left: .5rem;
+}
+
+.createButtonsContainer .public {
+  background-color: rgb(64, 116, 59);
+  color: black;
+  border-radius: 5px;
+  width: 40%;
+  transition: all .2s ease-in-out;
+  margin: 0 auto;
+}
+.createButtonsContainer .public:hover {
+  background-color: rgb(102, 184, 94);
+}
+
+.createButtonsContainer .private {
+  background-color: rgb(94, 43, 43);
+  color: black;
+  border-radius: 5px;
+  width: 40%;
+  transition: all .1s ease-in-out;
+  margin: 0 auto;
+}
+.createButtonsContainer .private:hover {
+  background-color: rgb(167, 77, 77);
+}
+
+.createButtonsContainer .public.active {
+  background-color: rgb(61, 190, 49);
+  z-index: 1;
+  color: white;
+  animation: selectButton .2s ease-in-out forwards;
+}
+
+.createButtonsContainer .private.active {
+  background-color: rgb(173, 31, 31);
+  z-index: 1;
+  color: white;
+  animation: selectButton .2s ease-in-out forwards;
+}
