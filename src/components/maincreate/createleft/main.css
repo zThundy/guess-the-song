@@ -1,5 +1,6 @@
 @import url("./category.css");
 @import url("./genere.css");
+@import url("./buttons.css");
 @import url("./keyframes.css");
 
 .createLeftContainer {
@@ -26,7 +27,7 @@
   box-shadow: 0 .1rem .3rem rgba(0, 0, 0, 0.5);
   overflow: hidden;
   margin: 1rem auto 0 auto;
-  padding: 1rem;
+  padding: .5rem;
   border: .2rem solid rgba(255, 169, 41, 1);
 }
 
@@ -78,4 +79,14 @@
 
 .categoryScrollButtonLeft:hover {
   background: #fff;
+}
+
+.createSelectArrowDown {
+  position: absolute;
+  border-left: 1rem solid transparent;
+  border-right: 1rem solid transparent;
+  border-top: 1rem solid white;
+  cursor: pointer;
+  bottom: calc(100% + .3rem);
+  animation: popup .3s ease-in-out;
 }

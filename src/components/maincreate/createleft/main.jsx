@@ -4,6 +4,7 @@ import { MusicNote, Videocam, Movie, SportsEsports, HourglassBottom } from "@mui
 
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Button } from "@mui/material";
 
 const _categories = [
   {
@@ -71,6 +72,30 @@ const _generes = [
   },
 ]
 
+function DifficutlyButtons({ choices, setChoices }) {
+  const [selectedDifficulty, setSelectedDifficulty] = useState(0);
+  if (!choices.genere) return null;
+
+  const handleMouseClick = (e) => {
+    const id = Number(e.currentTarget.dataset.id);
+    setSelectedDifficulty(id);
+    setChoices({ category: choices.category, genere: choices.genere, difficulty: id });
+  }
+
+  return (
+    <motion.div
+      initial={{ scale: 0, rotate: 0 }}
+      animate={{ scale: [0, 1, 1.3, 1], rotate: [0, 8, -8, 10, -10, 0] }}
+      transition={{ duration: 0.4 }}
+      className="createSelectDifficulty"
+    >
+      <Button disableRipple variant="contained" data-id="1" className={"easy " + (selectedDifficulty === 1 ? "selected" : "")} onMouseDown={handleMouseClick}>Easy</Button>
+      <Button disableRipple variant="contained" data-id="2" className={"normal " + (selectedDifficulty === 2 ? "selected" : "")} onMouseDown={handleMouseClick}>Normal</Button>
+      <Button disableRipple variant="contained" data-id="3" className={"hard " + (selectedDifficulty === 3 ? "selected" : "")} onMouseDown={handleMouseClick}>Hard</Button>
+    </motion.div>
+  )
+}
+
 function Generes({ choices, setChoices, enableTimeout, scrollTimeout }) {
   const [selectedGenere, setSelectedGenere] = useState(0);
   const [generes, setGeneres] = useState(_generes);
@@ -92,14 +117,13 @@ function Generes({ choices, setChoices, enableTimeout, scrollTimeout }) {
     // get id from dataset
     const id = Number(e.currentTarget.dataset.id);
     setSelectedGenere(id);
-    setChoices({ category: choices.category, genere: generes[id] });
+    setChoices({ category: choices.category, genere: generes[id], difficulty: choices.difficulty || null });
   }
 
   return (
     <motion.div
       initial={{ scale: 0, rotate: 0 }}
       animate={{ scale: [0, 1, 1.1, 1], rotate: [0, 5, -5, 8, -8, 0] }}
-      exit={{ scale: 0 }}
       transition={{ duration: 0.4 }}
       className="createSelectContainer"
       onWheel={handleScrollGenere}
@@ -109,7 +133,7 @@ function Generes({ choices, setChoices, enableTimeout, scrollTimeout }) {
           generes.map((genere, index) => {
             return (
               <div className="genere" key={index} onMouseDown={handleMouseClick} data-id={index}>
-                {index === selectedGenere && <div className="createSelectGenereArrowDown"></div>}
+                {index === selectedGenere && <div className="createSelectArrowDown"></div>}
 
                 <div className="genereIcon">
                   {genere.icon}
@@ -130,7 +154,7 @@ function CreateLobbyLeft() {
   const [categories, setCategories] = useState(_categories);
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [scrollTimeout, setScrollTimeout] = useState(false);
-  const [choices, setChoices] = useState({ category: null, genere: null });
+  const [choices, setChoices] = useState({ category: null, genere: null, difficulty: null });
 
   const categoryRef = useRef(null);
 
@@ -154,7 +178,7 @@ function CreateLobbyLeft() {
     // get id from dataset
     const id = Number(e.currentTarget.dataset.id);
     setSelectedCategory(id);
-    setChoices({ category: categories[id], genere: null });
+    setChoices({ category: categories[id], genere: choices.genere || null, difficulty: choices.difficulty || null });
   }
 
   return (
@@ -165,7 +189,7 @@ function CreateLobbyLeft() {
             categories.map((category, index) => {
               return (
                 <div className="category" key={index} onMouseDown={handleMouseClick} data-id={index}>
-                  {index === selectedCategory && <div className="createSelectGenereArrowDown"></div>}
+                  {index === selectedCategory && <div className="createSelectArrowDown"></div>}
 
                   <div className="categoryIcon">
                     {category.icon}
@@ -182,6 +206,10 @@ function CreateLobbyLeft() {
       <Generes
         enableTimeout={enableTimeout}
         scrollTimeout={scrollTimeout}
+        setChoices={setChoices}
+        choices={choices}
+      />
+      <DifficutlyButtons
         setChoices={setChoices}
         choices={choices}
       />
