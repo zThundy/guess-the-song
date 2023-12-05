@@ -9,7 +9,7 @@ import Header from "../maingameheader/main.jsx";
 import { motion } from 'framer-motion'
 
 function MainGame() {
-  const [status] = useState("lobby"); // lobby, game, create
+  const [status] = useState("game"); // lobby, game, create
 
   return (
     <motion.div

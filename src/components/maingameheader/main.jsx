@@ -3,13 +3,18 @@ import "./main.css";
 import { IconButton } from "@mui/material";
 import { ArrowBack } from '@mui/icons-material';
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function MainGameHeader({ status }) {
+  const location = useLocation();
   const navigate = useNavigate();
 
   const handleBackButton = (event) => {
     setTimeout(() => {
+      if (location.pathname === "/game") {
+        navigate("/", { state: { shouldAnimate: true } });
+        return;
+      }
       navigate(-1, { state: { shouldAnimate: true } });
     }, 300);
   }
