@@ -1,5 +1,6 @@
 @import url("./category.css");
 @import url("./genere.css");
+@import url("./keyframes.css");
 
 .createLeftContainer {
   position: relative;
@@ -15,7 +16,19 @@
   user-select: none;
 }
 
-
+.createSelectContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 4rem);
+  background-color: rgba(204, 102, 0, 1);
+  border-radius: 1rem;
+  box-shadow: 0 .1rem .3rem rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  margin: 1rem auto 0 auto;
+  padding: 1rem;
+  border: .2rem solid rgba(255, 169, 41, 1);
+}
 
 .categoryScrollButtonRight {
   position: absolute;

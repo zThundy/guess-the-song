@@ -1,16 +1,26 @@
+.createSelectCategoryContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-color: red;
+}
+
 .createSelectCategory {
   /* position in top left of container */
   position: relative;
   display: flex;
   flex-direction: row;
-  overflow: auto;
+  overflow: hidden;
   width: fit-content;
 }
 
 .createSelectCategory .category {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: calc(10vw - 20px);
+  height: calc(10vw - 20px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,11 +40,11 @@
 
 .categoryIcon svg {
   transition: all .1s ease-in-out;
-  font-size: 6rem;
+  font-size: 400%;
   color: rgba(255, 255, 255, 0.3);
 }
 
 /* on hover category change size of svg */
 .category:hover .categoryIcon svg {
-  font-size: 7rem;
+  font-size: 500%;
 }
