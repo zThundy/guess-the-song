@@ -1,22 +1,26 @@
 import "./main.css";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import JoinableLobby from "./lobby/main.jsx";
 
 function Lobbies() {
   const [lobbies, setLobbies] = useState([]);
 
-  for (var i = 0; i < 30; i++) {
-    lobbies.push({
-      name: "Unnamed Lobby " + (i + 1),
-      players: Math.floor(Math.random() * 15),
-      maxPlayers: Math.floor(Math.random() * 99),
-      locked: Math.floor(Math.random() * 2) === 1,
-      category: "Pop",
-      genere: "Music"
-    })
-  }
+  useEffect(() => {
+    const _lobbies = [];
+    for (var i = 0; i < 30; i++) {
+      _lobbies.push({
+        name: "Unnamed Lobby " + (i + 1),
+        players: Math.floor(Math.random() * 15),
+        maxPlayers: Math.floor(Math.random() * 99),
+        locked: Math.floor(Math.random() * 2) === 1,
+        category: "Pop",
+        genere: "Music"
+      })
+    }
+    setLobbies(_lobbies);
+  }, []);
 
   return (
     <div className="lobbiesContainer">
