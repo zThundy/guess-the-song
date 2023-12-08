@@ -2,20 +2,24 @@ import "./main.css";
 
 import { Avatar, Badge } from "@mui/material";
 import { Person } from '@mui/icons-material';
+import { useMemo } from "react";
 
 function User() {
-  const users = [
-    { name: "User #1", points: 0, guessed: false },
-    { name: "User #2", points: 0, guessed: false },
-    { name: "User #3", points: 0, self: true, guessed: false },
-    { name: "User #4", points: 0, guessed: false },
-    { name: "User #5", points: 0, guessed: true },
-    { name: "User #6", points: 0, guessed: false },
-    { name: "User #7", points: 0, guessed: false },
-    { name: "User #8", points: 0, guessed: false },
-    { name: "User #9", points: 0, guessed: false },
-    { name: "User #10", points: 0, guessed: false },
-  ]
+  const [users] = useMemo(() => {
+    const users = [];
+    for (let i = 0; i < 15; i++) {
+      const guessed = Math.random() > 0.5;
+      console.log(guessed, "for user", i);
+      users.push({
+        name: `User #${i + 1}`,
+        points: Math.floor(Math.random() * 100),
+        guessed,
+        self: i === 2,
+      });
+    }
+    users.sort((a, b) => b.points - a.points);
+    return [users];
+  }, []);
 
   return (
     <>
@@ -28,10 +32,10 @@ function User() {
             }}
             color="secondary"
             overlap="circular"
-            badgeContent="You"
+            badgeContent={user.self ? "You" : ""}
             invisible={!user.self}
           >
-            <Avatar className="avatar">
+            <Avatar className={"avatar " + (user.guessed ? "guessed" : "")}>
               <Person fontSize="large" />
             </Avatar>
           </Badge>
