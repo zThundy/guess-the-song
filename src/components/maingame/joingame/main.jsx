@@ -6,7 +6,7 @@ import { useAnimate, motion } from "framer-motion";
 
 import Lobbies from "./lobbies/main";
 
-import { Button, styled, Paper, Typography, Zoom, IconButton, InputBase } from '@mui/material';
+import { Button, styled, Paper, Typography, Zoom, IconButton, InputBase, ClickAwayListener } from '@mui/material';
 import { Add, Close, Login, East } from '@mui/icons-material';
 
 const StyledButtonPrimary = styled(Button)({
@@ -55,6 +55,10 @@ const StyledButtonPrimary = styled(Button)({
 });
 
 function JoinGameModal({ on, toggle }) {
+  const handleJoinGame = () => {
+    console.log("Joining game...");
+  }
+
   return (
     <Zoom in={on} timeout={300} unmountOnExit>
       <motion.div
@@ -72,33 +76,35 @@ function JoinGameModal({ on, toggle }) {
         }}
         className={"joinGameModal " + (!on ? "fadeOutModal" : "")}
       >
-        <motion.div
-          initial={{ scale: 1 }}
-          animate={{ scale: [1.2, 1] }}
-          exit={{ scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="modalContainer"
-        >
-          <Button className="modalCloseButton" onClick={() => toggle(false)}>
-            <Close />
-          </Button>
-          <Typography variant="h4" className="modalTitle">Join a game</Typography>
-          <Typography variant="body1" className="modalText">Enter the game code to join a game.</Typography>
-          <Paper
-            className="modalInput"
-            component="form"
-            sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+        <ClickAwayListener onClickAway={() => toggle(false)}>
+          <motion.div
+            initial={{ scale: 1 }}
+            animate={{ scale: [1.2, 1] }}
+            exit={{ scale: 1 }}
+            transition={{ delay: 0.3 }}
+            className="modalContainer"
           >
-            <InputBase
-              sx={{ ml: 1, flex: 1 }}
-              placeholder="Enter game code"
-              inputProps={{ 'aria-label': 'enter game code' }}
-            />
-            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-              <East />
-            </IconButton>
-          </Paper>
-        </motion.div>
+            <Button className="modalCloseButton" onClick={() => toggle(false)}>
+              <Close />
+            </Button>
+            <Typography variant="h4" className="modalTitle">Join a game</Typography>
+            <Typography variant="body1" className="modalText">Enter the game code to join a game.</Typography>
+            <Paper
+              className="modalInput"
+              component="form"
+              sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+            >
+              <InputBase
+                sx={{ ml: 1, flex: 1 }}
+                placeholder="Enter game code"
+                inputProps={{ 'aria-label': 'enter game code' }}
+              />
+              <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleJoinGame}>
+                <East />
+              </IconButton>
+            </Paper>
+          </motion.div>
+        </ClickAwayListener>
       </motion.div>
     </Zoom>
   );
