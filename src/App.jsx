@@ -1,6 +1,6 @@
 import MainPage from "./components/mainpage/main";
 
-import { HashRouter } from "react-router-dom";
+import { HashRouter, MemoryRouter, BrowserRouter } from "react-router-dom";
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -28,11 +28,11 @@ const theme = createTheme({
 
 function App() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <ThemeProvider theme={theme}>
         <MainPage />
       </ThemeProvider>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 
