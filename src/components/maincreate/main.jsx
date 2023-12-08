@@ -14,12 +14,11 @@ function MainCreate() {
     console.log("changing choices", data)
     globalChoices[data.type] = data.value;
     setGlobalChoices(globalChoices);
-    console.log(globalChoices)
   }
 
-  useEffect(() => {
-    console.log(globalChoices);
-  }, [globalChoices])
+  const createRoom = () => {
+    console.log("creating room", globalChoices);
+  }
 
   return (
     <motion.div
@@ -35,6 +34,7 @@ function MainCreate() {
         />
         <CreateLobbyRight
           setGlobalChoices={computeSetChoices}
+          create={createRoom}
         />
       </div>
     </motion.div>

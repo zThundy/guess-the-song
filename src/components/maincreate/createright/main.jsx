@@ -1,9 +1,9 @@
 import "./main.css";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
-import { Typography, TextField, Button, styled } from "@mui/material";
-import { CreateRounded, LockOpen, LockOutlined, Add } from "@mui/icons-material";
+import { Typography, TextField, Button, FormHelperText, styled, useFormControl } from "@mui/material";
+import { LockOpen, LockOutlined } from "@mui/icons-material";
 
 const StyledButtonPrimary = styled(Button)({
   background: 'linear-gradient(45deg, #ffab2b 30%, #ffc86f 90%)',
@@ -26,11 +26,10 @@ const StyledButtonPrimary = styled(Button)({
   },
 });
 
-function CreateLobbyRight({ setGlobalChoices }) {
-  const [choices, setChoices] = useState({ roomName: "", maxPlayers: 8, rounds: 5, isPrivate: false });
+function CreateLobbyRight({ setGlobalChoices, create }) {
+  const [choices, setChoices] = useState({ });
 
   const handleInputChange = (type, e) => {
-    console.log(e.target.value);
     switch (type) {
       case "roomName":
         setChoices({ ...choices, roomName: e.target.value });
@@ -53,6 +52,37 @@ function CreateLobbyRight({ setGlobalChoices }) {
     }
     setGlobalChoices({ type, value: e.target.value });
   }
+  
+  const isErrored = () => {
+    if (choices.roomName === undefined) return false;
+    if (choices.roomName === null) return true;
+    return ((choices.roomName !== undefined || choices.roomName !== null) && choices.roomName.length === 0);
+  };
+
+  const handleCreate = (e) => {
+    if (isErrored()) return;
+    if (choices.roomName === undefined) {
+      setChoices({ ...choices, roomName: "" });
+      setGlobalChoices({ type: "roomName", value: "" });
+      return;
+    };
+    if (choices.maxPlayers === undefined) {
+      setChoices({ ...choices, maxPlayers: 8 });
+      setGlobalChoices({ type: "maxPlayers", value: 8 });
+      return;
+    }
+    if (choices.rounds === undefined) {
+      setChoices({ ...choices, rounds: 5 });
+      setGlobalChoices({ type: "rounds", value: 5 });
+      return;
+    }
+    if (choices.isPrivate === undefined) {
+      setChoices({ ...choices, isPrivate: false });
+      setGlobalChoices({ type: "isPrivate", value: false });
+      return;
+    }
+    create();
+  }
 
   return (
     <div className="createRightContainer">
@@ -62,9 +92,12 @@ function CreateLobbyRight({ setGlobalChoices }) {
       <div className="createRightInputContainer">
         <div className="createRightInput">
           <TextField
+            InputLabelProps={{ shrink: true }}
             className="input"
             label="ROOM NAME"
             color="secondary"
+            error={isErrored()}
+            helperText={isErrored() ? "Please enter a room name" : ""}
             InputProps={{
               inputProps: { maxLength: 30 },
               fullWidth: true,
@@ -75,10 +108,12 @@ function CreateLobbyRight({ setGlobalChoices }) {
         </div>
         <div className="createRightInput">
           <TextField
+            InputLabelProps={{ shrink: true }}
             className="input"
             label="MAX PLAYERS"
             color="secondary"
             type="number"
+            helperText={"Min: 2, Max: 15"}
             InputProps={{
               inputProps: { min: 2, max: 15 },
               type: "number",
@@ -91,10 +126,12 @@ function CreateLobbyRight({ setGlobalChoices }) {
         </div>
         <div className="createRightInput">
           <TextField
+            InputLabelProps={{ shrink: true }}
             className="input"
             label="ROUNDS"
             color="secondary"
             type="number"
+            helperText={"Min: 2, Max: 20"}
             InputProps={{
               inputProps: { min: 2, max: 20 },
               type: "number",
@@ -138,6 +175,7 @@ function CreateLobbyRight({ setGlobalChoices }) {
           variant="contained"
           color="primary"
           size="large"
+          onClick={handleCreate}
         >
           Create
         </StyledButtonPrimary>

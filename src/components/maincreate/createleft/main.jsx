@@ -122,6 +122,7 @@ function Generes({ setGlobalChoices, choices, setChoices, enableTimeout, scrollT
     setSelectedGenere(id);
     setGlobalChoices({ type: "genere", value: generes[id] });
     setChoices({ category: choices.category, genere: generes[id], difficulty: choices.difficulty });
+    genereRef.current.children[id].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
   }
 
   return (
@@ -186,6 +187,7 @@ function CreateLobbyLeft({ setGlobalChoices }) {
     setSelectedCategory(id);
     setGlobalChoices({ type: "category", value: categories[id] });
     setChoices({ category: categories[id], genere: choices.genere, difficulty: choices.difficulty });
+    categoryRef.current.children[id].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
   }
 
   return (
