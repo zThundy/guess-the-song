@@ -4,6 +4,8 @@ import wave from "./wave.svg";
 import MainForm from "../mainform/main";
 import MainGame from "../maingame/main";
 import MainCreate from "../maincreate/main";
+import MainPreLobby from "../mainprelobby/main";
+import MainErrorPage from "../mainerrorpage/main";
 
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from 'framer-motion';
@@ -20,20 +22,25 @@ function MainPage() {
       <AnimatePresence mode='wait'>
         <Routes location={location} key={location.pathname}>
           <Route
+            path="*"
+            title="Song Guesser - Error"
+            Component={MainErrorPage}
+          />
+          <Route
             exact
             path="/"
             title="Song Guesser"
-            element={<MainForm />}
+            Component={MainForm}
           />
           <Route
             path="/game"
             title="Song Guesser - Game"
-            element={<MainGame />}
+            Component={MainGame}
           />
           <Route
             path="/create"
             title="Song Guesser - Create"
-            element={<MainCreate />}
+            Component={MainCreate}
           />
         </Routes>
       </AnimatePresence>
