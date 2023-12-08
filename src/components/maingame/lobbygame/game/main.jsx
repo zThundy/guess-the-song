@@ -38,18 +38,15 @@ const StyledButtonPrimary = styled(Button)({
 });
 
 function Notes() {
-  const notes = [
-    // <div className="notes" style={{ animation: "popout 5s ease-in-out infinite 1s" }}>🎵</div>,
-    // <div className="notes" style={{ animation: "popout2 5s ease-in-out infinite 1.5s" }}>🎵</div>,
-    // <div className="notes" style={{ animation: "popout3 5s ease-in-out infinite 2s" }}>🎵</div>,
-    // <div className="notes" style={{ animation: "popout4 5s ease-in-out infinite 2.5s" }}>🎵</div>,
-    // <div className="notes" style={{ animation: "popout5 5s ease-in-out infinite 3s" }}>🎵</div>,
-    // <div className="notes" style={{ animation: "popout6 5s ease-in-out infinite 3.5s" }}>🎵</div>
-  ]
+  const [notes, setNotes] = useState([]);
 
-  for (var i = 0; i < 30; i++) {
-    notes.push(<div className="notes" style={{ animation: "popout" + ((i % 6) + 1) + " 5s ease-in-out infinite " + i + "s" }}>🎵</div>)
-  }
+  useEffect(() => {
+    const _notes = [];
+    for (var i = 0; i < 30; i++) {
+      _notes.push(<div className="notes" style={{ animation: "popout" + ((i % 6) + 1) + " 5s ease-in-out infinite " + i + "s" }}>🎵</div>)
+    }
+    setNotes(_notes);
+  }, []);
 
   return (
     <>
