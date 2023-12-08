@@ -43,7 +43,7 @@ function Notes() {
   useEffect(() => {
     const _notes = [];
     for (var i = 0; i < 30; i++) {
-      _notes.push(<div className="notes" style={{ animation: "popout" + ((i % 6) + 1) + " 5s ease-in-out infinite " + i + "s" }}>🎵</div>)
+      _notes.push(<div className="notes" key={i} style={{ animation: "popout" + ((i % 6) + 1) + " 5s ease-in-out infinite " + i + "s" }}>🎵</div>)
     }
     setNotes(_notes);
   }, []);
@@ -57,7 +57,7 @@ function Notes() {
 
 function Game() {
   const [guessed, setGuessed] = useState("0");
-  const [maxSeconds] = useState(10);
+  const [maxSeconds] = useState(5);
   const [secondsLeft, setSecondsLeft] = useState(maxSeconds - 3);
   const [started, setStarted] = useState(false);
   const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
