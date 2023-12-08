@@ -26,8 +26,8 @@ function MainGameHeader({ status }) {
       </IconButton>
 
       { status === "game" ? <span className="title">🎵 Lobby #233</span> : "" }
-      { status === "lobby" ? <span className="title">⌛️ Searching for game...</span> : "" }
-      { status === "create" ? <span className="title">➕ Create a new lobby</span> : "" }
+      { status === "lobby" ? <span className="title">⌛️ Search for game...</span> : "" }
+      { status === "create" ? <span className="title">➕ Create new lobby</span> : "" }
     </div>
   )
 }

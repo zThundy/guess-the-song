@@ -7,14 +7,12 @@ import { useMemo } from "react";
 function User() {
   const [users] = useMemo(() => {
     const users = [];
-    for (let i = 0; i < 15; i++) {
-      const guessed = Math.random() > 0.5;
-      console.log(guessed, "for user", i);
+    for (let i = 0; i < 2; i++) {
       users.push({
         name: `User #${i + 1}`,
         points: Math.floor(Math.random() * 100),
-        guessed,
-        self: i === 2,
+        guessed: Math.random() > 0.5,
+        self: i === 1,
       });
     }
     users.sort((a, b) => b.points - a.points);

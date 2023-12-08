@@ -58,7 +58,7 @@ function Notes() {
 function Game() {
   const [guessed, setGuessed] = useState("0");
   const [maxSeconds] = useState(5);
-  const [secondsLeft, setSecondsLeft] = useState(maxSeconds - 3);
+  const [secondsLeft, setSecondsLeft] = useState(maxSeconds - 2);
   const [started, setStarted] = useState(false);
   const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
 
@@ -86,7 +86,7 @@ function Game() {
   }, [secondsLeft, started]);
 
   // calculate progress from secondsLeft
-  const progress = (secondsLeft / (maxSeconds - 3)) * 100;
+  const progress = (secondsLeft / (maxSeconds - 2)) * 100;
 
   return (
     <div className="gameContentContainer">

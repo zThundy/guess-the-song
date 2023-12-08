@@ -44,3 +44,8 @@
   box-sizing: border-box;
   border: 5px solid rgb(112, 255, 112);
 }
+
+.user .unguessed {
+  box-sizing: border-box;
+  border: 5px solid rgb(255, 112, 112);
+}
