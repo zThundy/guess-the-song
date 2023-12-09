@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Build Project",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Build Project"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Start in Dev",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Start in Dev"
+        }
+    ]
+}
