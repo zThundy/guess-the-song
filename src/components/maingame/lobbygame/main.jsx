@@ -5,12 +5,10 @@ import Game from "./game/main.jsx";
 
 function LobbyGame({ status }) {
   return (
-    <>
-      <div className="gameContainer">
-        <Sidebar />
-        <Game />
-      </div>
-    </>
+    <div className="gameContainer">
+      <Sidebar />
+      <Game />
+    </div>
   )
 }
 

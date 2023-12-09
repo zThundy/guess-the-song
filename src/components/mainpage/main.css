@@ -1,8 +1,7 @@
-@import url("./keyframes.css");
 @import url("./colors.css");
+@import url("./keyframes.css");
 
 .main {
-  /* overflow: hidden; */
   background-color: #4d2600;
   width: 100vw;
   height: 100vh;

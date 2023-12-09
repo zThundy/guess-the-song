@@ -1,8 +1,8 @@
 import "./main.css";
 
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAnimate, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 import Lobbies from "./lobbies/main";
 
@@ -55,9 +55,21 @@ const StyledButtonPrimary = styled(Button)({
 });
 
 function JoinGameModal({ on, toggle }) {
+  const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
+  const inputRef = useRef(null);
+
   const handleJoinGame = () => {
-    console.log("Joining game...");
+    const code = inputRef.current.value;
+    if (code === "") return setSubmitted("Please enter a game code.");
+    if (code.length !== 5) return setSubmitted("Game code must be 5 characters long.");
+    if (isNaN(Number(code))) return setSubmitted("Game code must be a number.");
+    navigate("/game", { state: { id: code } });
   }
+
+  useEffect(() => {
+    console.log(submitted);
+  }, [submitted]);
 
   return (
     <Zoom in={on} timeout={300} unmountOnExit>
@@ -92,17 +104,25 @@ function JoinGameModal({ on, toggle }) {
             <Paper
               className="modalInput"
               component="form"
-              sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+              sx={{
+                p: '2px 4px',
+                display: 'flex',
+                alignItems: 'center',
+                width: 400
+              }}
             >
               <InputBase
                 sx={{ ml: 1, flex: 1 }}
                 placeholder="Enter game code"
                 inputProps={{ 'aria-label': 'enter game code' }}
+                inputRef={inputRef}
+                onChange={() => setSubmitted(false)}
               />
               <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleJoinGame}>
                 <East />
               </IconButton>
             </Paper>
+            { submitted ? <Typography variant="body1" className="modalError">{submitted}</Typography> : null }
           </motion.div>
         </ClickAwayListener>
       </motion.div>

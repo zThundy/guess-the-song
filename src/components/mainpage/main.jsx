@@ -1,10 +1,10 @@
-import "./main.css";
+import styles from "./main.css";
+
 import wave from "./wave.svg";
 
 import MainForm from "../mainform/main";
 import MainGame from "../maingame/main";
 import MainCreate from "../maincreate/main";
-import MainPreLobby from "../mainprelobby/main";
 import MainErrorPage from "../mainerrorpage/main";
 
 import { Routes, Route, useLocation } from "react-router-dom";
