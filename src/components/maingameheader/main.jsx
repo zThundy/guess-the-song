@@ -21,7 +21,7 @@ function MainGameHeader({ status }) {
 
   return (
     <div className="header">
-      <IconButton disableRipple className="backButton" aria-label="delete" size="large" onMouseDown={handleBackButton}>
+      <IconButton disableRipple className="backButton" aria-label="delete" size="large" onMouseUp={handleBackButton}>
         <ArrowBack fontSize="inherit" />
       </IconButton>
 
