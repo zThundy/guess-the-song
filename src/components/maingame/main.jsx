@@ -12,18 +12,21 @@ import { useLocation } from "react-router-dom";
 
 function MainGame() {
   const location = useLocation();
-  const [status, setStatus] = useState("list"); // prelobby, game, create, lobby
+  const [status, setStatus] = useState("list"); // prelobby, game, create, list
 
   useEffect(() => {
     if (location.state && location.state.id && location.pathname === "/game") {
       console.log("started")
       setStatus("prelobby");
     }
+    if (location.state && location.state.id && location.state.started) {
+      setStatus("game");
+    }
   }, [location]);
 
   return (
     <motion.div
-      className="container"
+      className="gamePageContainer"
       initial={{ x: -3000, opacity: 1 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -3000, opacity: 1 }}

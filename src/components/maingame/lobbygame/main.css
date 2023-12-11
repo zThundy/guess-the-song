@@ -1,0 +1,14 @@
+.gameContainer {
+  background-color: white;
+  width: 98%;
+  height: 100%;
+  margin: 1rem auto;
+  display: flex;
+  flex-direction: row;
+  border-radius: 1rem;
+  font-size: 1.5rem;
+  /* box-shadow: 0 0 .5rem 0 rgba(0, 0, 0, 0.2); */
+  z-index: 4;
+  overflow: auto;
+  justify-content: space-between;
+}

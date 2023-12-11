@@ -56,9 +56,11 @@ function Notes() {
 }
 
 function Game() {
+  // TODO: logic from server (?) to determine time for answer
+  const [maxSeconds] = useState(10);
+
   const [guessed, setGuessed] = useState("0");
-  const [maxSeconds] = useState(5);
-  const [secondsLeft, setSecondsLeft] = useState(maxSeconds - 2);
+  const [msLeft, setMsLeft] = useState(maxSeconds * 1000);
   const [started, setStarted] = useState(false);
   const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
 
@@ -70,23 +72,21 @@ function Game() {
   }
 
   useEffect(() => {
-    var msLeft = secondsLeft * 1000;
+    if (!started) return;
     const step = 10;
     const interval = setInterval(() => {
-      if (!started) return;
-      if (msLeft <= 0) {
-        clearInterval(interval);
-        return;
-      }
-      msLeft -= step;
-      const _secondsLeft = (msLeft / 1000);
-      setSecondsLeft(_secondsLeft);
+      setMsLeft((prev) => {
+        if (prev <= 0) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - step;
+      });
     }, step);
     return () => clearInterval(interval);
-  }, [secondsLeft, started]);
+  }, [started]);
 
-  // calculate progress from secondsLeft
-  const progress = (secondsLeft / (maxSeconds - 2)) * 100;
+  const progress = (msLeft / (maxSeconds * 1000)) * 100;
 
   return (
     <div className="gameContentContainer">

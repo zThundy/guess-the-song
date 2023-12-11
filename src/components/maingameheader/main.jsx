@@ -12,17 +12,15 @@ function MainGameHeader({ status }) {
   const [headerMessage, setHeaderMessage] = useState("");
 
   useEffect(() => {
-    if (location.state && location.state.id && location.pathname === "/lobby") {
-      setHeaderMessage("🎵 Lobby #" + location.state.id);
-    }
     if (location.pathname === "/game") {
-      setHeaderMessage("⌛️ Search for game...");
+      if (location.state && location.state.id) {
+        setHeaderMessage("🎵 Lobby #" + location.state.id);
+      } else {
+        setHeaderMessage("⌛️ Search for game...");
+      }
     }
     if (location.pathname === "/create") {
       setHeaderMessage("➕ Create new lobby");
-    }
-    if (status === "prelobby") {
-      setHeaderMessage("🎵 Lobby #" + location.state.id);
     }
   }, [location]);
 
