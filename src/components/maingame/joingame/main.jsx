@@ -67,10 +67,6 @@ function JoinGameModal({ on, toggle }) {
     navigate("/game", { state: { id: code } });
   }
 
-  useEffect(() => {
-    console.log(submitted);
-  }, [submitted]);
-
   return (
     <Zoom in={on} timeout={300} unmountOnExit>
       <motion.div
@@ -117,6 +113,16 @@ function JoinGameModal({ on, toggle }) {
                 inputProps={{ 'aria-label': 'enter game code' }}
                 inputRef={inputRef}
                 onChange={() => setSubmitted(false)}
+                onKeyDown={(e) => {
+                  e.preventDefault();
+                  if (e.key === "Enter") handleJoinGame();
+                  if (e.key === "Escape") toggle(false);
+                  if (e.key === "Backspace") inputRef.current.value = inputRef.current.value.slice(0, -1);
+
+                  if (isNaN(Number(e.key))) return;
+                  // else if (inputRef.current.value.length >= 5) return;
+                  else inputRef.current.value += e.key;
+                }}
               />
               <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleJoinGame}>
                 <East />

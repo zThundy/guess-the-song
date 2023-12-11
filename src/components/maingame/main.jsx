@@ -16,7 +16,6 @@ function MainGame() {
 
   useEffect(() => {
     if (location.state && location.state.id && location.pathname === "/game") {
-      console.log("started")
       setStatus("prelobby");
     }
     if (location.state && location.state.id && location.state.started) {

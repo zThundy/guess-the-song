@@ -11,7 +11,6 @@ function MainCreate() {
   const [globalChoices, setGlobalChoices] = useState({});
 
   const computeSetChoices = (data) => {
-    console.log("changing choices", data)
     globalChoices[data.type] = data.value;
     setGlobalChoices(globalChoices);
   }

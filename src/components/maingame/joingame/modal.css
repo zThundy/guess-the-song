@@ -71,4 +71,5 @@
   background-color: rgba(255, 174, 94, 0.4);
   border-radius: 0.5rem;
   outline: none;
+  user-select: none;
 }

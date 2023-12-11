@@ -13,6 +13,19 @@
 
   align-items: center;
   z-index: 4;
+  transition: width 0.1s ease-in-out;
+}
+
+@media screen and (max-width: 1600px) {
+  .formContainer {
+    width: 40%;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .formContainer {
+    width: 75%;
+  }
 }
 
 @media screen and (max-width: 768px) {
@@ -31,7 +44,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 60%;
+  width: 65%;
   justify-content: space-around;
   margin: 1rem 0 1rem 0;
   /* position: fixed; */
