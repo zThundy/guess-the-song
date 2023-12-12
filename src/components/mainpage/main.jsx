@@ -18,7 +18,11 @@ function MainPage() {
       <div className="color first"></div>
       <div className="color second"></div>
       <div className="color third"></div>
-      <img src={wave} className="wave" alt="wave" />
+      <img
+        src={wave}
+        className="wave"
+        alt="wave"
+      />
       <AnimatePresence mode='wait'>
         <Routes location={location} key={location.pathname}>
           <Route

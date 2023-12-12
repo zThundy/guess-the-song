@@ -1,75 +1,96 @@
 
 
-<svg viewbox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+<svg width="1922" height="232" viewBox="0 0 1922 232" xmlns="http://www.w3.org/2000/svg">
+  <style>
+  :root {
+    --wave-color: rgb(255, 169, 84);
+
+    --wave-opacity: 0.2;
+    --wave-opacity-2: 0.3;
+    --wave-opacity-3: 0.4;
+    --wave-opacity-4: 0.5;
+    }
+
+    .wave {
+      fill: var(--wave-color);
+      fill-opacity: var(--wave-opacity);
+      animation: wave 40s 0s linear infinite;
+    }
+
+    .wave2 {
+      fill: var(--wave-color);
+      fill-opacity: var(--wave-opacity-2);
+      animation: wave2 35s 0s linear infinite;
+    }
+
+    .wave3 {
+      fill: var(--wave-color);
+      fill-opacity: var(--wave-opacity-3);
+      animation: wave3 30s 0s linear infinite;
+    }
+
+    .wave4 {
+      fill: var(--wave-color);
+      fill-opacity: var(--wave-opacity-4);
+      animation: wave4 25s 0s linear infinite;
+    }
+
+    @keyframes wave {
+      0% {
+        transform: translate(0%, 0%);
+      }
+
+      100% {
+        transform: translate(120%, 0%);
+      }
+    }
+
+    @keyframes wave2 {
+      0% {
+        transform: translate(0%, 10%);
+      }
+
+      100% {
+        transform: translate(110%, 10%);
+      }
+    }
+
+    @keyframes wave3 {
+      0% {
+        transform: translate(0%, 20%);
+      }
+
+      100% {
+        transform: translate(140%, 20%);
+      }
+    }
+
+    @keyframes wave4 {
+      0% {
+        transform: translate(0%, 30%);
+      }
+
+      100% {
+        transform: translate(150%, 30%);
+      }
+    }
+  </style>
+
   <defs>
-    <style type="text/css">
-      .wave {
-        animation: wave 15s linear infinite;
-      }
-
-      .wave1 {
-        animation: wave1 18s linear infinite;
-      }
-
-      .wave2 {
-        animation: wave2 21s linear infinite;
-      }
-
-      .wave3 {
-        animation: wave3 23s linear infinite;
-      }
-
-      @keyframes wave {
-        0% {
-          transform: translateX(0%);
-        }
-
-        100% {
-          transform: translateX(100%);
-        }
-      }
-
-      @keyframes wave1 {
-        0% {
-          transform: scaleY(1.2) translateX(0%);
-        }
-
-        100% {
-          transform: scaleY(1.2) translateX(100%);
-        }
-      }
-
-      @keyframes wave2 {
-        0% {
-          transform: scaleY(.8) translateX(0%);
-        }
-
-        100% {
-          transform: scaleY(.8) translateX(100%);
-        }
-      }
-
-      @keyframes wave3 {
-        0% {
-          transform: scaleY(.6) translateX(0%);
-        }
-
-        100% {
-          transform: scaleY(.6) translateX(100%);
-        }
-      }
-    </style>
-    <path id='sineWave' fill="rgb(255, 169, 84)" fill-opacity=".8" d="M0,256L48,218.7C96,181,192,107,288,74.7C384,43,480,53,576,101.3C672,149,768,235,864,240C960,245,1056,171,1152,170.7C1248,171,1344,245,1392,282.7L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-    <path id='sineWave1' fill="rgb(255, 169, 84)" fill-opacity=".6" d="M0,256L48,218.7C96,181,192,107,288,74.7C384,43,480,53,576,101.3C672,149,768,235,864,240C960,245,1056,171,1152,170.7C1248,171,1344,245,1392,282.7L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-    <path id='sineWave2' fill="rgb(255, 169, 84)" fill-opacity=".4" d="M0,256L48,218.7C96,181,192,107,288,74.7C384,43,480,53,576,101.3C672,149,768,235,864,240C960,245,1056,171,1152,170.7C1248,171,1344,245,1392,282.7L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-    <path id='sineWave3' fill="rgb(255, 169, 84)" fill-opacity=".2" d="M0,256L48,218.7C96,181,192,107,288,74.7C384,43,480,53,576,101.3C672,149,768,235,864,240C960,245,1056,171,1152,170.7C1248,171,1344,245,1392,282.7L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    <path id='sineWave' d="M2 231.5H1920.5C1841.34 170.484 1795.5 108.203 1710.5 155.269C1655 186.001 1640.5 190.501 1579.5 190.501C1532 190.501 1504 180.501 1449 137.674C1325.29 41.343 1193 7.34467 1132.5 2.00009C1075.5 -3.03529 958 6.50055 846 95.0006C791.351 138.183 741.5 144.5 724.5 144.5C710 144.5 651 144.501 598 107.001C381.852 -45.9346 314.522 58.5775 2 231.5Z" /> 
+    <path id='sineWave2' d="M2 231.5H1920.5C1841.34 170.484 1795.5 108.203 1710.5 155.269C1655 186.001 1640.5 190.501 1579.5 190.501C1532 190.501 1504 180.501 1449 137.674C1325.29 41.343 1193 7.34467 1132.5 2.00009C1075.5 -3.03529 958 6.50055 846 95.0006C791.351 138.183 741.5 144.5 724.5 144.5C710 144.5 651 144.501 598 107.001C381.852 -45.9346 314.522 58.5775 2 231.5Z" /> 
+    <path id='sineWave3' d="M2 231.5H1920.5C1841.34 170.484 1795.5 108.203 1710.5 155.269C1655 186.001 1640.5 190.501 1579.5 190.501C1532 190.501 1504 180.501 1449 137.674C1325.29 41.343 1193 7.34467 1132.5 2.00009C1075.5 -3.03529 958 6.50055 846 95.0006C791.351 138.183 741.5 144.5 724.5 144.5C710 144.5 651 144.501 598 107.001C381.852 -45.9346 314.522 58.5775 2 231.5Z" /> 
+    <path id='sineWave4' d="M2 231.5H1920.5C1841.34 170.484 1795.5 108.203 1710.5 155.269C1655 186.001 1640.5 190.501 1579.5 190.501C1532 190.501 1504 180.501 1449 137.674C1325.29 41.343 1193 7.34467 1132.5 2.00009C1075.5 -3.03529 958 6.50055 846 95.0006C791.351 138.183 741.5 144.5 724.5 144.5C710 144.5 651 144.501 598 107.001C381.852 -45.9346 314.522 58.5775 2 231.5Z" /> 
   </defs>
   <use class="wave" href="#sineWave" />
-  <use class="wave" x="-100%" href="#sineWave" />
-  <use class="wave1" href="#sineWave1" />
-  <use class="wave1" x="-120%" href="#sineWave1" />
+  <use class="wave" x="-120%" href="#sineWave" />
+
   <use class="wave2" href="#sineWave2" />
-  <use class="wave2" x="-140%" href="#sineWave2" />
+  <use class="wave2" x="-110%" href="#sineWave2" />
+
   <use class="wave3" href="#sineWave3" />
-  <use class="wave3" x="-160%" href="#sineWave3" />
+  <use class="wave3" x="-140%" href="#sineWave3" />
+
+  <use class="wave4" href="#sineWave4" />
+  <use class="wave4" x="-150%" href="#sineWave4" />
 </svg>
