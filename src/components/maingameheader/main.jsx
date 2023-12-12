@@ -26,9 +26,7 @@ function MainGameHeader({ status }) {
 
   const handleBackButton = (event) => {
     setTimeout(() => {
-      console.log(location.pathname)
       if (location.pathname === "/game") {
-        console.log("navigate to /")
         navigate("/", { state: { shouldAnimate: true } });
         return;
       }

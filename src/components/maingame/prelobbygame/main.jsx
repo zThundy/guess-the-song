@@ -1,6 +1,6 @@
 import "./main.css";
 
-import { useRef, useMemo, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 import { motion } from 'framer-motion';
 import { Typography } from "@mui/material";
@@ -8,24 +8,8 @@ import { Typography } from "@mui/material";
 function Users({ customRef }) {
   const [users, setUsers] = useState([{ self: true, name: 'You' }]);
 
-  const tempAddUser = () => {
-    setUsers((prev) => { return [...prev, { self: false, name: 'You' }] })
-  }
-
-  useEffect(() => {
-    console.log(users)
-  }, [users])
-
-  const tempStyle = {
-    position: 'absolute',
-    top: '1rem',
-    left: '1rem',
-    zIndex: '1000',
-  }
-
   return (
     <>
-      <button onClick={tempAddUser} style={tempStyle}>Add user</button>
       {
         users.map((user, i) => {
           return (
@@ -70,15 +54,16 @@ function Users({ customRef }) {
 
 function PrelobbyGame() {
   const constraintsRef = useRef(null);
-
+  const center = constraintsRef.current?.getBoundingClientRect();
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    setReady(false);
     if (constraintsRef.current) {
       // this forces the element to rerender because of the new value
       setReady(true);
     }
-  }, [constraintsRef]);
+  }, [constraintsRef, center]);
 
   return (
     <motion.div
