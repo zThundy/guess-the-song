@@ -7,7 +7,7 @@ import { useMemo } from "react";
 function User() {
   const [users] = useMemo(() => {
     const users = [];
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 20; i++) {
       users.push({
         name: `User #${i + 1}`,
         points: Math.floor(Math.random() * 100),
