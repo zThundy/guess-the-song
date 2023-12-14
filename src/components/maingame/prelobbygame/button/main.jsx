@@ -1,29 +1,59 @@
 import "./main.css";
 
-import { Button } from "@mui/material";
+import { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-function StartButton() {
+import { motion, AnimatePresence } from 'framer-motion';
+
+function StartButton({ id }) {
   const navigate = useNavigate();
+  const [hover, setHover] = useState(false);
 
   const handleButtonClick = () => {
-    navigate("/game", { state: { started: true, id: "11111" } });
+    navigate("/game", { state: { started: true, id } });
+  }
+
+  const changeHover = (e, hover) => {
+    setHover(hover);
   }
 
   return (
     <div className="prelobbyButtonContainer">
-      <span className="buttonHoverIcon top-left"></span>
-      <span className="buttonHoverIcon bottom-left"></span>
-      <span className="buttonHoverIcon top-right"></span>
-      <span className="buttonHoverIcon bottom-right"></span>
-
-      <Button
+      <div
         variant='contained'
-        className='button'
         color='primary'
+        className="button"
         onClick={handleButtonClick}
-      >Start Game</Button>
+        onMouseEnter={(e) => {
+          changeHover(e, true);
+        }}
+        onMouseLeave={(e) => {
+          changeHover(e, false);
+        }}
+      >
+        <AnimatePresence>
+          {hover ? <motion.div
+            initial={{ width: "0%" }}
+            animate={{ width: "100%" }}
+            exit={{ width: "0%" }}
+            transition={{ delay: 0, duration: .3, ease: "easeInOut" }}
+            className="bg bg1"></motion.div> : null}
+          {hover ? <motion.div
+            initial={{ width: "0%" }}
+            animate={{ width: "100%" }}
+            exit={{ width: "0%" }}
+            transition={{ delay: 0.1, duration: .3, ease: "easeInOut" }}
+            className="bg bg2"></motion.div> : null}
+          {hover ? <motion.div
+            initial={{ width: "0%" }}
+            animate={{ width: "100%" }}
+            exit={{ width: "0%" }}
+            transition={{ delay: 0.3, duration: .3, ease: "easeInOut" }}
+            className="bg bg3"></motion.div> : null}
+        </AnimatePresence>
+        <span className="buttonText">Start Game</span>
+      </div>
     </div>
   )
 }

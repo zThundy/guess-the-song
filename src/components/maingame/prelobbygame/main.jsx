@@ -8,7 +8,7 @@ import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Typography } from "@mui/material";
 
-function PrelobbyGame() {
+function PrelobbyGame({ status, id }) {
   const constraintsRef = useRef(null);
   const [shouldRender, setShouldRender] = useState(false);
   const center = constraintsRef.current?.getBoundingClientRect();
@@ -42,7 +42,7 @@ function PrelobbyGame() {
           </motion.div>
         </div>
 
-        <StartButton />
+        <StartButton id={id} />
       </div>
     </motion.div>
   )

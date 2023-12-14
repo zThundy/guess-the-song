@@ -33,9 +33,9 @@ function MainGame() {
       <Header
         status={status}
       />
-      { status === "game" ? <LobbyGame started={status} /> : null }
+      { status === "game" ? <LobbyGame started={status} id={location.state.id} /> : null }
       { status === "list" ? <JoinGame started={status} /> : null }
-      { status === "prelobby" ? <PrelobbyGame started={status} /> : null }
+      { status === "prelobby" ? <PrelobbyGame started={status} id={location.state.id} /> : null }
     </motion.div>
   )
 }

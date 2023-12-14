@@ -5,7 +5,7 @@ import Game from "./game/main.jsx";
 
 import { motion } from 'framer-motion';
 
-function LobbyGame({ status }) {
+function LobbyGame({ status, id }) {
   return (
     <motion.div
       className="gameContainer"

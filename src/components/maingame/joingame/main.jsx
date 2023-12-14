@@ -108,6 +108,7 @@ function JoinGameModal({ on, toggle }) {
               }}
             >
               <InputBase
+                autoFocus
                 sx={{ ml: 1, flex: 1 }}
                 placeholder="Enter game code"
                 inputProps={{ 'aria-label': 'enter game code' }}
