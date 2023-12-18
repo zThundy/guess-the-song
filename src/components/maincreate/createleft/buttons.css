@@ -23,47 +23,49 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: black;
   border-radius: .8rem;
   cursor: pointer;
   margin: 0 .5rem;
   transition: all .1s ease-in-out;
   font-size: 1.8rem;
   font-weight: bold;
+  opacity: 0.6;
+  box-sizing: border-box;
 }
 
 .createSelectDifficulty .easy {
   background-color: rgb(0, 255, 1);
-  color: black;
-  opacity: 0.6;
+  border: .4rem solid rgb(0, 180, 0);
 }
 
 .createSelectDifficulty .normal {
   background-color: rgb(255, 255, 0);
-  color: black;
-  opacity: 0.6;
+  border: .4rem solid rgb(180, 180, 0);
 }
 
 .createSelectDifficulty .hard {
   background-color: rgb(255, 0, 0);
-  color: black;
-  opacity: 0.6;
+  border: .4rem solid rgb(180, 0, 0);
 }
 
 .createSelectDifficulty .easy:hover {
   background-color: rgb(0, 255, 1);
+  border: .4rem solid rgb(0, 220, 0);
   color: black;
   opacity: 1;
 }
 
 .createSelectDifficulty .normal:hover {
   background-color: rgb(255, 255, 0);
+  border: .4rem solid rgb(220, 220, 0);
   color: black;
   opacity: 1;
 }
 
 .createSelectDifficulty .hard:hover {
   background-color: rgb(255, 0, 0);
+  border: .4rem solid rgb(220, 0, 0);
   color: black;
   opacity: 1;
 }

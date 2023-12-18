@@ -1,8 +1,8 @@
 import "./main.css";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
-import { Typography, TextField, Button, FormHelperText, styled, useFormControl } from "@mui/material";
+import { Typography, TextField, Button, styled } from "@mui/material";
 import { LockOpen, LockOutlined } from "@mui/icons-material";
 
 const StyledButtonPrimary = styled(Button)({
@@ -27,7 +27,7 @@ const StyledButtonPrimary = styled(Button)({
 });
 
 function CreateLobbyRight({ setGlobalChoices, create }) {
-  const [choices, setChoices] = useState({ });
+  const [choices, setChoices] = useState({});
 
   const handleInputChange = (type, e) => {
     switch (type) {
@@ -52,7 +52,7 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
     }
     setGlobalChoices({ type, value: e.target.value });
   }
-  
+
   const isErrored = () => {
     if (choices.roomName === undefined) return false;
     if (choices.roomName === null) return true;
@@ -69,118 +69,115 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
     if (choices.maxPlayers === undefined) {
       setChoices({ ...choices, maxPlayers: 8 });
       setGlobalChoices({ type: "maxPlayers", value: 8 });
-      return;
     }
     if (choices.rounds === undefined) {
       setChoices({ ...choices, rounds: 5 });
       setGlobalChoices({ type: "rounds", value: 5 });
-      return;
     }
     if (choices.isPrivate === undefined) {
       setChoices({ ...choices, isPrivate: false });
       setGlobalChoices({ type: "isPrivate", value: false });
-      return;
     }
     create();
   }
 
   return (
-    <div className="createRightContainer">
-      <Typography variant="h4" className="createRightTitle">
-        Room settings
-      </Typography>
-      <div className="createRightInputContainer">
-        <div className="createRightInput">
-          <TextField
-            InputLabelProps={{ shrink: true }}
-            className="input"
-            label="ROOM NAME"
-            color="secondary"
-            error={isErrored()}
-            helperText={isErrored() ? "Please enter a room name" : ""}
-            InputProps={{
-              inputProps: { maxLength: 30 },
-              fullWidth: true,
-            }}
-            onChange={(e) => handleInputChange("roomName", e)}
-            size="small"
-          />
+      <div className="createRightContainer">
+        <Typography variant="h4" className="createRightTitle">
+          Room settings
+        </Typography>
+        <div className="createRightInputContainer">
+          <div className="createRightInput">
+            <TextField
+              InputLabelProps={{ shrink: true }}
+              className="input"
+              label="ROOM NAME"
+              color="secondary"
+              error={isErrored()}
+              helperText={isErrored() ? "Please enter a room name" : ""}
+              InputProps={{
+                inputProps: { maxLength: 30 },
+                fullWidth: true,
+              }}
+              onChange={(e) => handleInputChange("roomName", e)}
+              size="small"
+            />
+          </div>
+          <div className="createRightInput">
+            <TextField
+              InputLabelProps={{ shrink: true }}
+              className="input"
+              label="MAX PLAYERS"
+              color="secondary"
+              type="number"
+              helperText={"Min: 2, Max: 15"}
+              InputProps={{
+                inputProps: { min: 2, max: 15 },
+                type: "number",
+                fullWidth: true,
+              }}
+              onChange={(e) => handleInputChange("maxPlayers", e)}
+              defaultValue={8}
+              size="small"
+            />
+          </div>
+          <div className="createRightInput">
+            <TextField
+              InputLabelProps={{ shrink: true }}
+              className="input"
+              label="ROUNDS"
+              color="secondary"
+              type="number"
+              helperText={"Min: 2, Max: 20"}
+              InputProps={{
+                inputProps: { min: 2, max: 20 },
+                type: "number",
+                fullWidth: true,
+              }}
+              onChange={(e) => handleInputChange("rounds", e)}
+              defaultValue={5}
+              size="small"
+            />
+          </div>
         </div>
-        <div className="createRightInput">
-          <TextField
-            InputLabelProps={{ shrink: true }}
-            className="input"
-            label="MAX PLAYERS"
-            color="secondary"
-            type="number"
-            helperText={"Min: 2, Max: 15"}
-            InputProps={{
-              inputProps: { min: 2, max: 15 },
-              type: "number",
-              fullWidth: true,
-            }}
-            onChange={(e) => handleInputChange("maxPlayers", e)}
-            defaultValue={8}
-            size="small"
-          />
+        <div className="createButtonsContainer">
+          <Button
+            className={"createButton public " + (choices.isPrivate ? "" : "active")}
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={() => handleInputChange("isPrivate", { target: { value: false } })}
+            fullWidth
+            disableRipple
+          >
+            Public
+            <LockOpen />
+          </Button>
+          <Button
+            className={"createButton private " + (choices.isPrivate ? "active" : "")}
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={() => handleInputChange("isPrivate", { target: { value: true } })}
+            fullWidth
+            disableRipple
+          >
+            Private
+            <LockOutlined />
+          </Button>
         </div>
-        <div className="createRightInput">
-          <TextField
-            InputLabelProps={{ shrink: true }}
-            className="input"
-            label="ROUNDS"
-            color="secondary"
-            type="number"
-            helperText={"Min: 2, Max: 20"}
-            InputProps={{
-              inputProps: { min: 2, max: 20 },
-              type: "number",
-              fullWidth: true,
-            }}
-            onChange={(e) => handleInputChange("rounds", e)}
-            defaultValue={5}
-            size="small"
-          />
+        <div className="createButtonSubmitContainer">
+          <StyledButtonPrimary
+            className="createButtonSubmit"
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={handleCreate}
+          >
+            Create
+          </StyledButtonPrimary>
         </div>
       </div>
-      <div className="createButtonsContainer">
-        <Button
-          className={"createButton public " + (choices.isPrivate ? "" : "active")}
-          variant="contained"
-          color="primary"
-          size="large"
-          onClick={() => handleInputChange("isPrivate", { target: { value: false } })}
-          fullWidth
-          disableRipple
-        >
-          Public
-          <LockOpen />
-        </Button>
-        <Button
-          className={"createButton private " + (choices.isPrivate ? "active" : "")}
-          variant="contained"
-          color="primary"
-          size="large"
-          onClick={() => handleInputChange("isPrivate", { target: { value: true } })}
-          fullWidth
-          disableRipple
-        >
-          Private
-          <LockOutlined />
-        </Button>
-      </div>
-      <div className="createButtonSubmitContainer">
-        <StyledButtonPrimary
-          className="createButtonSubmit"
-          variant="contained"
-          color="primary"
-          size="large"
-          onClick={handleCreate}
-        >
-          Create
-        </StyledButtonPrimary>
-      </div>
-    </div>
   )
 }
 

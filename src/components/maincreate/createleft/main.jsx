@@ -1,9 +1,9 @@
 import "./main.css";
 
-import { MusicNote, Videocam, Movie, SportsEsports, HourglassBottom } from "@mui/icons-material";
-
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
+
+import { MusicNote, Videocam, Movie, SportsEsports, HourglassBottom } from "@mui/icons-material";
 import { Button } from "@mui/material";
 
 const _categories = [
@@ -33,23 +33,18 @@ const _categories = [
 const _generes = [
   {
     name: "Rock",
-    icon: <MusicNote />
   },
   {
     name: "Pop",
-    icon: <MusicNote />
   },
   {
     name: "Jazz",
-    icon: <MusicNote />
   },
   {
     name: "Classical",
-    icon: <MusicNote />
   },
   {
     name: "Hip Hop",
-    icon: <MusicNote />
   },
   {
     name: "Rap",
@@ -57,25 +52,22 @@ const _generes = [
   },
   {
     name: "Country",
-    icon: <MusicNote />
+    icon: <Movie />
   },
   {
     name: "Metal",
-    icon: <MusicNote />
   },
   {
     name: "Japanese",
-    icon: <MusicNote />
   },
   {
     name: "Korean",
-    icon: <MusicNote />
+    icon: <SportsEsports />
   },
 ]
 
 function DifficutlyButtons({ setGlobalChoices, choices, setChoices }) {
-  const [selectedDifficulty, setSelectedDifficulty] = useState(0);
-  if (!choices.genere) return null;
+  const [selectedDifficulty, setSelectedDifficulty] = useState(1);
 
   const handleMouseClick = (e) => {
     const id = Number(e.currentTarget.dataset.id);
@@ -84,7 +76,15 @@ function DifficutlyButtons({ setGlobalChoices, choices, setChoices }) {
     setChoices({ category: choices.category, genere: choices.genere, difficulty: id });
   }
 
+  useEffect(() => {
+    setSelectedDifficulty((p) => {
+      setGlobalChoices({ type: "difficulty", value: p });
+      return p;
+    });
+  }, [choices.genere])
+
   return (
+    choices.genere &&
     <motion.div
       initial={{ scale: 0, rotate: 0 }}
       animate={{ scale: [0, 1, 1.3, 1], rotate: [0, 8, -8, 6, -6, 0] }}
@@ -141,7 +141,7 @@ function Generes({ setGlobalChoices, choices, setChoices, enableTimeout, scrollT
                 {index === selectedGenere && <div className="createSelectArrowDown"></div>}
 
                 <div className="genereIcon">
-                  {genere.icon}
+                  {genere.icon ? genere.icon : <MusicNote />}
                 </div>
                 <div className="createGenereName">
                   {genere.name}
