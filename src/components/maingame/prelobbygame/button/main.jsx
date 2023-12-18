@@ -1,9 +1,7 @@
-import "./main.css";
+import classes from "./main.module.css";
 
 import { useEffect, useState } from "react";
-
 import { useNavigate } from "react-router-dom";
-
 import { motion, AnimatePresence } from 'framer-motion';
 
 function StartButton({ id }) {
@@ -19,11 +17,11 @@ function StartButton({ id }) {
   }
 
   return (
-    <div className="prelobbyButtonContainer">
+    <div className={classes.container}>
       <div
         variant='contained'
         color='primary'
-        className="button"
+        className={classes.button}
         onClick={handleButtonClick}
         onMouseEnter={(e) => {
           changeHover(e, true);
@@ -38,21 +36,21 @@ function StartButton({ id }) {
             animate={{ width: "100%" }}
             exit={{ width: "0%" }}
             transition={{ delay: 0, duration: .3, ease: "easeInOut" }}
-            className="bg bg1"></motion.div> : null}
+            className={`${classes.bg} ${classes.bg1}`}></motion.div> : null}
           {hover ? <motion.div
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
             exit={{ width: "0%" }}
             transition={{ delay: 0.1, duration: .3, ease: "easeInOut" }}
-            className="bg bg2"></motion.div> : null}
+            className={`${classes.bg} ${classes.bg2}`}></motion.div> : null}
           {hover ? <motion.div
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
             exit={{ width: "0%" }}
             transition={{ delay: 0.3, duration: .3, ease: "easeInOut" }}
-            className="bg bg3"></motion.div> : null}
+            className={`${classes.bg} ${classes.bg3}`}></motion.div> : null}
         </AnimatePresence>
-        <span className="buttonText">Start Game</span>
+        <span className={classes.text}>Start Game</span>
       </div>
     </div>
   )

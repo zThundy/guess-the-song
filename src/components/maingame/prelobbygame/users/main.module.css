@@ -1,4 +1,4 @@
-.prelobbyUser {
+.user {
   position: absolute;
   width: 5.5rem;
   height: 5.5rem;
@@ -23,6 +23,6 @@
   z-index: 100;
 }
 
-.prelobbyUser svg {
+.user svg {
   font-size: 2.5rem;
 }

@@ -1,5 +1,5 @@
 
-import "./main.css";
+import classes from "./main.module.css";
 
 import { Button, styled } from '@mui/material';
 import { Launch, SportsEsports } from '@mui/icons-material';
@@ -71,22 +71,25 @@ function MainForm() {
 
   return (
     (!(location.state && location.state.shouldAnimate) ?
-      <div className="formContainer animate">
+      <div className={`
+        ${classes.form}
+        ${classes.animate}
+      `}>
         <h1>Welcome 👋</h1>
-        <div className="buttonsFormContainer">
+        <div className={classes.button}>
           <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>Play</StyledButtonPrimary>
           <StyledButtonSecondary variant="outlined" color="secondary" endIcon={<Launch />}>Account</StyledButtonSecondary>
         </div>
       </div>
       :
       <motion.div
-        className="formContainer"
+        className={classes.form}
         initial={{ x: 3000, opacity: 1 }}
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: 3000, opacity: 1 }}
       >
         <h1>Welcome 👋</h1>
-        <div className="buttonsFormContainer">
+        <div className={classes.button}>
           <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>Play</StyledButtonPrimary>
           <StyledButtonSecondary variant="outlined" color="secondary" endIcon={<Launch />}>Account</StyledButtonSecondary>
         </div>

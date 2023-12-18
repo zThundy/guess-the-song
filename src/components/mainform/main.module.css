@@ -1,6 +1,21 @@
-@import url("./keyframes.css");
+@keyframes poupFromBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(20%);
+  }
 
-.formContainer {
+  50% {
+    opacity: 1;
+    transform: translateY(-20%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form {
   background-color: white;
   width: 30%;
   margin: 0 auto;
@@ -17,19 +32,19 @@
 }
 
 @media screen and (max-width: 1600px) {
-  .formContainer {
+  .form {
     width: 40%;
   }
 }
 
 @media screen and (max-width: 1000px) {
-  .formContainer {
+  .form {
     width: 75%;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .formContainer {
+  .form {
     width: 85%;
   }
 }
@@ -39,7 +54,7 @@
   animation: poupFromBottom 1s 1.2s forwards;
 }
 
-.buttonsFormContainer {
+.button {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -47,5 +62,4 @@
   width: 65%;
   justify-content: space-around;
   margin: 1rem 0 1rem 0;
-  /* position: fixed; */
 }

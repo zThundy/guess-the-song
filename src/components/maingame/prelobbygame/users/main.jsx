@@ -1,7 +1,6 @@
-import "./main.css";
+import classes from "./main.module.css";
 
 import { useEffect, useState } from 'react';
-
 import { motion } from 'framer-motion';
 
 import { Badge } from "@mui/material";
@@ -47,7 +46,7 @@ function Users({ customRef }) {
       setDragDirection((prev) => {
         const angle = Math.atan2(newY - prev.y, newX - prev.x);
         const angleInDegrees = (angle * (180 / Math.PI) + 360) % 360;
-        if (Math.abs(angleInDegrees - prev.angle) > 15) {
+        if (Math.abs(angleInDegrees - prev.angle) > 16) {
           setUserAngles((prev) => {
             const newArray = [...prev];
             if (!newArray[i]) newArray[i] = 0;
@@ -72,7 +71,10 @@ function Users({ customRef }) {
             <motion.div
               key={i}
               id={"prelobbyUser-" + i}
-              className="prelobbyUser grab"
+              className={`
+                ${classes.user}
+                ${classes.grab}
+              `}
               drag
               dragConstraints={customRef}
               dragSnapToOrigin={false}
@@ -84,14 +86,14 @@ function Users({ customRef }) {
               }}
               onDragStart={(e) => {
                 const target = document.getElementById("prelobbyUser-" + i);
-                target.classList.add("grabbing");
-                target.classList.remove("grab");
+                target.classList.add(classes.grabbing);
+                target.classList.remove(classes.grab);
               }}
               onDrag={(e) => { calculateIconRotation(e, i) }}
               onDragEnd={(e) => {
                 const target = document.getElementById("prelobbyUser-" + i);
-                target.classList.remove("grabbing");
-                target.classList.add("grab");
+                target.classList.remove(classes.grabbing);
+                target.classList.add(classes.grab);
               }}
               style={{
                 left: ((i * 3) + 4) + 'rem',

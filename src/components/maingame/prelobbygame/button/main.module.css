@@ -1,3 +1,14 @@
+.container {
+  width: 100%;
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* BACKGROUND SECTION */
+
 .button {
   background-color: linear-gradient(318deg, rgba(204, 102, 0, 1) 0%, rgba(255, 171, 43, 1) 36%, rgba(255, 200, 111, 1) 100%);
   position: relative;
@@ -23,7 +34,7 @@
   box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
 }
 
-.button .buttonText {
+.button .text {
   position: relative;
   z-index: 2;
 }

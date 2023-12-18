@@ -1,4 +1,4 @@
-import "./main.css";
+import classes from "./main.module.css";
 
 import { useEffect, useState } from "react";
 
@@ -25,7 +25,7 @@ function MainGame() {
 
   return (
     <motion.div
-      className="gamePageContainer"
+      className={classes.main}
       initial={{ x: -3000, opacity: 1 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -3000, opacity: 1 }}
