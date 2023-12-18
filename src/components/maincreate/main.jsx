@@ -1,8 +1,8 @@
-import "./main.css";
+import classes from "./main.module.css";
 
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react';
-import { AlertTitle, Alert } from "@mui/material";
+import { Alert } from "@mui/material";
 
 import Header from "../maingameheader/main.jsx";
 import CreateLobbyLeft from "./createleft/main.jsx";
@@ -32,19 +32,19 @@ function MainCreate() {
 
   return (
     <motion.div
-      className="container"
+      className={classes.container}
       initial={{ x: -3000, opacity: 1 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -3000, opacity: 1 }}
     >
-    { alertTitle !== "" &&
-      <Alert severity="error" className="createAlert">
-        <AlertTitle>Error</AlertTitle>
-        {alertTitle}
-      </Alert>
-    }
+      {
+        alertTitle !== "" &&
+        <Alert severity="error" className={classes.alert}>
+          {alertTitle}
+        </Alert>
+      }
       <Header status="create" />
-      <div className="createLobbyContainer">
+      <div className={classes.content}>
         <CreateLobbyLeft
           setGlobalChoices={computeSetChoices}
         />

@@ -17,6 +17,9 @@ const theme = createTheme({
     secondary: {
       main: "rgb(204,102,0)",
     },
+    error: {
+      main: "rgb(255, 0, 0)",
+    }
   },
   typography: {
     fontFamily: [
