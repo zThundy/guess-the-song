@@ -1,10 +1,10 @@
-import "./main.css";
+import classes from "./main.module.css";
 
 import Users from "./users/main.jsx";
 
 function GameBar() {
   return (
-    <div className="gameSidebarContainer">
+    <div className={classes.container}>
       <Users />
     </div>
   )

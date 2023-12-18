@@ -1,4 +1,4 @@
-import "./main.css";
+import classes from "./main.module.css";
 
 import { useEffect, useState } from "react";
 
@@ -37,24 +37,6 @@ const StyledButtonPrimary = styled(Button)({
   },
 });
 
-function Notes() {
-  const [notes, setNotes] = useState([]);
-
-  useEffect(() => {
-    const _notes = [];
-    for (var i = 0; i < 30; i++) {
-      _notes.push(<div className="notes" key={i} style={{ animation: "popout" + ((i % 6) + 1) + " 5s ease-in-out infinite " + i + "s" }}>🎵</div>)
-    }
-    setNotes(_notes);
-  }, []);
-
-  return (
-    <>
-      {notes}
-    </>
-  )
-}
-
 function Game() {
   // TODO: logic from server (?) to determine time for answer
   const [maxSeconds] = useState(10);
@@ -89,39 +71,38 @@ function Game() {
   const progress = (msLeft / (maxSeconds * 1000)) * 100;
 
   return (
-    <div className="gameContentContainer">
-      <div className="gameContent">
+    <div className={classes.container}>
+      <div className={classes.content}>
         <StyledLinearProgress variant="determinate" color="secondary" value={Number(progress)} />
 
-        <div className="vinylContainer">
-          <img src={"/assets/vinyl" + generatedNumber + ".png"} alt="vinyl" className="vinyl" />
-          <Notes />
+        <div className={classes.vinyl_container}>
+          <img src={"/assets/vinyl" + generatedNumber + ".png"} alt="vinyl" className={classes.vinyl} />
         </div>
 
-        <Grid container className="choicesContainer">
+        <Grid container className={classes.choices}>
           <Grid item xs={12}>
             <StyledButtonPrimary
               variant="contained"
-              className={"choiceButton " + (guessed === "1" ? "guessed" : "")}
+              className={classes.button + " " + (guessed === "1" ? classes.guessed : "")}
               data-guess="1"
               onClick={handleGuess}>Justin beaber</StyledButtonPrimary>
           </Grid>
           <Grid item xs={12}>
             <StyledButtonPrimary
               variant="contained"
-              className={"choiceButton " + (guessed === "2" ? "guessed" : "")}
+              className={classes.button + " " + (guessed === "2" ? classes.guessed : "")}
               data-guess="2"
               onClick={handleGuess}>Maroon 5</StyledButtonPrimary>
             <StyledButtonPrimary
               variant="contained"
-              className={"choiceButton " + (guessed === "3" ? "guessed" : "")}
+              className={classes.button + " " + (guessed === "3" ? classes.guessed : "")}
               data-guess="3"
               onClick={handleGuess}>Ed Sheeran</StyledButtonPrimary>
           </Grid>
           <Grid item xs={12}>
             <StyledButtonPrimary
               variant="contained"
-              className={"choiceButton " + (guessed === "4" ? "guessed" : "")}
+              className={classes.button + " " + (guessed === "4" ? classes.guessed : "")}
               data-guess="4"
               onClick={handleGuess}>Alan Walker</StyledButtonPrimary>
           </Grid>
