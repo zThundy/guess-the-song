@@ -69,6 +69,13 @@ function MainForm() {
     }, 300);
   }
 
+  const handleAccount = (event) => {
+    event.preventDefault();
+    setTimeout(() => {
+      navigate("account");
+    }, 300);
+  }
+
   return (
     (!(location.state && location.state.shouldAnimate) ?
       <div className={`
@@ -78,7 +85,7 @@ function MainForm() {
         <h1>Welcome 👋</h1>
         <div className={classes.button}>
           <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>Play</StyledButtonPrimary>
-          <StyledButtonSecondary variant="outlined" color="secondary" endIcon={<Launch />}>Account</StyledButtonSecondary>
+          <StyledButtonSecondary variant="outlined" color="secondary" endIcon={<Launch />} onMouseDown={handleAccount}>Account</StyledButtonSecondary>
         </div>
       </div>
       :
@@ -91,7 +98,7 @@ function MainForm() {
         <h1>Welcome 👋</h1>
         <div className={classes.button}>
           <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>Play</StyledButtonPrimary>
-          <StyledButtonSecondary variant="outlined" color="secondary" endIcon={<Launch />}>Account</StyledButtonSecondary>
+          <StyledButtonSecondary variant="outlined" color="secondary" endIcon={<Launch />} onMouseDown={handleAccount}>Account</StyledButtonSecondary>
         </div>
       </motion.div>
     )

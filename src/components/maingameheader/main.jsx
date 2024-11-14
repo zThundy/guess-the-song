@@ -22,6 +22,9 @@ function MainGameHeader({ status }) {
     if (location.pathname === "/create") {
       setHeaderMessage("➕ Create new lobby");
     }
+    if (location.pathname === "/account") {
+      setHeaderMessage("🔒 Account settings");
+    }
   }, [location]);
 
   const handleBackButton = (event) => {
