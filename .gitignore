@@ -1,6 +1,13 @@
 # Created by https://www.toptal.com/developers/gitignore/api/node,react,reactnative,nextjs
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,react,reactnative,nextjs
 
+### Custom ###
+# Ignore all .env files
+.env*
+
+# Ignore all sqlite files
+*.sqlite
+
 ### NextJS ###
 # dependencies
 /node_modules
