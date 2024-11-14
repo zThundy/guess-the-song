@@ -1,5 +1,7 @@
 import router, { Request, Response } from "express";
+import { RegisterBody } from "../../types/account_types";
 
+const db = require('../sql.ts');
 const accountRouter = router();
 
 accountRouter.get('/', (req: Request, res: Response) => {
@@ -14,14 +16,7 @@ accountRouter.post('/login', (req: Request, res: Response) => {
     res.send('login');
 });
 
-type RegisterBody = {
-    username: string;
-    uniqueId: string;
-    userImage: string;
-    hasProperty: (key: string) => boolean;
-};
-
-accountRouter.post('/register', (req: Request, res: Response) => {
+accountRouter.post('/validate', (req: Request, res: Response) => {
     // check if content of body is application/json
     if (req.headers['content-type'] !== 'application/json') {
         res.status(400).json({ message: 'Invalid content-type' });
@@ -44,7 +39,13 @@ accountRouter.post('/register', (req: Request, res: Response) => {
         if (body.uniqueId.length === 0) {
             body.uniqueId = Math.random().toString(36).substring(2, 15);
         }
-        
+
+        // if username is empty, then generate a random one
+        if (body.username.length === 0) {
+            body.username = 'User-' + Math.random().toString(36).substring(2, 15);
+        }
+
+        db.validateUser(body);
         res.json(body);
     } else {
         res.status(400).json({ message: 'Invalid body' });

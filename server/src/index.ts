@@ -10,7 +10,6 @@ const https = require('https');
 const http = require('http');
 
 const DBHandler = require('./sql.ts');
-const db = new DBHandler();
 
 const app: Express = express();
 const port: number = <number|null|undefined>process.env.HTTP_PORT || 80;
