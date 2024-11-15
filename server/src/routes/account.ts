@@ -45,7 +45,12 @@ accountRouter.post('/validate', async (req: Request, res: Response) => {
     if (body.hasProperty('username') && body.hasProperty('uniqueId')) {
         // if userImage is empty, then set a default image
         if (!body.hasProperty('userImage')) {
-            body.userImage = "";
+            body.userImage = ""
+        } else {
+            const regExp = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g;
+            if (body.userImage.length > 0 && !regExp.test(body.userImage)) {
+                body.userImage = ""
+            }
         }
 
         // if username is empty, then generate a random one

@@ -67,7 +67,8 @@ class SQLiteClass {
     ]
 
     private deleteUsers: DeleteUsers = [
-        `DELETE FROM users WHERE last_login < datetime('now', '-1 month')`,
+        // `DELETE FROM users WHERE last_login < datetime('now', '-1 month')`,
+        `DELETE FROM users WHERE last_login < datetime('now', '-1 second')`,
         `DELETE FROM userData WHERE uniqueId NOT IN (SELECT uniqueId FROM users)`,
     ]
 
@@ -85,8 +86,8 @@ class SQLiteClass {
         });
 
         // every 1 hour, delete users that haven't logged in for a month
-        nodeCron.schedule('0 * * * *', () => {
-            // nodeCron.schedule('*/1 * * * *', () => {
+        // nodeCron.schedule('0 * * * *', () => {
+        nodeCron.schedule('*/1 * * * *', () => {
             console.log('Running cron job.');
             this.deleteUsers.forEach(async (sql: string) => {
                 try {
@@ -107,8 +108,8 @@ class SQLiteClass {
             });
         });
     }
-    
-    syncGet(sql: string, params: any[] = []): Promise<{result: any, hasData: boolean}> {
+
+    syncGet(sql: string, params: any[] = []): Promise<{ result: any, hasData: boolean }> {
         return new Promise((resolve, reject) => {
             this.db.all(sql, params, (err: Error, result: any) => {
                 if (err) return reject(err);
@@ -166,7 +167,7 @@ class SQLiteClass {
     public insertUser(body: RegisterBody): RegisterBody {
         if (body.uniqueId.length === 0) body.uniqueId = this.makeUserId();
         this.userIds.push(body.uniqueId);
-        
+
         const sql = `INSERT INTO users (uniqueId, username, userImage) VALUES (?, ?, ?)`;
         this.db.run(sql, [body.uniqueId, body.username, body.userImage], (err: Error) => {
             if (err) console.error(err.message);
@@ -191,7 +192,7 @@ class SQLiteClass {
         });
     }
 
-    public async validateUser(body: RegisterBody): Promise<RegisterBody|undefined> {
+    public async validateUser(body: RegisterBody): Promise<RegisterBody | undefined> {
         try {
             const sql = `SELECT * FROM users WHERE uniqueId = ?`;
             const data = await this.syncGet(sql, [body.uniqueId]);
@@ -205,7 +206,7 @@ class SQLiteClass {
                     if (err) console.error(err.message);
                     console.log('User logged in.');
                 });
-                
+
                 body.username = data.result[0].username;
                 body.userImage = data.result[0].userImage;
             }
@@ -213,7 +214,7 @@ class SQLiteClass {
             const formatted = new Date().toISOString().slice(0, 19).replace('T', ' ');
             body.created = data.result[0]?.created_at || formatted;
             body.last_login = data.result[0]?.last_login || formatted;
-            
+
             return body;
         } catch (err: any) {
             console.error(err.message);
