@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import Header from '../maingameheader/main'
 
 import { motion } from 'framer-motion'
-import { TextField } from '@mui/material'
+import { Button, TextField } from '@mui/material'
 
 const { setCookie, getCookie } = require("@helpers/cookies")
 
@@ -62,14 +62,26 @@ export default function MainAccount() {
               marginBottom: ".8rem"
             }}
           >Profile Picture</div>
-          <TextField
-            className={classes.input}
-            placeholder='Type a picture URL'
-            onChange={updateUserImage}
-            value={userImage}
-            error={isValidUrlError.length > 0}
-            helperText={isValidUrlError}
-          ></TextField>
+          <div
+            className={classes.inputFieldButton}
+          >
+            <TextField
+              className={classes.input}
+              placeholder='Type a picture URL'
+              onChange={updateUserImage}
+              value={userImage}
+              error={isValidUrlError.length > 0}
+              helperText={isValidUrlError}
+            ></TextField>
+            <Button
+              className={classes.saveButton}
+              variant='contained'
+              onClick={() => {
+                setCookie('username', username, 365)
+                setCookie('userImage', userImage, 365)
+              }}
+            >Save</Button>
+          </div>
         </div>
       </div>
     </motion.div>
