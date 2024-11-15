@@ -18,13 +18,10 @@ class SQLiteClass {
     private userIds: string[] = [];
 
     private transactions: TableTransactions = [
-        `CREATE TABLE IF NOT EXISTS users (
-            uniqueId TEXT PRIMARY KEY
-        )`,
-
-        `CREATE TABLE IF NOT EXISTS userData (
-            uniqueId TEXT PRIMARY KEY
-        )`,
+        `CREATE TABLE IF NOT EXISTS users (uniqueId TEXT PRIMARY KEY)`,
+        `CREATE TABLE IF NOT EXISTS userData (uniqueId TEXT PRIMARY KEY)`,
+        `CREATE TABLE IF NOT EXISTS rooms (roomUniqueId TEXT PRIMARY KEY)`,
+        `CREATE TABLE IF NOT EXISTS roomUsers (roomUniqueId TEXT, uniqueId TEXT)`,
     ];
 
     private alterTable: AlterTableTransactions = [
@@ -63,12 +60,72 @@ class SQLiteClass {
             column: 'level',
             type: 'INTEGER',
             default: '0'
+        },
+        {
+            table: "rooms",
+            column: "roomOwner",
+            type: "TEXT",
+            default: '""'
+        },
+        {
+            table: "rooms",
+            column: "inviteCode",
+            type: "INTEGER",
+            default: '00000'
+        },
+        {
+            table: "rooms",
+            column: "roomName",
+            type: "TEXT",
+            default: '""'
+        },
+        {
+            table: "rooms",
+            column: "maxPlayers",
+            type: "INTEGER",
+            default: '2'
+        },
+        {
+            table: "rooms",
+            column: "rounds",
+            type: "INTEGER",
+            default: '2'
+        },
+        {
+            table: "rooms",
+            column: "isPrivate",
+            type: "BOOLEAN",
+            default: '0'
+        },
+        {
+            table: "rooms",
+            column: "category",
+            type: "TEXT",
+            default: '""'
+        },
+        {
+            table: "rooms",
+            column: "genre",
+            type: "TEXT",
+            default: '""'
+        },
+        {
+            table: "rooms",
+            column: "difficulty",
+            type: "INTEGER",
+            default: '1'
+        },
+        {
+            table: "rooms",
+            column: "created_at",
+            type: "TIMESTAMP",
+            default: "CURRENT_TIMESTAMP"
         }
     ]
 
     private deleteUsers: DeleteUsers = [
-        // `DELETE FROM users WHERE last_login < datetime('now', '-1 month')`,
-        `DELETE FROM users WHERE last_login < datetime('now', '-1 second')`,
+        `DELETE FROM users WHERE last_login < datetime('now', '-1 month')`,
+        // `DELETE FROM users WHERE last_login < datetime('now', '-1 second')`,
         `DELETE FROM userData WHERE uniqueId NOT IN (SELECT uniqueId FROM users)`,
     ]
 
@@ -86,8 +143,8 @@ class SQLiteClass {
         });
 
         // every 1 hour, delete users that haven't logged in for a month
-        // nodeCron.schedule('0 * * * *', () => {
-        nodeCron.schedule('*/1 * * * *', () => {
+        nodeCron.schedule('0 * * * *', () => {
+        // nodeCron.schedule('*/1 * * * *', () => {
             console.log('Running cron job.');
             this.deleteUsers.forEach(async (sql: string) => {
                 try {

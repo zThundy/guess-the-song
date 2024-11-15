@@ -8,7 +8,7 @@ type RegisterBody = {
     hasProperty: (key: string) => boolean;
 };
 
-type TableTransactions = [string, string];
+type TableTransactions = string[];
 
 type AlterTableTransaction = {
     table: string;
@@ -19,7 +19,7 @@ type AlterTableTransaction = {
 
 type AlterTableTransactions = AlterTableTransaction[];
 
-type DeleteUsers = [string, string];
+type DeleteUsers = string[];
 
 export {
     RegisterBody,

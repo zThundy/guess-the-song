@@ -5,7 +5,7 @@ import { LockOutlined, LockOpen } from "@mui/icons-material";
 
 import { useState } from "react";
 
-function JoinableLobby({ name, players, maxPlayers, locked, category, genere }) {
+function JoinableLobby({ name, players, maxPlayers, locked, category, genre }) {
   const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
 
   return (
@@ -17,7 +17,7 @@ function JoinableLobby({ name, players, maxPlayers, locked, category, genere }) 
         </span>
         <div className="lobbyInfoTextContainer">
           <span className="players">{players} / {maxPlayers}</span>
-          <span className="genere">{genere.toUpperCase()}</span>
+          <span className="genre">{genre.toUpperCase()}</span>
           <span className="category">{category.toUpperCase()}</span>
         </div>
       </div>

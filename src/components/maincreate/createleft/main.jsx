@@ -73,7 +73,7 @@ function DifficutlyButtons({ setGlobalChoices, choices, setChoices }) {
     const id = Number(e.currentTarget.dataset.id);
     setSelectedDifficulty(id);
     setGlobalChoices({ type: "difficulty", value: id });
-    setChoices({ category: choices.category, genere: choices.genere, difficulty: id });
+    setChoices({ category: choices.category, genre: choices.genre, difficulty: id });
   }
 
   useEffect(() => {
@@ -81,10 +81,10 @@ function DifficutlyButtons({ setGlobalChoices, choices, setChoices }) {
       setGlobalChoices({ type: "difficulty", value: p });
       return p;
     });
-  }, [choices.genere])
+  }, [choices.genre])
 
   return (
-    choices.genere &&
+    choices.genre &&
     <motion.div
       initial={{ scale: 0, rotate: 0 }}
       animate={{ scale: [0, 1, 1.3, 1], rotate: [0, 8, -8, 6, -6, 0] }}
@@ -120,8 +120,8 @@ function Generes({ setGlobalChoices, choices, setChoices, enableTimeout, scrollT
     const id = Number(e.currentTarget.dataset.id);
     if (generes[id].disabled) return;
     setSelectedGenere(id);
-    setGlobalChoices({ type: "genere", value: generes[id] });
-    setChoices({ category: choices.category, genere: generes[id], difficulty: choices.difficulty });
+    setGlobalChoices({ type: "genre", value: generes[id] });
+    setChoices({ category: choices.category, genre: generes[id], difficulty: choices.difficulty });
     genereRef.current.children[id].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
   }
 
@@ -135,16 +135,16 @@ function Generes({ setGlobalChoices, choices, setChoices, enableTimeout, scrollT
     >
       <div className="createSelectGenere" ref={genereRef}>
         {
-          generes.map((genere, index) => {
+          generes.map((genre, index) => {
             return (
-              <div className="genere" key={index} onMouseDown={handleMouseClick} data-id={index}>
+              <div className="genre" key={index} onMouseDown={handleMouseClick} data-id={index}>
                 {index === selectedGenere && <div className="createSelectArrowDown"></div>}
 
                 <div className="genereIcon">
-                  {genere.icon ? genere.icon : <MusicNote />}
+                  {genre.icon ? genre.icon : <MusicNote />}
                 </div>
                 <div className="createGenereName">
-                  {genere.name}
+                  {genre.name}
                 </div>
               </div>
             )
@@ -159,7 +159,7 @@ function CreateLobbyLeft({ setGlobalChoices }) {
   const [categories, setCategories] = useState(_categories);
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [scrollTimeout, setScrollTimeout] = useState(false);
-  const [choices, setChoices] = useState({ genere: null, category: null, difficulty: null });
+  const [choices, setChoices] = useState({ genre: null, category: null, difficulty: null });
 
   const categoryRef = useRef(null);
 
@@ -186,7 +186,7 @@ function CreateLobbyLeft({ setGlobalChoices }) {
     if (categories[id].disabled) return;
     setSelectedCategory(id);
     setGlobalChoices({ type: "category", value: categories[id] });
-    setChoices({ category: categories[id], genere: choices.genere, difficulty: choices.difficulty });
+    setChoices({ category: categories[id], genre: choices.genre, difficulty: choices.difficulty });
     categoryRef.current.children[id].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
   }
 

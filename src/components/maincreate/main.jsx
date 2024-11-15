@@ -23,8 +23,8 @@ function MainCreate() {
       setAlertTitle("Please select a category");
       return;
     }
-    if (globalChoices.genere === undefined) {
-      setAlertTitle("Please select a genere");
+    if (globalChoices.genre === undefined) {
+      setAlertTitle("Please select a genre");
       return;
     }
     console.log("creating room", globalChoices);

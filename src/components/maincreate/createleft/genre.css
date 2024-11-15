@@ -7,7 +7,7 @@
   width: fit-content;
 }
 
-.createSelectGenere .genere {
+.createSelectGenere .genre {
   position: relative;
   width: calc(10vw - 20px);
   height: calc(10vw - 20px);
@@ -35,7 +35,7 @@
   color: rgba(255, 255, 255, 0.3);
 }
 
-/* on hover genere change size of svg */
-.genere:hover .genereIcon svg {
+/* on hover genre change size of svg */
+.genre:hover .genereIcon svg {
   font-size: 500%;
 }
