@@ -1,31 +1,39 @@
 import router, { Request, Response } from "express";
 import { RegisterBody } from "../../types/account_types";
+import User from "../user";
+// import { UserInstance } from "../../types/user_types";
 
-const db = require('../sql.ts');
 const accountRouter = router();
+
+const { addUser, getUser, hasUser } = require('../states.ts');
+const hasProperty = (data: object, key: string) => Object.keys(data).includes(key);
 
 accountRouter.get('/', (req: Request, res: Response) => {
     res.json({ message: 'Account works!' });
 });
 
-accountRouter.post("/image", (req: Request, res: Response) => {
+accountRouter.post("/image", async (req: Request, res: Response) => {
     if (req.headers['content-type'] !== 'application/json') {
         res.status(400).json({ message: 'Invalid content-type' });
         return;
     }
-
+    
     const body = req.body as RegisterBody;
-    body.hasProperty = (key: string) => Object.keys(body).includes(key);
 
-    if (body.hasProperty('userImage')) {
-        const regExp = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g;
-        if (body.userImage.length > 0 && !regExp.test(body.userImage)) {
-            res.status(400).json({ message: 'Invalid user image' });
-            return;
+    if (!hasProperty(body, 'uniqueId')) {
+        res.status(400).json({ message: 'Invalid body' });
+        return;
+    }
+
+    if (hasProperty(body, 'userImage')) {
+        let user = getUser(body.uniqueId);
+        if (!user) {
+            user = new User(body.uniqueId, body.username, body.userImage);
+            await user.validateUser();
+            addUser(user);
         }
-
-        db.updateImage(body);
-        res.json(body);
+        user.update({ column: 'userImage', value: body.userImage });
+        res.json(user.save().get());
     } else {
         res.status(400).json({ message: 'Invalid body' });
     }
@@ -37,28 +45,21 @@ accountRouter.post('/validate', async (req: Request, res: Response) => {
         res.status(400).json({ message: 'Invalid content-type' });
         return;
     }
-    
+
     const body = req.body as RegisterBody;
-    body.hasProperty = (key: string) => Object.keys(body).includes(key);
 
     // check if body contains username, uniqueId, userImage
-    if (body.hasProperty('username') && body.hasProperty('uniqueId')) {
-        // if userImage is empty, then set a default image
-        if (!body.hasProperty('userImage')) {
-            body.userImage = ""
+    if (hasProperty(body, 'uniqueId')) {
+        let user: User;
+        if (hasUser(body.uniqueId)) {
+            user = getUser(body.uniqueId);
         } else {
-            const regExp = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g;
-            if (body.userImage.length > 0 && !regExp.test(body.userImage)) {
-                body.userImage = ""
-            }
+            user = new User(body.uniqueId, body.username, body.userImage);
+            await user.validateUser();
+            addUser(user);
         }
 
-        // if username is empty, then generate a random one
-        if (body.username.length === 0) {
-            body.username = 'User-' + Math.random().toString(36).substring(2, 8);
-        }
-
-        res.json(await db.validateUser(body));
+        res.json(user.get());
     } else {
         res.status(400).json({ message: 'Invalid body' });
     }

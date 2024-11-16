@@ -4,6 +4,7 @@ import {
     AlterTableTransactions,
     DeleteUsers
 } from "../types/account_types";
+import { UserInstance } from "../types/user_types";
 
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
@@ -15,7 +16,6 @@ class SQLiteClass {
     private engine: any = sqlite3;
     private db: any;
     private dbPath: string = path.join("data", 'db.sqlite');
-    private userIds: string[] = [];
 
     private transactions: TableTransactions = [
         `CREATE TABLE IF NOT EXISTS users (uniqueId TEXT PRIMARY KEY)`,
@@ -135,8 +135,8 @@ class SQLiteClass {
         this.db = new this.engine.cached.Database(this.dbPath, (err: Error) => {
             if (err) return console.error(err.message);
             try {
-                this.initDb();
                 console.log('Connected to the database.');
+                this.initDb();
             } catch (err: any) {
                 console.error(err.message);
             }
@@ -144,7 +144,6 @@ class SQLiteClass {
 
         // every 1 hour, delete users that haven't logged in for a month
         nodeCron.schedule('0 * * * *', () => {
-        // nodeCron.schedule('*/1 * * * *', () => {
             console.log('Running cron job.');
             this.deleteUsers.forEach(async (sql: string) => {
                 try {
@@ -156,9 +155,18 @@ class SQLiteClass {
         });
     }
 
-    syncRun(sql: string): Promise<any> {
+    private checkPath() {
+        // check if dbPath exists, if not create it
+        if (!fs.existsSync(this.dbPath)) {
+            fs.mkdirSync(path.dirname(this.dbPath), { recursive: true });
+        }
+
+        return this.dbPath;
+    }
+
+    private syncRun(sql: string, params: any[] = []): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.db.run(sql, (err: Error) => {
+            this.db.run(sql, params, (err: Error) => {
                 if (err) return reject(err);
                 console.log("Executed: " + sql);
                 resolve(sql);
@@ -166,7 +174,7 @@ class SQLiteClass {
         });
     }
 
-    syncGet(sql: string, params: any[] = []): Promise<{ result: any, hasData: boolean }> {
+    private syncGet(sql: string, params: any[] = []): Promise<{ result: any, hasData: boolean }> {
         return new Promise((resolve, reject) => {
             this.db.all(sql, params, (err: Error, result: any) => {
                 if (err) return reject(err);
@@ -195,88 +203,101 @@ class SQLiteClass {
                 console.error(err.message);
             }
         }
-
-        const sql = `SELECT uniqueId FROM users`;
-        const data = await this.syncGet(sql);
-        const result = data.result;
-        this.userIds = result.map((row: any) => row.unique);
     }
 
-    private checkPath() {
-        // check if dbPath exists, if not create it
-        if (!fs.existsSync(this.dbPath)) {
-            fs.mkdirSync(path.dirname(this.dbPath), { recursive: true });
-        }
+    /**
+     * PUBLIC METHODS
+     */
 
-        return this.dbPath;
-    }
-
-    private makeUserId(): string {
-        let userId = Math.random().toString(36).substring(2, 21);
-        if (this.userIds.includes(userId)) {
-            console.log(`User ID ${userId} already exists. Generating new one.`);
-            return this.makeUserId();
-        }
-        console.log(`Generated user ID: ${userId}`);
-        return userId;
-    }
-
-    public insertUser(body: RegisterBody): RegisterBody {
-        if (body.uniqueId.length === 0) body.uniqueId = this.makeUserId();
-        this.userIds.push(body.uniqueId);
-
-        const sql = `INSERT INTO users (uniqueId, username, userImage) VALUES (?, ?, ?)`;
-        this.db.run(sql, [body.uniqueId, body.username, body.userImage], (err: Error) => {
-            if (err) console.error(err.message);
-            console.log('User inserted.');
-        });
-
-        const userData = `INSERT INTO userData (uniqueId) VALUES (?)`;
-        this.db.run(userData, [body.uniqueId], (err: Error) => {
-            if (err) console.error(err.message);
-            console.log('User data inserted.');
-        });
-
-        return body;
-    }
-
-    public updateImage(body: RegisterBody) {
-        // update userimage and last_login
-        const sql = `UPDATE users SET userImage = ?, last_login = CURRENT_TIMESTAMP WHERE uniqueId = ?`;
-        this.db.run(sql, [body.userImage, body.uniqueId], (err: Error) => {
-            if (err) console.error(err.message);
-            console.log('User image updated.');
-        });
-    }
-
-    public async validateUser(body: RegisterBody): Promise<RegisterBody | undefined> {
+    public async insertUser(body: RegisterBody): Promise<void> {
         try {
-            const sql = `SELECT * FROM users WHERE uniqueId = ?`;
-            const data = await this.syncGet(sql, [body.uniqueId]);
+            const sql = `INSERT INTO users (uniqueId, username, userImage) VALUES (?, ?, ?)`;
+            await this.syncRun(sql, [body.uniqueId, body.username, body.userImage]);
 
-            if (!data.hasData) {
-                console.log('User not found. Inserting user.');
-                body = this.insertUser(body);
-            } else {
-                const query = `UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE uniqueId = ?`;
-                this.db.run(query, [body.uniqueId], (err: Error) => {
-                    if (err) console.error(err.message);
-                    console.log('User logged in.');
-                });
-
-                body.username = data.result[0].username;
-                body.userImage = data.result[0].userImage;
-            }
-
-            const formatted = new Date().toISOString().slice(0, 19).replace('T', ' ');
-            body.created = data.result[0]?.created_at || formatted;
-            body.last_login = data.result[0]?.last_login || formatted;
-
-            return body;
+            const userData = `INSERT INTO userData (uniqueId) VALUES (?)`;
+            await this.syncRun(userData, [body.uniqueId]);
         } catch (err: any) {
             console.error(err.message);
         }
     }
+
+    public async doesUserExist(uniqueId: string): Promise<boolean> {
+        try {
+            const sql = `SELECT * FROM users WHERE uniqueId = ?`;
+            const data = await this.syncGet(sql, [uniqueId]);
+            return data.hasData;
+        } catch (err: any) {
+            console.error(err.message);
+        }
+
+        return false;
+    }
+
+    public async loginUser(uniqueId: string): Promise<void> {
+        try {
+            const query = `UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE uniqueId = ?`;
+            this.db.run(query, [uniqueId], (err: Error) => {
+                if (err) console.error(err.message);
+                console.log('User logged in.');
+            });
+        } catch (err: any) {
+            console.error(err.message);
+        }
+    }
+
+    public async getUser(uniqueId: string): Promise<any> {
+        try {
+            const query = `SELECT * FROM users WHERE uniqueId = ?`;
+            const data = await this.syncGet(query, [uniqueId]);
+            return data.result;
+        } catch (err: any) {
+            console.error(err.message);
+        }
+
+        return [];
+    }
+
+    public async getUserData(uniqueId: string): Promise<any> {
+        try {
+            const query = `SELECT * FROM userData WHERE uniqueId = ?`;
+            const data = await this.syncGet(query, [uniqueId]);
+            return data.result;
+        } catch (err: any) {
+            console.error(err.message);
+        }
+
+        return [];
+    }
+
+    public createUser(data: UserInstance) {
+        const sql = `INSERT INTO users (uniqueId, username, userImage, created_at, last_login) VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`;
+        this.db.run(sql, [data.uniqueId, data.username, data.userImage], (err: Error) => {
+            if (err) console.error(err.message);
+            console.log('User created.');
+        });
+
+        const userData = `INSERT INTO userData (uniqueId, points, level) VALUES (?, 0, 0)`;
+        this.db.run(userData, [data.uniqueId], (err: Error) => {
+            if (err) console.error(err.message);
+            console.log('User data created.');
+        });
+    }
+
+    public async updateUser(data: UserInstance) {
+        const sql = `UPDATE users SET username = ?, userImage = ? WHERE uniqueId = ?`;
+        this.db.run(sql, [data.username, data.userImage, data.uniqueId], (err: Error) => {
+            if (err) console.error(err.message);
+            console.log('User updated.');
+        });
+    }
+
+    public async updateUserData(data: UserInstance) {
+        const sql = `UPDATE userData SET points = ?, level = ? WHERE uniqueId = ?`;
+        this.db.run(sql, [data.points, data.level, data.uniqueId], (err: Error) => {
+            if (err) console.error(err.message);
+            console.log('User data updated.');
+        });
+    }
 }
 
-module.exports = new SQLiteClass();
+export default new SQLiteClass();
