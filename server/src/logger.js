@@ -8,7 +8,6 @@ let logFolder = path.join("./", "data", "logs");
 let internalId = "";
 let logStream = null;
 
-writeLog = writeLog.bind(this);
 checkFolder();
 checkFile();
 createStream();
