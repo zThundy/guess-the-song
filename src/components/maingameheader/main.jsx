@@ -6,7 +6,7 @@ import { ArrowBack } from '@mui/icons-material';
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-function MainGameHeader({ status }) {
+function MainGameHeader({ onClickBack, canNavigate = true }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [headerMessage, setHeaderMessage] = useState("");
@@ -30,11 +30,15 @@ function MainGameHeader({ status }) {
   const handleBackButton = (event) => {
     setTimeout(() => {
       if (location.pathname === "/game") {
-        navigate("/", { state: { shouldAnimate: true } });
+        if (canNavigate) navigate("/", { state: { shouldAnimate: true } });
         return;
       }
-      navigate(-1, { state: { shouldAnimate: true } });
+      if (canNavigate) navigate(-1, { state: { shouldAnimate: true } });
     }, 300);
+
+    if (onClickBack) {
+      onClickBack({ event, location });
+    }
   }
 
   return (

@@ -11,27 +11,71 @@ import { Button, TextField } from '@mui/material'
 const { setCookie, getCookie } = require("@helpers/cookies")
 
 export default function MainAccount() {
+  const [canNavigateBack, setCanNavigateBack] = useState(true)
   const [username, setUsername] = useState(getCookie('username'))
   const [userImage, setUserImage] = useState(getCookie('userImage'))
-  const [isValidUrlError, setIsValidUrlError] = useState("")
+
+  const [hasUsernameChanged, setHasUsernameChanged] = useState(false)
+  const [hasUserImageChanged, setHasUserImageChanged] = useState(false)
+
+  useEffect(() => {
+    if (username !== getCookie('username')) {
+      setCanNavigateBack(false)
+      setHasUsernameChanged("Please save changes")
+    } else {
+      setHasUsernameChanged(false)
+    }
+    if (userImage !== getCookie('userImage')) {
+      setCanNavigateBack(false)
+      const regex = new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png|)/g)
+      if (regex.test(userImage)) {
+        setHasUserImageChanged("Please save changes")
+      } else {
+        setHasUserImageChanged("Invalid URL")
+      }
+    } else {
+      setHasUserImageChanged(false)
+    }
+  }, [username, userImage])
+
+  const onClickBack = ({ event, location }) => {
+  }
 
   const updateUsername = (e) => {
     // prevent spaces in username
     if (e.target.value.includes(' ')) e.target.value = e.target.value.replace(' ', '_')
     setUsername(e.target.value)
-    setCookie('username', e.target.value, 365)
+    // setCookie('username', e.target.value, 365)
   }
 
   const updateUserImage = (e) => {
     const url = e.target.value
-    const regex = new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g)
     setUserImage(url)
-    if (regex.test(url)) {
-      setIsValidUrlError('')
-      setCookie('userImage', url, 365)
-    } else {
-      setIsValidUrlError('Invalid URL')
+  }
+
+  const saveChanges = () => {
+    if (hasUsernameChanged) {
+      setCookie('username', username, 365)
+      setHasUsernameChanged(false)
     }
+    if (hasUserImageChanged) {
+      const regex = new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g)
+      if (regex.test(userImage)) {
+        setHasUserImageChanged(false)
+        setCookie('userImage', userImage, 365)
+      } else {
+        setHasUserImageChanged("Invalid URL")
+      }
+    }
+    setHasUsernameChanged((usr) => {
+      setHasUserImageChanged((prv) => {
+        if (!usr && !prv) {
+          setCanNavigateBack(true)
+        }
+        return prv
+      })
+      return usr
+    })
   }
 
   return (
@@ -41,7 +85,7 @@ export default function MainAccount() {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -3000, opacity: 1 }}
     >
-      <Header />
+      <Header onClickBack={onClickBack} canNavigate={canNavigateBack} />
       <div className={classes.content}>
         <div className={classes.inputContainer}>
           <div className={classes.inputTitle}>Username</div>
@@ -49,12 +93,24 @@ export default function MainAccount() {
             className={classes.inputDescription}
             style={{ color: 'gray' }}
           >Your user data is stored in the cookies</div>
-          <TextField className={classes.input} value={username} onChange={updateUsername}></TextField>
+          <div
+            className={classes.inputFieldButton}
+          >
+            <TextField
+              className={classes.input}
+              placeholder='Type a username'
+              onChange={updateUsername}
+              value={username}
+              error={hasUsernameChanged.length > 0}
+              helperText={hasUsernameChanged}
+            ></TextField>
+            <Button
+              className={classes.saveButton}
+              variant='contained'
+              onClick={saveChanges}
+            >Save</Button>
+          </div>
         </div>
-        {/* <div className={classes.inputContainer}>
-          <div className={classes.inputTitle}>Password</div>
-          <TextField className={classes.input} disabled placeholder='Account is saved in cookies'></TextField>
-        </div> */}
         <div className={classes.inputContainer}>
           <div
             className={classes.inputTitle}
@@ -70,16 +126,13 @@ export default function MainAccount() {
               placeholder='Type a picture URL'
               onChange={updateUserImage}
               value={userImage}
-              error={isValidUrlError.length > 0}
-              helperText={isValidUrlError}
+              error={hasUserImageChanged.length > 0}
+              helperText={hasUserImageChanged}
             ></TextField>
             <Button
               className={classes.saveButton}
               variant='contained'
-              onClick={() => {
-                setCookie('username', username, 365)
-                setCookie('userImage', userImage, 365)
-              }}
+              onClick={saveChanges}
             >Save</Button>
           </div>
         </div>
