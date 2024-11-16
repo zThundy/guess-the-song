@@ -8,6 +8,11 @@ const accountRouter = router();
 const { addUser, getUser, hasUser } = require('../states.ts');
 const hasProperty = (data: object, key: string) => Object.keys(data).includes(key);
 
+accountRouter.use((req: Request, res: Response, next) => {
+    console.log(`Account route: ${req.method} ${req.path}`);
+    next();
+});
+
 accountRouter.get('/', (req: Request, res: Response) => {
     res.json({ message: 'Account works!' });
 });
@@ -17,7 +22,7 @@ accountRouter.post("/image", async (req: Request, res: Response) => {
         res.status(400).json({ message: 'Invalid content-type' });
         return;
     }
-    
+
     const body = req.body as RegisterBody;
 
     if (!hasProperty(body, 'uniqueId')) {

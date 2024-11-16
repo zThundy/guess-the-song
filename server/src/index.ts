@@ -3,6 +3,7 @@ import express, { Express, Request, Response, Errback } from "express";
 import dotenv from "dotenv";
 
 dotenv.config();
+require('./logger');
 
 const path = require('path');
 const fs = require('fs');
@@ -52,7 +53,7 @@ import roomsRouter from "./routes/rooms";
 app.use('/rooms', roomsRouter);
 
 https.createServer(certs, app).listen(sport, () => {
-    console.log('Server started on https://localhost:' + sport);
+    console.info('Server started on https://localhost:' + sport);
 });
 
 // redirect http to https
@@ -64,5 +65,5 @@ http.createServer((req: Request, res: Response) => {
     res.writeHead(301, { 'Location': url });
     res.end();
 }).listen(port, () => {
-    console.log('Server started on http://localhost:' + port);
+    console.info('Server started on http://localhost:' + port);
 });
