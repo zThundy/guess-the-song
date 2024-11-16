@@ -59,7 +59,12 @@ function JoinGameModal({ on, toggle }) {
   const navigate = useNavigate();
   const inputRef = useRef(null);
 
+  useEffect(() => {
+    if (on) setSubmitted(false);
+  }, [on]);
+
   const handleJoinGame = () => {
+    console.log("Joining game...");
     const code = inputRef.current.value;
     if (code === "") return setSubmitted("Please enter a game code.");
     if (code.length !== 5) return setSubmitted("Game code must be 5 characters long.");
