@@ -17,3 +17,27 @@ export const getUser = (uniqueId: string) => {
 export const hasUser = (uniqueId: string) => {
     return users.has(uniqueId);
 };
+
+export const removeUser = (uniqueId: string) => {
+    users.delete(uniqueId);
+};
+
+
+
+
+
+export const addRoom = (room: Room) => {
+    rooms.set(room.roomId, room);
+};
+
+export const getRoom = (roomId: string) => {
+    return rooms.get(roomId);
+};
+
+export const hasRoom = (roomId: string) => {
+    return rooms.has(roomId);
+};
+
+export const removeRoom = (roomId: string) => {
+    rooms.delete(roomId);
+};

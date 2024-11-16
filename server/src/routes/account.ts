@@ -1,12 +1,11 @@
 import router, { Request, Response } from "express";
 import { RegisterBody } from "../../types/account_types";
 import User from "../user";
-// import { UserInstance } from "../../types/user_types";
 
 const accountRouter = router();
 
 const { addUser, getUser, hasUser } = require('../states.ts');
-const hasProperty = (data: object, key: string) => Object.keys(data).includes(key);
+const { hasProperty } = require('../utils.ts');
 
 accountRouter.use((req: Request, res: Response, next) => {
     console.log(`Account route: ${req.method} ${req.path}`);
@@ -79,6 +78,7 @@ accountRouter.post('/validate', async (req: Request, res: Response) => {
     }
 
     const body = req.body as RegisterBody;
+    console.log(`Validating user ${body.username} (Length ${body.username.length}) with uniqueId ${body.uniqueId} (Length ${body.uniqueId.length})`);
 
     // check if body contains username, uniqueId, userImage
     if (hasProperty(body, 'uniqueId')) {

@@ -5,6 +5,7 @@ import {
     DeleteUsers
 } from "../types/account_types";
 import { UserInstance } from "../types/user_types";
+import { RoomInstance } from "../types/room_types";
 
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
@@ -20,7 +21,7 @@ class SQLiteClass {
     private transactions: TableTransactions = [
         `CREATE TABLE IF NOT EXISTS users (uniqueId TEXT PRIMARY KEY)`,
         `CREATE TABLE IF NOT EXISTS userData (uniqueId TEXT PRIMARY KEY)`,
-        `CREATE TABLE IF NOT EXISTS rooms (roomUniqueId TEXT PRIMARY KEY)`,
+        `CREATE TABLE IF NOT EXISTS rooms (id INTEGER PRIMARY KEY, roomUniqueId TEXT UNIQUE)`,
         `CREATE TABLE IF NOT EXISTS roomUsers (roomUniqueId TEXT, uniqueId TEXT)`,
     ];
 
@@ -168,7 +169,7 @@ class SQLiteClass {
         return new Promise((resolve, reject) => {
             this.db.run(sql, params, (err: Error) => {
                 if (err) return reject(err);
-                console.log("Executed: " + sql);
+                console.log("Executed: " + sql + " with params: " + params);
                 resolve(sql);
             });
         });
@@ -208,6 +209,100 @@ class SQLiteClass {
     /**
      * PUBLIC METHODS
      */
+
+    // ROOMS
+
+    public async createRoom(room: RoomInstance): Promise<void> {
+        try {
+            const sql = `INSERT INTO rooms (roomUniqueId, roomOwner, inviteCode, roomName, maxPlayers, rounds, isPrivate, category, genre, difficulty) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            await this.syncRun(sql, [room.roomUniqueId, room.roomOwner, room.inviteCode, room.roomName, room.maxPlayers, room.rounds, room.isPrivate, room.category, room.genre, room.difficulty]);
+        } catch (err: any) {
+            console.error(err.message);
+        }
+    }
+
+    public async getRoom(roomUniqueId: string): Promise<any> {
+        try {
+            const query = `SELECT * FROM rooms WHERE roomUniqueId = ?`;
+            const data = await this.syncGet(query, [roomUniqueId]);
+            return data.result;
+        } catch (err: any) {
+            console.error(err.message);
+        }
+
+        return [];
+    }
+
+    /**
+     * 
+     * @param offset number
+     * @returns the first 10 rooms in the database that you can offset
+     */
+    public async getRooms(offset: number | string): Promise<any> {
+        try {
+            // select first 10 rooms from the database
+            const query = `SELECT * FROM rooms ORDER BY created_at DESC LIMIT 10 OFFSET ?`;
+            const data = await this.syncGet(query, [offset]);
+            return data.result;
+        } catch (err: any) {
+            console.error(err.message);
+        }
+
+        return [];
+    }
+
+    public async deleteRoom(roomUniqueId: string): Promise<void> {
+        try {
+            const query = `DELETE FROM rooms WHERE roomUniqueId = ?`;
+            await this.syncRun(query, [roomUniqueId]);
+        } catch (err: any) {
+            console.error(err.message);
+        }
+    }
+
+    public async addUserToRoom(roomUniqueId: string, uniqueId: string): Promise<void> {
+        try {
+            const query = `INSERT INTO roomUsers (roomUniqueId, uniqueId) VALUES (?, ?)`;
+            await this.syncRun(query, [roomUniqueId, uniqueId]);
+        } catch (err: any) {
+            console.error(err.message);
+        }
+    }
+
+    public async removeUserFromRoom(roomUniqueId: string, uniqueId: string): Promise<void> {
+        try {
+            const query = `DELETE FROM roomUsers WHERE roomUniqueId = ? AND uniqueId = ?`;
+            await this.syncRun(query, [roomUniqueId, uniqueId]);
+        } catch (err: any) {
+            console.error(err.message);
+        }
+    }
+
+    public async getUsersInRoom(roomUniqueId: string): Promise<any> {
+        try {
+            const query = `SELECT * FROM roomUsers WHERE roomUniqueId = ?`;
+            const data = await this.syncGet(query, [roomUniqueId]);
+            return data.result;
+        } catch (err: any) {
+            console.error(err.message);
+        }
+
+        return [];
+    }
+
+    public async doesRoomExist(roomUniqueId: string): Promise<boolean> {
+        try {
+            const query = `SELECT * FROM rooms WHERE roomUniqueId = ?`;
+            const data = await this.syncGet(query, [roomUniqueId]);
+            return data.hasData;
+        } catch (err: any) {
+            console.error(err.message);
+        }
+
+        return false;
+    }
+
+    // USERS
 
     public async insertUser(body: RegisterBody): Promise<void> {
         try {

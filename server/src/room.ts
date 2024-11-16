@@ -1,15 +1,15 @@
 
-import {
-    UserInstance
-} from '../types/user_types';
-
-import {
-    RoomInstance
-} from '../types/room_types';
+import { UserInstance } from '../types/user_types';
+import { RoomInstance } from '../types/room_types';
 
 import User from './user';
+import { hasProperty } from './utils';
+import db from './sql';
+
+const { getUser, addUser } = require('./states');
 
 export default class Room {
+    public roomId: string = '';
     public roomOwner: string = '';
     public inviteCode: string = '';
     public roomName: string = '';
@@ -23,41 +23,204 @@ export default class Room {
     public currentRound: number = 0;
     public users: User[] = [];
 
-    constructor(room: RoomInstance) {
-        this.roomOwner = room.roomOwner;
-        this.inviteCode = room.inviteCode;
-        this.roomName = room.roomName;
-        this.maxPlayers = room.maxPlayers;
-        this.rounds = room.rounds;
-        this.isPrivate = room.isPrivate;
-        this.category = room.category;
-        this.genre = room.genre;
-        this.difficulty = room.difficulty;
+    constructor() {}
 
-        console.log(`Room ${this.roomName} has been created.`);
+    public async initRoom(data: RoomInstance): Promise<void> {
+        if (!hasProperty(data, 'roomUniqueId')) throw new Error('Invalid room id');
+
+        this.roomId = data.roomUniqueId;
+        this.roomOwner = data.roomOwner;
+        this.roomName = data.roomName;
+        this.maxPlayers = data.maxPlayers;
+        this.rounds = data.rounds;
+        this.isPrivate = data.isPrivate;
+        this.category = data.category;
+        this.genre = data.genre;
+        this.difficulty = data.difficulty;
+
+        console.log(`Room "${this.roomId || "UNK"}" class has been initialized - ROOM NOT YET READY.`);
     }
 
-    private hasProperty(key: string) {
-        return Object.keys(this).includes(key);
-    }
-
-    private makeUserId(): string {
-        // generate a unique id and check if it already exists
-        let uniqueId = '';
-        let exists = true;
-
-        while (exists) {
-            uniqueId = Math.random().toString(36).substring(2, 20);
-            exists = this.users.some(u => u.uniqueId === uniqueId);
+    private update(key: string, value: any): void {
+        if (key in this) {
+            console.log(`Updating ${key} to ${value}`);
+            (this as any)[key] = value;
+        } else {
+            console.error(`Invalid key: ${key}`);
         }
-
-        return uniqueId;
     }
 
-    addToRoom(user: UserInstance): void {
+    private validateUser(): Promise<void> {
+        return new Promise(async (resolve, reject) => {
+            let user = getUser(this.roomOwner);
+            if (!user) {
+                console.error("User not found, trying database.");
+                let dbUser = await db.getUser(this.roomOwner);
+                dbUser = dbUser[0];
+                if (dbUser) {
+                    console.log(`User ${dbUser.username} found in database.`);
+                    user = new User(dbUser.uniqueId, dbUser.username, dbUser.userImage);
+                    await user.validateUser();
+                    addUser(user);
+                } else {
+                    // try and get the roomOwner from the rooms database
+                    let dbRoom = await db.getRoom(this.roomId);
+                    dbRoom = dbRoom[0];
+
+                    if (dbRoom) {
+                        console.log(`User ${dbRoom.roomOwner} found in database.`);
+                        user = new User(dbRoom.roomOwner, dbRoom.roomOwner, '');
+                        await user.validateUser();
+                        addUser(user);
+                    } else {
+                        return reject({ message: "User not found in database or in state storage. FATAL - Can't validate" });
+                    }
+                }
+            } else {
+                this.roomOwner = user.uniqueId;
+            }
+
+            console.log(`Room owner: ${user.username} (${user.uniqueId}) validated.`);
+            resolve();
+        });
+    }
+
+    private async makeRoomId(): Promise<string> {
+        const isRoomIdUnique = await db.doesRoomExist(this.roomId);
+        this.roomId = Math.random().toString(36).substring(2, 180);
+        if (isRoomIdUnique) {
+            return this.makeRoomId();
+        } else {
+            return this.roomId;
+        }
+    }
+
+    public async validateRoom() {
+        try {
+            await this.validateUser();
+            let dbRoom = await db.getRoom(this.roomId);
+            dbRoom = dbRoom[0];
+
+            if (dbRoom) {
+                if (dbRoom.roomName !== this.roomName) {
+                    this.update('roomName', dbRoom.roomName);
+                }
+
+                if (dbRoom.roomOwner !== this.roomOwner) {
+                    this.update('roomOwner', dbRoom.roomOwner);
+                }
+
+                if (dbRoom.inviteCode !== this.inviteCode) {
+                    this.update('inviteCode', dbRoom.inviteCode);
+                }
+
+                if (dbRoom.maxPlayers !== this.maxPlayers) {
+                    this.update('maxPlayers', dbRoom.maxPlayers);
+                }
+
+                if (dbRoom.rounds !== this.rounds) {
+                    this.update('rounds', dbRoom.rounds);
+                }
+
+                if (dbRoom.isPrivate !== this.isPrivate) {
+                    this.update('isPrivate', dbRoom.isPrivate);
+                }
+
+                if (dbRoom.category !== this.category) {
+                    this.update('category', dbRoom.category);
+                }
+
+                if (dbRoom.genre !== this.genre) {
+                    this.update('genre', dbRoom.genre);
+                }
+
+                if (dbRoom.difficulty !== this.difficulty) {
+                    this.update('difficulty', dbRoom.difficulty);
+                }
+
+                let dbRoomUsers = await db.getUsersInRoom(this.roomId);
+                dbRoomUsers.forEach((user: UserInstance) => {
+                    const stateUser = getUser(user.uniqueId);
+                    if (stateUser) {
+                        stateUser.update({ column: 'currentRoom', value: this.roomId });
+                        this.addToRoom(stateUser);
+                    } else {
+                        console.error(`User ${user.username} not found.`);
+                    }
+                });
+            } else {
+                if (this.roomId.length === 0) {
+                    this.roomId = await this.makeRoomId();
+                    console.log(`Room ID generated: ${this.roomId}`);
+                }
+
+                if (!this.roomName || this.roomName.length === 0) {
+                    const roomName = "Room-" + Math.random().toString(36).substring(2, 8);
+                    console.warn(`Invalid room name input for room ${this.roomId}, setting to ${roomName}. (Current: ${this.roomName})`);
+                    this.roomName = roomName;
+                }
+
+                // random 5 numbers code
+                this.inviteCode = Math.random().toString().substring(2, 7);
+
+                if (!this.maxPlayers || this.maxPlayers === 0 || this.maxPlayers > 15 || this.maxPlayers < 2 || typeof this.maxPlayers !== 'number') {
+                    console.warn(`Invalid max players input for room ${this.roomId}, setting to 8. (Current: ${this.maxPlayers})`);
+                    this.maxPlayers = 8;
+                }
+
+                if (!this.rounds || this.rounds === 0 || this.rounds > 20 || this.rounds < 2 || typeof this.rounds !== 'number') {
+                    console.warn(`Invalid rounds input for room ${this.roomId}, setting to 5. (Current: ${this.rounds})`);
+                    this.rounds = 5;
+                }
+
+                this.isPrivate = Boolean(this.isPrivate);
+                if (!hasProperty(this, 'isPrivate') || typeof this.isPrivate !== 'boolean') {
+                    console.warn(`Invalid isPrivate input for room ${this.roomId}, setting to false. (Current: ${this.isPrivate})`);
+                    this.isPrivate = false;
+                }
+
+                if (!this.category || this.category.length === 0) {
+                    console.warn(`Invalid category input for room ${this.roomId}, setting to Music. (Current: ${this.category})`);
+                    this.category = 'Music';
+                }
+
+                if (!this.genre || this.genre.length === 0) {
+                    console.warn(`Invalid genre input for room ${this.roomId}, setting to Pop. (Current: ${this.genre})`);
+                    this.genre = 'Pop';
+                }
+
+                if (!this.difficulty || this.difficulty === 0 || this.difficulty > 3 || this.difficulty < 1 || typeof this.difficulty !== 'number') {
+                    console.warn(`Invalid difficulty input for room ${this.roomId}, setting to 2. (Current: ${this.difficulty})`);
+                    this.difficulty = 2;
+                }
+
+                db.createRoom(this.get());
+            }
+        } catch (e: any) {
+            console.error(`Error validating room: ${e.message}`);
+            throw e;
+        }
+    }
+
+    public get(): any {
+        return {
+            roomUniqueId: this.roomId,
+            roomOwner: this.roomOwner,
+            roomName: this.roomName,
+            maxPlayers: this.maxPlayers,
+            rounds: this.rounds,
+            isPrivate: this.isPrivate,
+            category: this.category,
+            genre: this.genre,
+            difficulty: this.difficulty,
+            inviteCode: this.inviteCode,
+            users: this.users.map(u => u.get())
+        };
+    }
+
+    addToRoom(user: User): void {
         console.log(`${user.username} has joined the room.`);
-        // const newUser = new User(user);
-        // this.users.push(newUser);
+        this.users.push(user);
     }
 
     removeFromRoom(user: UserInstance): void {
@@ -67,30 +230,6 @@ export default class Room {
 
     isInRoom(user: UserInstance): boolean {
         return this.users.some(u => u.uniqueId === user.uniqueId);
-    }
-
-    get getCurrentRound(): number {
-        return this.currentRound;
-    }
-
-    set setCurrentRound(round: number) {
-        this.currentRound = round;
-    }
-
-    get getRoomOwner(): string {
-        return this.roomOwner;
-    }
-
-    get getInviteCode(): string {
-        return this.inviteCode;
-    }
-
-    get getRoomName(): string {
-        return this.roomName;
-    }
-
-    set setRoomName(name: string) {
-        this.roomName = name;
     }
 }
 

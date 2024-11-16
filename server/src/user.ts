@@ -15,6 +15,7 @@ export default class User {
     public points: number = 0;
     public level: number = 0;
     public currentRoom: string = '';
+    // maybe circular on currentRoom????
 
     constructor(uniqueId: string|undefined|null, username: string|undefined|null, userImage: string|undefined|null) {
         this.username = username || '';
@@ -22,10 +23,6 @@ export default class User {
         this.userImage = userImage || '';
 
         console.log('User added as class.');
-    }
-
-    private hasProperty(obj: any, key: string) {
-        return Object.keys(obj).includes(key);
     }
 
     save() {
@@ -114,7 +111,7 @@ export default class User {
             }
 
             if (this.uniqueId.length === 0) {
-                this.update({ column: 'uniqueId', value: Math.random().toString(36).substring(2, 20) });
+                this.update({ column: 'uniqueId', value: Math.random().toString(36).substring(2, 180) });
             }
             
             this.created = new Date().toISOString().slice(0, 19).replace('T', ' ');

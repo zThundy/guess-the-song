@@ -1,7 +1,6 @@
 
 type RoomInstance = {
     roomOwner: string;
-    inviteCode: string;
     roomName: string;
     maxPlayers: number;
     rounds: number;
@@ -9,6 +8,8 @@ type RoomInstance = {
     category: string;
     genre: string;
     difficulty: number;
+    inviteCode: string;
+    roomUniqueId: string;
 };
 
 type RoomList = RoomInstance[];
