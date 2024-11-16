@@ -55,6 +55,17 @@ export default function MainAccount() {
 
   const saveChanges = () => {
     if (hasUsernameChanged) {
+      if (username.includes(' ')) {
+        setUsername(username.replace(' ', '_'))
+      }
+      if (username.length < 3) {
+        setHasUsernameChanged("Username must be at least 3 characters long")
+        return
+      }
+      if (username.length > 20) {
+        setHasUsernameChanged("Username must be less than 20 characters long")
+        return
+      }
       setCookie('username', username, 365)
       setHasUsernameChanged(false)
     }
@@ -64,7 +75,12 @@ export default function MainAccount() {
         setHasUserImageChanged(false)
         setCookie('userImage', userImage, 365)
       } else {
-        setHasUserImageChanged("Invalid URL")
+        if (userImage.length === 0) {
+          setHasUserImageChanged(false)
+          setCookie('userImage', userImage, 365)
+        } else {
+          setHasUserImageChanged("Invalid URL")
+        }
       }
     }
     setHasUsernameChanged((usr) => {
