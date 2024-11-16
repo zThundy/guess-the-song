@@ -1,5 +1,5 @@
 
-type Room = {
+type RoomInstance = {
     roomOwner: string;
     inviteCode: string;
     roomName: string;
@@ -9,12 +9,11 @@ type Room = {
     category: string;
     genre: string;
     difficulty: number;
-    hasProperty: (key: string) => boolean;
 };
 
-type RoomList = Room[];
+type RoomList = RoomInstance[];
 
 export {
-    Room,
+    RoomInstance,
     RoomList
 };

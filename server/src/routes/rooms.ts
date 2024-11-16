@@ -1,6 +1,6 @@
 import router, { Request, Response } from "express";
 import {
-    Room
+    RoomInstance
 } from "../../types/room_types";
 
 const roomsRouter = router();
@@ -15,19 +15,9 @@ roomsRouter.post('/create', (req: Request, res: Response) => {
         return;
     }
 
-    const body = req.body as Room;
-    body.hasProperty = (key: string) => Object.keys(body).includes(key);
+    const body = req.body as RoomInstance;
     
-    if (
-        body.hasProperty('roomName') &&
-        body.hasProperty('maxPlayers') &&
-        body.hasProperty('rounds') &&
-        body.hasProperty('isPrivate') &&
-        body.hasProperty('category') &&
-        body.hasProperty('genre') &&
-        body.hasProperty('difficulty') &&
-        body.hasProperty('roomOwner')
-    ) {
+    if (true) {
         res.json(body);
     } else {
         res.status(400).json({ message: 'Invalid body' });
