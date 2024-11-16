@@ -44,6 +44,33 @@ accountRouter.post("/image", async (req: Request, res: Response) => {
     }
 });
 
+accountRouter.post("/username", async (req: Request, res: Response) => {
+    if (req.headers['content-type'] !== 'application/json') {
+        res.status(400).json({ message: 'Invalid content-type' });
+        return;
+    }
+
+    const body = req.body as RegisterBody;
+
+    if (!hasProperty(body, 'uniqueId')) {
+        res.status(400).json({ message: 'Invalid body' });
+        return;
+    }
+
+    if (hasProperty(body, 'username')) {
+        let user = getUser(body.uniqueId);
+        if (!user) {
+            user = new User(body.uniqueId, body.username, body.userImage);
+            await user.validateUser();
+            addUser(user);
+        }
+        user.update({ column: 'username', value: body.username });
+        res.json(user.save().get());
+    } else {
+        res.status(400).json({ message: 'Invalid body' });
+    }
+});
+
 accountRouter.post('/validate', async (req: Request, res: Response) => {
     // check if content of body is application/json
     if (req.headers['content-type'] !== 'application/json') {
