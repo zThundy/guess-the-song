@@ -19,20 +19,17 @@ function MainPage() {
   const location = useLocation();
 
   useEffect(() => {
-    const username = getCookie("username");
-    // make a random number xxxxx
-    if (!username) {
-      const randomUsername = `User${Math.floor(Math.random() * 10000)}`;
-      setCookie("username", randomUsername, 365);
-    }
-
-    const uniqueId = getCookie("uniqueId");
-    if (!uniqueId) {
-      const randomUniqueId = Math.random().toString(36).substring(2, 15);
-      setCookie("uniqueId", randomUniqueId, 365);
-    }
-
-    api.getBase();
+    api.userAction()
+      .then(user => {
+        setCookie("username", user.username, 365);
+        setCookie("uniqueId", user.uniqueId, 365);
+        setCookie("userImage", user.userImage, 365);
+        setCookie("created", user.created, 365);
+        setCookie("last_login", user.last_login, 365);
+        setCookie("points", user.points, 365);
+        setCookie("level", user.level, 365);
+        setCookie("currentRoom", user.currentRoom, 365);
+      });
   }, []);
 
   return (

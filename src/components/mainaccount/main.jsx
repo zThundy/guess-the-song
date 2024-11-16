@@ -9,6 +9,7 @@ import { motion } from 'framer-motion'
 import { Button, TextField } from '@mui/material'
 
 const { setCookie, getCookie } = require("@helpers/cookies")
+const api = require("@helpers/api")
 
 export default function MainAccount() {
   const [canNavigateBack, setCanNavigateBack] = useState(true)
@@ -38,8 +39,7 @@ export default function MainAccount() {
     }
   }, [username, userImage])
 
-  const onClickBack = ({ event, location }) => {
-  }
+  const onClickBack = ({ event, location }) => {}
 
   const updateUsername = (e) => {
     // prevent spaces in username
@@ -67,6 +67,7 @@ export default function MainAccount() {
         return
       }
       setCookie('username', username, 365)
+      api.updateUsername()
       setHasUsernameChanged(false)
     }
     if (hasUserImageChanged) {
