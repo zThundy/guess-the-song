@@ -1,0 +1,34 @@
+.lobbiesContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: rgb(255, 174, 94);
+  font-size: 3.5rem;
+  font-weight: bold;
+
+  .loadingSpinner {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    width: 8rem;
+    height: 8rem;
+  }
+
+  .loadingText {
+    margin-left: 10px;
+    letter-spacing: 3px;
+    /* text border */
+    -webkit-text-stroke: 2px rgb(204,102,0);
+  }
+}

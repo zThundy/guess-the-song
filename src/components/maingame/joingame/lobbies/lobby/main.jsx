@@ -7,6 +7,7 @@ import { useState } from "react";
 
 function JoinableLobby({ name, players, maxPlayers, locked, category, genre }) {
   const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
+  const [playersInLobby] = useState(players);
 
   return (
     <div className="lobbyContainer">
@@ -16,7 +17,7 @@ function JoinableLobby({ name, players, maxPlayers, locked, category, genre }) {
           {name}
         </span>
         <div className="lobbyInfoTextContainer">
-          <span className="players">{players} / {maxPlayers}</span>
+          <span className="players">{playersInLobby.length} / {maxPlayers}</span>
           <span className="genre">{genre.toUpperCase()}</span>
           <span className="category">{category.toUpperCase()}</span>
         </div>

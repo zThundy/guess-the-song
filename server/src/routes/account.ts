@@ -78,7 +78,7 @@ accountRouter.post('/validate', async (req: Request, res: Response) => {
     }
 
     const body = req.body as RegisterBody;
-    console.log(`Validating user ${body.username} (Length ${body.username.length}) with uniqueId ${body.uniqueId} (Length ${body.uniqueId.length})`);
+    console.log(`Validating user ${body.username} (Length ${body.username?.length || "UNK"}) with uniqueId ${body.uniqueId} (Length ${body.uniqueId?.length || "UNK"})`);
 
     // check if body contains username, uniqueId, userImage
     if (hasProperty(body, 'uniqueId')) {

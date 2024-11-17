@@ -9,7 +9,7 @@ import db from './sql';
 const { getUser, addUser } = require('./states');
 
 export default class Room {
-    public roomId: string = '';
+    public roomUniqueId: string = '';
     public roomOwner: string = '';
     public inviteCode: string = '';
     public roomName: string = '';
@@ -28,7 +28,7 @@ export default class Room {
     public async initRoom(data: RoomInstance): Promise<void> {
         if (!hasProperty(data, 'roomUniqueId')) throw new Error('Invalid room id');
 
-        this.roomId = data.roomUniqueId;
+        this.roomUniqueId = data.roomUniqueId;
         this.roomOwner = data.roomOwner;
         this.roomName = data.roomName;
         this.maxPlayers = data.maxPlayers;
@@ -38,7 +38,7 @@ export default class Room {
         this.genre = data.genre;
         this.difficulty = data.difficulty;
 
-        console.log(`Room "${this.roomId || "UNK"}" class has been initialized - ROOM NOT YET READY.`);
+        console.log(`Room "${this.roomUniqueId || "UNK"}" class has been initialized - ROOM NOT YET READY.`);
     }
 
     private update(key: string, value: any): void {
@@ -47,6 +47,15 @@ export default class Room {
             (this as any)[key] = value;
         } else {
             console.error(`Invalid key: ${key}`);
+        }
+    }
+
+    public getColumn(column: string): any {
+        if (column in this) {
+            return (this as any)[column];
+        } else {
+            console.error(`Invalid column: ${column}`);
+            return null;
         }
     }
 
@@ -64,7 +73,7 @@ export default class Room {
                     addUser(user);
                 } else {
                     // try and get the roomOwner from the rooms database
-                    let dbRoom = await db.getRoom(this.roomId);
+                    let dbRoom = await db.getRoom(this.roomUniqueId);
                     dbRoom = dbRoom[0];
 
                     if (dbRoom) {
@@ -85,20 +94,20 @@ export default class Room {
         });
     }
 
-    private async makeRoomId(): Promise<string> {
-        const isRoomIdUnique = await db.doesRoomExist(this.roomId);
-        this.roomId = Math.random().toString(36).substring(2, 180);
-        if (isRoomIdUnique) {
-            return this.makeRoomId();
+    private async makeroomUniqueId(): Promise<string> {
+        const isroomUniqueIdUnique = await db.doesRoomExist(this.roomUniqueId);
+        this.roomUniqueId = Math.random().toString(36).substring(2, 180);
+        if (isroomUniqueIdUnique) {
+            return this.makeroomUniqueId();
         } else {
-            return this.roomId;
+            return this.roomUniqueId;
         }
     }
 
     public async validateRoom() {
         try {
             await this.validateUser();
-            let dbRoom = await db.getRoom(this.roomId);
+            let dbRoom = await db.getRoom(this.roomUniqueId);
             dbRoom = dbRoom[0];
 
             if (dbRoom) {
@@ -138,25 +147,25 @@ export default class Room {
                     this.update('difficulty', dbRoom.difficulty);
                 }
 
-                let dbRoomUsers = await db.getUsersInRoom(this.roomId);
+                let dbRoomUsers = await db.getUsersInRoom(this.roomUniqueId);
                 dbRoomUsers.forEach((user: UserInstance) => {
                     const stateUser = getUser(user.uniqueId);
                     if (stateUser) {
-                        stateUser.update({ column: 'currentRoom', value: this.roomId });
-                        this.addToRoom(stateUser);
+                        stateUser.update({ column: 'currentRoom', value: this.roomUniqueId });
+                        this.addUser(stateUser);
                     } else {
                         console.error(`User ${user.username} not found.`);
                     }
                 });
             } else {
-                if (this.roomId.length === 0) {
-                    this.roomId = await this.makeRoomId();
-                    console.log(`Room ID generated: ${this.roomId}`);
+                if (this.roomUniqueId.length === 0) {
+                    this.roomUniqueId = await this.makeroomUniqueId();
+                    console.log(`Room ID generated: ${this.roomUniqueId}`);
                 }
 
                 if (!this.roomName || this.roomName.length === 0) {
                     const roomName = "Room-" + Math.random().toString(36).substring(2, 8);
-                    console.warn(`Invalid room name input for room ${this.roomId}, setting to ${roomName}. (Current: ${this.roomName})`);
+                    console.warn(`Invalid room name input for room ${this.roomUniqueId}, setting to ${roomName}. (Current: ${this.roomName})`);
                     this.roomName = roomName;
                 }
 
@@ -164,33 +173,33 @@ export default class Room {
                 this.inviteCode = Math.random().toString().substring(2, 7);
 
                 if (!this.maxPlayers || this.maxPlayers === 0 || this.maxPlayers > 15 || this.maxPlayers < 2 || typeof this.maxPlayers !== 'number') {
-                    console.warn(`Invalid max players input for room ${this.roomId}, setting to 8. (Current: ${this.maxPlayers})`);
+                    console.warn(`Invalid max players input for room ${this.roomUniqueId}, setting to 8. (Current: ${this.maxPlayers})`);
                     this.maxPlayers = 8;
                 }
 
                 if (!this.rounds || this.rounds === 0 || this.rounds > 20 || this.rounds < 2 || typeof this.rounds !== 'number') {
-                    console.warn(`Invalid rounds input for room ${this.roomId}, setting to 5. (Current: ${this.rounds})`);
+                    console.warn(`Invalid rounds input for room ${this.roomUniqueId}, setting to 5. (Current: ${this.rounds})`);
                     this.rounds = 5;
                 }
 
                 this.isPrivate = Boolean(this.isPrivate);
                 if (!hasProperty(this, 'isPrivate') || typeof this.isPrivate !== 'boolean') {
-                    console.warn(`Invalid isPrivate input for room ${this.roomId}, setting to false. (Current: ${this.isPrivate})`);
+                    console.warn(`Invalid isPrivate input for room ${this.roomUniqueId}, setting to false. (Current: ${this.isPrivate})`);
                     this.isPrivate = false;
                 }
 
                 if (!this.category || this.category.length === 0) {
-                    console.warn(`Invalid category input for room ${this.roomId}, setting to Music. (Current: ${this.category})`);
+                    console.warn(`Invalid category input for room ${this.roomUniqueId}, setting to Music. (Current: ${this.category})`);
                     this.category = 'Music';
                 }
 
                 if (!this.genre || this.genre.length === 0) {
-                    console.warn(`Invalid genre input for room ${this.roomId}, setting to Pop. (Current: ${this.genre})`);
+                    console.warn(`Invalid genre input for room ${this.roomUniqueId}, setting to Pop. (Current: ${this.genre})`);
                     this.genre = 'Pop';
                 }
 
                 if (!this.difficulty || this.difficulty === 0 || this.difficulty > 3 || this.difficulty < 1 || typeof this.difficulty !== 'number') {
-                    console.warn(`Invalid difficulty input for room ${this.roomId}, setting to 2. (Current: ${this.difficulty})`);
+                    console.warn(`Invalid difficulty input for room ${this.roomUniqueId}, setting to 2. (Current: ${this.difficulty})`);
                     this.difficulty = 2;
                 }
 
@@ -204,7 +213,7 @@ export default class Room {
 
     public get(): any {
         return {
-            roomUniqueId: this.roomId,
+            roomUniqueId: this.roomUniqueId,
             roomOwner: this.roomOwner,
             roomName: this.roomName,
             maxPlayers: this.maxPlayers,
@@ -218,17 +227,17 @@ export default class Room {
         };
     }
 
-    addToRoom(user: User): void {
+    addUser(user: User): void {
         console.log(`${user.username} has joined the room.`);
         this.users.push(user);
     }
 
-    removeFromRoom(user: UserInstance): void {
+    removeFromRoom(user: User): void {
         console.log(`${user.username} has left the room.`);
         this.users = this.users.filter(u => u.uniqueId !== user.uniqueId);
     }
 
-    isInRoom(user: UserInstance): boolean {
+    isInRoom(user: User): boolean {
         return this.users.some(u => u.uniqueId === user.uniqueId);
     }
 }

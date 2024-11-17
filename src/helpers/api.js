@@ -1,3 +1,4 @@
+import { Http } from '@mui/icons-material';
 
 const BASE_URL = 'https://localhost:8443';
 const { getCookie } = require('@helpers/cookies');
@@ -35,6 +36,16 @@ export function updateUsername() {
       uniqueId: getCookie("uniqueId") || "",
     })
   })
+    .then(response => response.json())
+    .catch(error => console.log(error));
+}
+
+export function getLobbies(offset) {
+  const httpParams = new URLSearchParams();
+  httpParams.append('offset', offset);
+  httpParams.append("count", true);
+
+  return fetch(`${BASE_URL}/rooms/all?${httpParams.toString()}`)
     .then(response => response.json())
     .catch(error => console.log(error));
 }

@@ -27,7 +27,7 @@ export const removeUser = (uniqueId: string) => {
 
 
 export const addRoom = (room: Room) => {
-    rooms.set(room.roomId, room);
+    rooms.set(room.roomUniqueId, room);
 };
 
 export const getRoom = (roomId: string) => {
