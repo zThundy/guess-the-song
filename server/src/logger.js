@@ -92,18 +92,18 @@ function rotate() {
                 // end the stream of the current log file
                 logStream.end();
                 // rename the current log file to the new path
-                fs.rename(logFile, newFile, (err) => {
-                    if (err) return reject(err);
-                    // create a new stream
-                    createStream();
-                    // set ready
-                    ready = true;
-                    // print file rotation
-                    console.log(`Renamed log file from ${logFile} to ${newFile}`);
-                    // resolve
-                    resolve();
-                });
+                fs.renameSync(logFile, newFile);
+                // create a new stream
+                createStream();
+                // set ready
+                ready = true;
+                // print file rotation
+                console.log(`Renamed log file from ${logFile} to ${newFile}`);
+                // resolve
+                resolve();
             } else {
+                // log to process.stdout
+                // process.stdout.write(`[INFO] Log file is ${getMeta().size} bytes, not rotating.\r\n`);
                 // set ready
                 ready = true;
                 // resolve
@@ -120,12 +120,14 @@ async function writeLog(type, ...args) {
         // rotate log file
         await rotate();
         // wait for ready
-        let tries = 0;
-        do {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            tries++;
-            if (tries > 10) throw new Error("Could not rotate log file");
-        } while (!ready);
+        if (!ready) {
+            let tries = 0;
+            do {
+                tries++;
+                if (tries > 10) throw new Error("Could not rotate log file");
+                await new Promise((resolve) => setTimeout(resolve, 100));
+            } while (!ready);
+        }
         // check if args have array or object, if so, stringify it
         args = args.map(arg => {
             if (typeof arg === "object") {

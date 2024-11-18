@@ -32,18 +32,21 @@ function StartButton({ id }) {
       >
         <AnimatePresence>
           {hover ? <motion.div
+            key={"bg1"}
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
             exit={{ width: "0%" }}
             transition={{ delay: 0, duration: .3, ease: "easeInOut" }}
             className={`${classes.bg} ${classes.bg1}`}></motion.div> : null}
           {hover ? <motion.div
+            key={"bg2"}
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
             exit={{ width: "0%" }}
             transition={{ delay: 0.1, duration: .3, ease: "easeInOut" }}
             className={`${classes.bg} ${classes.bg2}`}></motion.div> : null}
           {hover ? <motion.div
+            key={"bg3"}
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
             exit={{ width: "0%" }}

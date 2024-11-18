@@ -9,6 +9,8 @@ import Lobbies from "./lobbies/main";
 import { Button, styled, Paper, Typography, Zoom, IconButton, InputBase, ClickAwayListener } from '@mui/material';
 import { Add, Close, Login, East } from '@mui/icons-material';
 
+const api = require("@helpers/api");
+
 const StyledButtonPrimary = styled(Button)({
   color: "white",
   background: "radial-gradient(circle, rgba(255,167,51,1) 0%, rgba(255,167,51,1) 50%, rgba(255,167,51,1) 100%)",
@@ -69,7 +71,14 @@ function JoinGameModal({ on, toggle }) {
     if (code === "") return setSubmitted("Please enter a game code.");
     if (code.length !== 5) return setSubmitted("Game code must be 5 characters long.");
     if (isNaN(Number(code))) return setSubmitted("Game code must be a number.");
-    navigate("/game", { state: { id: code } });
+    api.validateInviteCode(code)
+      .then((data) => {
+        navigate("/game", { state: { id: data.inviteCode } });
+      })
+      .catch((error) => {
+        console.log(error);
+        setSubmitted(error.message);
+      });
   }
 
   return (

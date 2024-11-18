@@ -41,3 +41,12 @@ export const hasRoom = (roomId: string) => {
 export const removeRoom = (roomId: string) => {
     rooms.delete(roomId);
 };
+
+export const findRoomFromInviteCode = (inviteCode: string) => {
+    for (let room of rooms.values()) {
+        if (room.inviteCode === inviteCode) {
+            return room;
+        }
+    }
+    return null;
+};

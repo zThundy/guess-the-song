@@ -3,12 +3,16 @@ import classes from "./main.module.css";
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react';
 import { Alert } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import Header from "../maingameheader/main.jsx";
 import CreateLobbyLeft from "./createleft/main.jsx";
 import CreateLobbyRight from "./createright/main.jsx";
 
+const api = require("@helpers/api");
+
 function MainCreate() {
+  const navigate = useNavigate();
   const [alertTitle, setAlertTitle] = useState("");
   const [globalChoices, setGlobalChoices] = useState({});
   useEffect(() => { if (alertTitle) setTimeout(() => setAlertTitle(""), 11000) }, [alertTitle]);
@@ -27,7 +31,16 @@ function MainCreate() {
       setAlertTitle("Please select a genre");
       return;
     }
-    console.log("creating room", globalChoices);
+    console.log(globalChoices);
+    api.createRoom(globalChoices)
+      .then((data) => {
+        navigate("/game", { state: { id: data.inviteCode } });
+        // window.location.href = `/game/${data.roomUniqueId}`;
+      })
+      .catch((error) => {
+        console.log(error);
+        setAlertTitle(error.message);
+      });
   }
 
   return (

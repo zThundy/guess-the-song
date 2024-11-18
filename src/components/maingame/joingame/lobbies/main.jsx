@@ -68,6 +68,7 @@ function Lobbies() {
                 locked={lobby.isPrivate ? true : false || lobby.users.length >= lobby.maxPlayers}
                 category={lobby.category}
                 genre={lobby.genre}
+                inviteCode={lobby.inviteCode}
               />
             ))
           }

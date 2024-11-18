@@ -1,13 +1,29 @@
 import "./main.css";
 
+import { useState } from "react";
+
+import { useNavigate } from "react-router-dom";
 import { Button, ButtonGroup } from "@mui/material";
 import { LockOutlined, LockOpen } from "@mui/icons-material";
 
-import { useState } from "react";
+const api = require("@helpers/api");
 
-function JoinableLobby({ name, players, maxPlayers, locked, category, genre }) {
+function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inviteCode }) {
+  const navigate = useNavigate();
   const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
   const [playersInLobby] = useState(players);
+
+  const handleJoinGame = () => {
+    console.log("Joining game with invite code: " + inviteCode);
+    api.validateInviteCode(inviteCode)
+      .then((data) => {
+        console.log(data);
+        navigate("/game", { state: { id: data.inviteCode } });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   return (
     <div className="lobbyContainer">
@@ -23,7 +39,7 @@ function JoinableLobby({ name, players, maxPlayers, locked, category, genre }) {
         </div>
       </div>
       <ButtonGroup className="joinButtonContainer" variant="contained" aria-label="outlined primary button group">
-        <Button className="joinButton" disabled={locked}>Join</Button>
+        <Button className="joinButton" disabled={locked} onClick={handleJoinGame}>Join</Button>
         { locked ? <LockOutlined className="joinLockedIcon" color="error" /> : <LockOpen className="joinLockedIcon" color="success" /> }
       </ButtonGroup>
     </div>

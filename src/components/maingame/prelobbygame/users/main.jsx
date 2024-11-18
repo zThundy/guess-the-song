@@ -8,26 +8,7 @@ import { Person } from "@mui/icons-material";
 
 function Users({ customRef }) {
   const [users, setUsers] = useState([
-    { self: true, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' },
-    { self: false, name: 'You' }
+    { self: true, name: 'You' }
   ]);
 
   const [dragDirection, setDragDirection] = useState({ x: 0, y: 0, angle: 0 });
