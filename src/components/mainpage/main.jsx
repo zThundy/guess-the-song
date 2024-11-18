@@ -1,4 +1,4 @@
-import styles from "./main.css";
+import "./main.css";
 
 import wave from "./wave.svg";
 
@@ -10,27 +10,9 @@ import MainAccount from "../mainaccount/main";
 
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from 'framer-motion';
-import { useEffect } from "react";
-
-const { setCookie, getCookie } = require("@helpers/cookies");
-const api = require("@helpers/api");
 
 function MainPage() {
   const location = useLocation();
-
-  useEffect(() => {
-    api.userAction()
-      .then(user => {
-        setCookie("username", user.username, 365);
-        setCookie("uniqueId", user.uniqueId, 365);
-        setCookie("userImage", user.userImage, 365);
-        setCookie("created", user.created, 365);
-        setCookie("last_login", user.last_login, 365);
-        setCookie("points", user.points, 365);
-        setCookie("level", user.level, 365);
-        setCookie("currentRoom", user.currentRoom, 365);
-      });
-  }, []);
 
   return (
     <div className="main">

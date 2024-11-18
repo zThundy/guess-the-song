@@ -9,6 +9,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
+  "watch": [
+    "src/**/*.ts",
+    "dist/**/*.js"
+  ],
+  "ext": "js,ts",
   "license": "ISC",
   "description": "",
   "dependencies": {

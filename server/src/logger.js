@@ -2,17 +2,21 @@ const path = require("path");
 const fs = require("fs");
 
 const logLevel = process.env.LOG_LEVEL || "info";
+let ready = false;
+
+const rotateAt = process.env.LOG_ROTATE_AT || "50MB";
 
 let logFile = path.join("./", "data", "logs", "stream.log");
 let logFolder = path.join("./", "data", "logs");
 let internalId = "";
 let logStream = null;
+// make internalId a random id so that we can monitor if the server restarts
+internalId = id();
 
 checkFolder();
 checkFile();
 createStream();
 
-internalId = id();
 logStream = fs.createWriteStream(logFile, { flags: "a" });
 console.log = log;
 console.info = info;
@@ -20,6 +24,7 @@ console.warn = warn;
 console.error = error;
 
 console.log("------------------------- LOG STARTED -------------------------");
+console.log(`Log level: ${logLevel}. Log rotation at: ${rotateAt}`);
 
 // make id function where A are letters and 0 are numbers
 // 0A00AA0000AAA
@@ -56,51 +61,106 @@ function checkFile() {
     }
 }
 
+function getMeta() {
+    return fs.statSync(logFile);
+}
+
+// translate size from string to bytes
+function translateSize(size) {
+    const sizes = {
+        "KB": 1024,
+        "MB": 1024 * 1024,
+        "GB": 1024 * 1024 * 1024,
+        "TB": 1024 * 1024 * 1024 * 1024
+    };
+    const sizeSplit = size.split("");
+    const sizeNumber = parseInt(sizeSplit.slice(0, sizeSplit.length - 2).join(""));
+    const sizeType = sizeSplit.slice(sizeSplit.length - 2).join("");
+    return sizeNumber * sizes[sizeType];
+}
+
 function rotate() {
-    checkFile();
-    // rename file
-    const date = new Date();
-    // create new log file and rename adding date as DD/MM/YYYY HH:MM:SS
-    const newFile = path.join(logFolder, `log_${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.txt`);
-    // print file rotation
-    console.log(`Renaming log file to ${newFile}`);
-    // end the stream of the current log file
-    logStream.end();
-    // rename the current log file to the new path
-    fs.renameSync(logFile, newFile);
+    return new Promise((resolve, reject) => {
+        try {
+            // check if file size is bigger than 50MB
+            if (getMeta().size > translateSize(rotateAt)) {
+                checkFile();
+                // rename file
+                const date = new Date();
+                // create new log file and rename adding date as DD/MM/YYYY HH:MM:SS
+                const newFile = path.join(logFolder, `log_${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}_${date.getHours()}.${date.getMinutes()}.${date.getSeconds()}.log`);
+                // end the stream of the current log file
+                logStream.end();
+                // rename the current log file to the new path
+                fs.rename(logFile, newFile, (err) => {
+                    if (err) return reject(err);
+                    // create a new stream
+                    createStream();
+                    // set ready
+                    ready = true;
+                    // print file rotation
+                    console.log(`Renamed log file from ${logFile} to ${newFile}`);
+                    // resolve
+                    resolve();
+                });
+            } else {
+                // set ready
+                ready = true;
+                // resolve
+                resolve();
+            }
+        } catch (err) {
+            reject(err);
+        }
+    });
 }
 
 async function writeLog(type, ...args) {
-    // check if args have array or object, if so, stringify it
-    args = args.map(arg => {
-        if (typeof arg === "object") {
-            return JSON.stringify(arg);
-        } else {
-            return arg;
-        }
-    });
-    // add date to log as DD/MM/YYYY HH:MM:SS
-    const date = new Date();
-    // check if date is single digit, if so, add a 0 before it
-    var dateString = `[${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}/${date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1}/${date.getFullYear()} ${date.getHours() < 10 ? "0" + date.getHours() : date.getHours()}:${date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()}:${date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds()}]`;
-    args.unshift(internalId + " | " + dateString);
-    // create message
-    const message = Array.from(args).join(" ") + "\r\n"
-    // write to stdout
-    process.stdout.write(`[${type}] ${message}`);
-    // write to log file
-    logStream.write(`[${type}] ${message}`);
-    // check if file size is bigger than 50MB
-    if (logStream.bytesWritten > 50000000) {
+    try {
         // rotate log file
-        rotate();
+        await rotate();
+        // wait for ready
+        let tries = 0;
+        do {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            tries++;
+            if (tries > 10) throw new Error("Could not rotate log file");
+        } while (!ready);
+        // check if args have array or object, if so, stringify it
+        args = args.map(arg => {
+            if (typeof arg === "object") {
+                return JSON.stringify(arg);
+            } else {
+                return arg;
+            }
+        });
+        // add date to log as DD/MM/YYYY HH:MM:SS
+        const date = new Date();
+        // check if date is single digit, if so, add a 0 before it
+        var dateString = `[${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}/${date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1}/${date.getFullYear()} ${date.getHours() < 10 ? "0" + date.getHours() : date.getHours()}:${date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()}:${date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds()}]`;
+        args.unshift(internalId + " | " + dateString);
+        // create message
+        const message = Array.from(args).join(" ") + "\r\n"
+        // write to stdout
+        process.stdout.write(`[${type}] ${message}`);
+        // write to log file
+        logStream.write(`[${type}] ${message}`);
+    } catch (err) {
+        process.stdout.write(`[ERROR] ${err.message}\r\n`);
     }
 }
 
 function log(...args) {
-    // if loglevel is verbose, write to log
+    // check if one of the args is "SQL", if so, write to console.sql
     if (logLevel === "verbose")
-        writeLog("LOG", ...args);
+        if (args.includes("SQL-LOG")) {
+            // remove SQL-LOG from args
+            args = args.filter(arg => arg !== "SQL-LOG");
+            writeLog("SQL", ...args);
+        } else {
+            // if loglevel is verbose, write to log
+            writeLog("LOG", ...args);
+        }
 }
 
 function info(...args) {
@@ -118,3 +178,10 @@ function error(...args) {
     if (logLevel === "verbose" || logLevel === "error")
         writeLog("ERROR", ...args);
 }
+
+module.exports = {
+    log,
+    info,
+    warn,
+    error
+};

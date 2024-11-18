@@ -1,10 +1,13 @@
 import MainPage from "./components/mainpage/main";
 
-import { HashRouter, MemoryRouter, BrowserRouter } from "react-router-dom";
-
+import { BrowserRouter } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import "./index.css";
+import { useEffect } from "react";
+
+const { setCookie } = require("@helpers/cookies");
+const api = require("@helpers/api");
 
 const theme = createTheme({
   status: {
@@ -30,6 +33,24 @@ const theme = createTheme({
 });
 
 function App() {
+  useEffect(() => {
+    console.log("App useEffect");
+    api.userAction()
+      .then(user => {
+        setCookie("username", user.username, 365);
+        setCookie("uniqueId", user.uniqueId, 365);
+        setCookie("userImage", user.userImage, 365);
+        setCookie("created", user.created, 365);
+        setCookie("last_login", user.last_login, 365);
+        setCookie("points", user.points, 365);
+        setCookie("level", user.level, 365);
+        setCookie("currentRoom", user.currentRoom, 365);
+      });
+    return () => {
+      console.log("App cleanup");
+    }
+  }, []);
+
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>

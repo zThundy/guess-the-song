@@ -3,7 +3,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 
 dotenv.config();
-require('./logger');
+const { } = require('./logger');
 
 const path = require('path');
 const fs = require('fs');

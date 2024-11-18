@@ -28,6 +28,7 @@ export default class User {
     save() {
         console.log(`Updating user ${this.username}, ${this.uniqueId}`);
         db.updateUser(this.get());
+        db.updateUserData(this.get());
         return this;
     }
 

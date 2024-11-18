@@ -137,7 +137,7 @@ class SQLiteClass {
         this.db = new this.engine.cached.Database(this.dbPath, (err: Error) => {
             if (err) return console.error(err.message);
             try {
-                if (SHOULD_LOG) console.log('Connected to the database.');
+                if (SHOULD_LOG) console.log("SQL-LOG", 'Connected to the database.');
                 this.initDb();
             } catch (err: any) {
                 console.error(err.message);
@@ -146,7 +146,7 @@ class SQLiteClass {
 
         // every 1 hour, delete users that haven't logged in for a month
         nodeCron.schedule('0 * * * *', () => {
-            if (SHOULD_LOG) console.log('Running cron job.');
+            if (SHOULD_LOG) console.log("SQL-LOG", 'Running cron job.');
             this.deleteUsers.forEach(async (sql: string) => {
                 try {
                     await this.syncRun(sql);
@@ -170,7 +170,7 @@ class SQLiteClass {
         return new Promise((resolve, reject) => {
             this.db.run(sql, params, (err: Error) => {
                 if (err) return reject(err);
-                if (SHOULD_LOG) console.log("Executed: " + sql + " with params: " + params);
+                if (SHOULD_LOG) console.log("SQL-LOG", "Executed: " + sql + " with params: " + params);
                 resolve(sql);
             });
         });
@@ -180,7 +180,7 @@ class SQLiteClass {
         return new Promise((resolve, reject) => {
             this.db.all(sql, params, (err: Error, result: any) => {
                 if (err) return reject(err);
-                if (SHOULD_LOG) console.log("Executed: " + sql + " with params: " + params);
+                if (SHOULD_LOG) console.log("SQL-LOG", "Executed: " + sql + " with params: " + params);
                 const hasData = result.length > 0;
                 resolve({ result, hasData });
             });
@@ -334,7 +334,7 @@ class SQLiteClass {
             const query = `UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE uniqueId = ?`;
             this.db.run(query, [uniqueId], (err: Error) => {
                 if (err) console.error(err.message);
-                if (SHOULD_LOG) console.log('User logged in.');
+                if (SHOULD_LOG) console.log("SQL-LOG", 'User logged in.');
             });
         } catch (err: any) {
             console.error(err.message);
@@ -369,30 +369,32 @@ class SQLiteClass {
         const sql = `INSERT INTO users (uniqueId, username, userImage, created_at, last_login) VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`;
         this.db.run(sql, [data.uniqueId, data.username, data.userImage], (err: Error) => {
             if (err) console.error(err.message);
-            if (SHOULD_LOG) console.log('User created.');
+            if (SHOULD_LOG) console.log("SQL-LOG", 'User created.');
         });
 
         const userData = `INSERT INTO userData (uniqueId, points, level) VALUES (?, 0, 0)`;
         this.db.run(userData, [data.uniqueId], (err: Error) => {
             if (err) console.error(err.message);
-            if (SHOULD_LOG) console.log('User data created.');
+            if (SHOULD_LOG) console.log("SQL-LOG", 'User data created.');
         });
     }
 
     public async updateUser(data: UserInstance) {
         const sql = `UPDATE users SET username = ?, userImage = ? WHERE uniqueId = ?`;
-        this.db.run(sql, [data.username, data.userImage, data.uniqueId], (err: Error) => {
-            if (err) console.error(err.message);
-            if (SHOULD_LOG) console.log('User updated.');
-        });
+        await this.syncRun(sql, [data.username, data.userImage, data.uniqueId]);
+        // this.db.run(sql, [data.username, data.userImage, data.uniqueId], (err: Error) => {
+        //     if (err) console.error(err.message);
+        //     if (SHOULD_LOG) console.log("SQL-LOG", 'User updated.');
+        // });
     }
 
     public async updateUserData(data: UserInstance) {
         const sql = `UPDATE userData SET points = ?, level = ? WHERE uniqueId = ?`;
-        this.db.run(sql, [data.points, data.level, data.uniqueId], (err: Error) => {
-            if (err) console.error(err.message);
-            if (SHOULD_LOG) console.log('User data updated.');
-        });
+        await this.syncRun(sql, [data.points, data.level, data.uniqueId]);
+        // this.db.run(sql, [data.points, data.level, data.uniqueId], (err: Error) => {
+        //     if (err) console.error(err.message);
+        //     if (SHOULD_LOG) console.log("SQL-LOG", 'User data updated.');
+        // });
     }
 }
 

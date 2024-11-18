@@ -36,8 +36,16 @@ accountRouter.post("/image", async (req: Request, res: Response) => {
             await user.validateUser();
             addUser(user);
         }
-        user.update({ column: 'userImage', value: body.userImage });
-        res.json(user.save().get());
+
+        const regex = new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g)
+        if (!regex.test(body.userImage)) {
+            res.status(400).json({ message: 'Invalid image URL' });
+            return;
+        }
+
+        if (user.getColumn('userImage') !== body.userImage)
+            user.update({ column: 'userImage', value: body.userImage }).save();
+        res.json(user.get());
     } else {
         res.status(400).json({ message: 'Invalid body' });
     }
