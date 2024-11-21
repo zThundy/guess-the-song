@@ -52,8 +52,6 @@ import accountRouter from "./routes/account";
 app.use('/account', accountRouter);
 import roomsRouter from "./routes/rooms";
 app.use('/rooms', roomsRouter);
-import languageRouter from "./routes/language";
-app.use('/language', languageRouter);
 
 https.createServer(certs, app).listen(sport, () => {
     console.info('Server started on https://localhost:' + sport);
