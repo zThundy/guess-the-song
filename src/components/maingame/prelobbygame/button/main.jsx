@@ -1,10 +1,12 @@
 import classes from "./main.module.css";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from "react-i18next";
 
 function StartButton({ id }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [hover, setHover] = useState(false);
 
@@ -53,7 +55,7 @@ function StartButton({ id }) {
             transition={{ delay: 0.3, duration: .3, ease: "easeInOut" }}
             className={`${classes.bg} ${classes.bg3}`}></motion.div> : null}
         </AnimatePresence>
-        <span className={classes.text}>Start Game</span>
+        <span className={classes.text}>{t("START_GAME")}</span>
       </div>
     </div>
   )

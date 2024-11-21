@@ -5,8 +5,10 @@ import { ArrowBack } from '@mui/icons-material';
 
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 function MainGameHeader({ onClickBack, canNavigate = true }) {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [headerMessage, setHeaderMessage] = useState("");
@@ -14,16 +16,16 @@ function MainGameHeader({ onClickBack, canNavigate = true }) {
   useEffect(() => {
     if (location.pathname === "/game") {
       if (location.state && location.state.id) {
-        setHeaderMessage("🎵 Lobby #" + location.state.id);
+        setHeaderMessage(`🎵 ${t("HEADER_LOBBY")} #${location.state.id}`);
       } else {
-        setHeaderMessage("⌛️ Search for game...");
+        setHeaderMessage(`⌛️ ${t("HEADER_SEARCH_FOR_GAME")}`);
       }
     }
     if (location.pathname === "/create") {
-      setHeaderMessage("➕ Create new lobby");
+      setHeaderMessage(`➕ ${t("HEADER_CREATE_LOBBY")}`);
     }
     if (location.pathname === "/account") {
-      setHeaderMessage("🔒 Account settings");
+      setHeaderMessage(`🔒 ${t("HEADER_ACCOUNT_SETTINGS")}`);
     }
   }, [location]);
 

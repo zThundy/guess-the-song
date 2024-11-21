@@ -8,6 +8,8 @@ import Lobbies from "./lobbies/main";
 
 import { Button, styled, Paper, Typography, Zoom, IconButton, InputBase, ClickAwayListener } from '@mui/material';
 import { Add, Close, Login, East } from '@mui/icons-material';
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 const api = require("@helpers/api");
 
@@ -57,6 +59,7 @@ const StyledButtonPrimary = styled(Button)({
 });
 
 function JoinGameModal({ on, toggle }) {
+  const { t } = useTranslation();
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -66,18 +69,17 @@ function JoinGameModal({ on, toggle }) {
   }, [on]);
 
   const handleJoinGame = () => {
-    console.log("Joining game...");
     const code = inputRef.current.value;
-    if (code === "") return setSubmitted("Please enter a game code.");
-    if (code.length !== 5) return setSubmitted("Game code must be 5 characters long.");
-    if (isNaN(Number(code))) return setSubmitted("Game code must be a number.");
+    if (code === "") return setSubmitted(t("JOIN_ERROR_GAME_CODE"));
+    if (code.length !== 5) return setSubmitted(t("JOIN_ERROR_CODE_LENGTH"));
+    if (isNaN(Number(code))) return setSubmitted(t("JOIN_ERROR_CODE_TYPE"));
     api.validateInviteCode(code)
       .then((data) => {
         navigate("/game", { state: { id: data.inviteCode } });
       })
       .catch((error) => {
         console.log(error);
-        setSubmitted(error.message);
+        setSubmitted(t(error.key));
       });
   }
 
@@ -109,8 +111,8 @@ function JoinGameModal({ on, toggle }) {
             <Button className="modalCloseButton" onClick={() => toggle(false)}>
               <Close />
             </Button>
-            <Typography variant="h4" className="modalTitle">Join a game</Typography>
-            <Typography variant="body1" className="modalText">Enter the game code to join a game.</Typography>
+            <Typography variant="h4" className="modalTitle">{t("JOIN_GAME_MODAL_TITLE")}</Typography>
+            <Typography variant="body1" className="modalText">{t("JOIN_GAME_MODAL_DESCRIPTION")}</Typography>
             <Paper
               className="modalInput"
               component="form"
@@ -124,7 +126,7 @@ function JoinGameModal({ on, toggle }) {
               <InputBase
                 autoFocus
                 sx={{ ml: 1, flex: 1 }}
-                placeholder="Enter game code"
+                placeholder={t("JOIN_GAME_MODAL_PLACEHOLDER")}
                 inputProps={{ 'aria-label': 'enter game code' }}
                 inputRef={inputRef}
                 onChange={() => setSubmitted(false)}
@@ -172,8 +174,8 @@ function JoinGame({ status }) {
       <JoinGameModal status={status} on={joinGameToggle} toggle={setJoinGameToggle} />
       <div className="joinOrCreateContainer">
         <div className="joinOrCreateButtons">
-          <StyledButtonPrimary variant="contained" endIcon={<Add />} onClick={handleCreateGame}>Create a game</StyledButtonPrimary>
-          <StyledButtonPrimary variant="contained" endIcon={<Login />} onClick={handleJoinGame}>Join a game</StyledButtonPrimary>
+          <StyledButtonPrimary variant="contained" endIcon={<Add />} onClick={handleCreateGame}>{t("JOIN_GAME_SCREEN_BUTTON_1")}</StyledButtonPrimary>
+          <StyledButtonPrimary variant="contained" endIcon={<Login />} onClick={handleJoinGame}>{t("JOIN_GAME_SCREEN_BUTTON_2")}</StyledButtonPrimary>
         </div>
         <div className="joinOrCreateListOfLobbies">
           <Lobbies />

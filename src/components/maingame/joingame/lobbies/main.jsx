@@ -1,6 +1,7 @@
 import style from "./main.module.css";
 
 import { Fragment, useEffect, useState, createRef } from "react";
+import { useTranslation } from "react-i18next";
 import { CircularProgress } from "@mui/material";
 
 import JoinableLobby from "./lobby/main.jsx";
@@ -8,6 +9,7 @@ import JoinableLobby from "./lobby/main.jsx";
 const api = require("@helpers/api");
 
 function Lobbies() {
+  const { t } = useTranslation();
   const [lobbies, setLobbies] = useState(null);
   const [resultsReady, setResultsReady] = useState(false);
   const ref = createRef();
@@ -15,11 +17,13 @@ function Lobbies() {
   useEffect(() => {
     api.getLobbies(0)
       .then((lobbies) => {
-        if (lobbies.length > 0) setLobbies(lobbies);
+        if (lobbies && lobbies.length > 0) setLobbies(lobbies);
+        else setLobbies([]);
         setResultsReady(true);
       })
       .catch((error) => {
         setResultsReady(false);
+        setLobbies([]);
         console.log(error);
       });
   }, []);
@@ -90,7 +94,7 @@ function Lobbies() {
               <CircularProgress sx={{ 'svg circle': { stroke: 'url(#spinnerGrad)' } }} size={80} />
             </Fragment>
           </div>
-          <span className={style.loadingText}>Loading...</span>
+          <span className={style.loadingText}>{t("LOADING")}</span>
         </div>
         : null}
     </>

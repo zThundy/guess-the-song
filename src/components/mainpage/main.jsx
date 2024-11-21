@@ -7,6 +7,7 @@ import MainGame from "../maingame/main";
 import MainCreate from "../maincreate/main";
 import MainErrorPage from "../mainerrorpage/main";
 import MainAccount from "../mainaccount/main";
+import Language from './languages';
 
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from 'framer-motion';
@@ -16,6 +17,8 @@ function MainPage() {
 
   return (
     <div className="main">
+      <Language />
+
       <div className="color first"></div>
       <div className="color second"></div>
       <div className="color third"></div>

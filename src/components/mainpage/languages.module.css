@@ -1,0 +1,74 @@
+.main {
+  z-index: 99;
+  position: fixed;
+  display: flex;
+  bottom: 0;
+  left: 1rem;
+  width: fit-content;
+  min-width: 10rem;
+  height: 5vh;
+  user-select: none;
+  margin-bottom: .5rem;
+
+  .active {
+    border-radius: 0 0 .5rem .5rem !important;
+    background-color: rgba(255, 175, 89, 0.9) !important;
+  }
+
+  .currentLanguage {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 .5rem;
+    border: 2px solid white;
+    border-radius: .5rem;
+    background-color: rgba(255, 175, 89, 0.4);
+    transition: background-color .1s ease;
+
+    img {
+      width: 2rem;
+      height: 2rem;
+      margin-right: .5rem;
+    }
+  }
+
+  .languageSelector {
+    position: absolute;
+    display: flex;
+    flex-direction: column-reverse;
+    font-size: 1.5rem;
+    width: 100%;
+    cursor: pointer;
+    background-color: white;
+    border-radius: .5rem .5rem 0 0;
+    bottom: 5vh;
+    max-height: 15rem;
+    overflow: auto;
+
+    .languageItem {
+      position: relative;
+      display: flex;
+      padding: .5rem;
+      justify-content: flex-start;
+      align-items: center;
+      height: 100%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: background-color .2s ease;
+
+      img {
+        width: 2rem;
+        height: 2rem;
+        margin-right: .5rem;
+      }
+    }
+  }
+
+  .languageItem:hover {
+    background-color: #b67e29;
+  }
+}

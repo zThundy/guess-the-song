@@ -7,11 +7,13 @@ import Header from '../maingameheader/main'
 
 import { motion } from 'framer-motion'
 import { Button, TextField } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 
 const { setCookie, getCookie } = require("@helpers/cookies")
 const api = require("@helpers/api")
 
 export default function MainAccount() {
+  const { t } = useTranslation();
   const [canNavigateBack, setCanNavigateBack] = useState(true)
   const [username, setUsername] = useState(getCookie('username'))
   const [userImage, setUserImage] = useState(getCookie('userImage'))
@@ -22,7 +24,7 @@ export default function MainAccount() {
   useEffect(() => {
     if (username !== getCookie('username')) {
       setCanNavigateBack(false)
-      setHasUsernameChanged("Please save changes")
+      setHasUsernameChanged(t("ERROR_SAVE_CHANGES"))
     } else {
       setHasUsernameChanged(false)
     }
@@ -30,9 +32,9 @@ export default function MainAccount() {
       setCanNavigateBack(false)
       const regex = new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png|)/g)
       if (regex.test(userImage)) {
-        setHasUserImageChanged("Please save changes")
+        setHasUserImageChanged(t("ERROR_SAVE_CHANGES"))
       } else {
-        setHasUserImageChanged("Invalid URL")
+        setHasUserImageChanged(t("ERROR_INVALID_URL"))
       }
     } else {
       setHasUserImageChanged(false)
@@ -59,11 +61,11 @@ export default function MainAccount() {
         setUsername(username.replace(' ', '_'))
       }
       if (username.length < 3) {
-        setHasUsernameChanged("Username must be at least 3 characters long")
+        setHasUsernameChanged(t("ERROR_LENGTH_3_USERNAME"))
         return
       }
       if (username.length > 20) {
-        setHasUsernameChanged("Username must be less than 20 characters long")
+        setHasUsernameChanged(t("ERROR_LENGTH_20_USERNAME"))
         return
       }
       setCookie('username', username, 365)
@@ -80,7 +82,7 @@ export default function MainAccount() {
           setHasUserImageChanged(false)
           setCookie('userImage', userImage, 365)
         } else {
-          setHasUserImageChanged("Invalid URL")
+          setHasUserImageChanged(t("ERROR_INVALID_URL"))
         }
       }
     }
@@ -105,17 +107,17 @@ export default function MainAccount() {
       <Header onClickBack={onClickBack} canNavigate={canNavigateBack} />
       <div className={classes.content}>
         <div className={classes.inputContainer}>
-          <div className={classes.inputTitle}>Username</div>
+          <div className={classes.inputTitle}>{t("USERNAME")}</div>
           <div
             className={classes.inputDescription}
             style={{ color: 'gray' }}
-          >Your user data is stored in the cookies</div>
+          >{t("USER_DATA_DESC")}</div>
           <div
             className={classes.inputFieldButton}
           >
             <TextField
               className={classes.input}
-              placeholder='Type a username'
+              placeholder={t("USERNAME")}
               onChange={updateUsername}
               value={username}
               error={hasUsernameChanged.length > 0}
@@ -125,7 +127,7 @@ export default function MainAccount() {
               className={classes.saveButton}
               variant='contained'
               onClick={saveChanges}
-            >Save</Button>
+            >{t("SAVE")}</Button>
           </div>
         </div>
         <div className={classes.inputContainer}>
@@ -134,15 +136,15 @@ export default function MainAccount() {
             style={{
               marginBottom: ".8rem"
             }}
-          >Profile Picture</div>
+          >{t("PROFILE_PICTURE")}</div>
           <div
             className={classes.inputFieldButton}
           >
             <TextField
               className={classes.input}
-              placeholder='Type a picture URL'
+              placeholder={t("PROFILE_PICTURE")}
               onChange={updateUserImage}
-              value={userImage}
+              value={userImage || ''}
               error={hasUserImageChanged.length > 0}
               helperText={hasUserImageChanged}
             ></TextField>
@@ -150,7 +152,7 @@ export default function MainAccount() {
               className={classes.saveButton}
               variant='contained'
               onClick={saveChanges}
-            >Save</Button>
+            >{t("SAVE")}</Button>
           </div>
         </div>
       </div>

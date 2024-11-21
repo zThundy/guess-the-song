@@ -6,8 +6,10 @@ import StartButton from "./button/main.jsx";
 import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 function PrelobbyGame({ status, id }) {
+  const { t } = useTranslation();
   const constraintsRef = useRef(null);
   const [shouldRender, setShouldRender] = useState(false);
   const center = constraintsRef.current?.getBoundingClientRect();
@@ -36,7 +38,7 @@ function PrelobbyGame({ status, id }) {
       <div className={classes.content}>
         <div className={classes.content_outer}>
           <motion.div id="_content" className={classes.users} ref={constraintsRef}>
-            <Typography variant='h6' className={classes.text}>Toss users around 🙃</Typography>
+            <Typography variant='h6' className={classes.text}>{t("TOSS_USERS_PLACEHOLDER")} 🙃</Typography>
             {shouldRender ? <Users customRef={constraintsRef} /> : null}
           </motion.div>
         </div>

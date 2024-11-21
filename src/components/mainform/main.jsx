@@ -6,6 +6,7 @@ import { Launch, SportsEsports } from '@mui/icons-material';
 
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from 'framer-motion'
+import { useTranslation } from "react-i18next";
 
 const StyledButtonPrimary = styled(Button)({
   background: 'linear-gradient(45deg, #ffab2b 30%, #ffc86f 90%)',
@@ -61,6 +62,7 @@ const StyledButtonSecondary = styled(Button)({
 function MainForm() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const handleJoinGame = (event) => {
     event.preventDefault();
@@ -82,10 +84,10 @@ function MainForm() {
         ${classes.form}
         ${classes.animate}
       `}>
-        <h1>Welcome 👋</h1>
+        <h1>{t("WELCOME")} 👋</h1>
         <div className={classes.button}>
-          <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>Play</StyledButtonPrimary>
-          <StyledButtonSecondary variant="outlined" color="secondary" endIcon={<Launch />} onMouseDown={handleAccount}>Account</StyledButtonSecondary>
+          <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>{t("PLAY")}</StyledButtonPrimary>
+          <StyledButtonSecondary variant="outlined" color="secondary" endIcon={<Launch />} onMouseDown={handleAccount}>{t("ACCOUNT")}</StyledButtonSecondary>
         </div>
       </div>
       :
@@ -95,10 +97,10 @@ function MainForm() {
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: 3000, opacity: 1 }}
       >
-        <h1>Welcome 👋</h1>
+        <h1>{t("WELCOME")} 👋</h1>
         <div className={classes.button}>
-          <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>Play</StyledButtonPrimary>
-          <StyledButtonSecondary variant="outlined" color="secondary" endIcon={<Launch />} onMouseDown={handleAccount}>Account</StyledButtonSecondary>
+          <StyledButtonPrimary variant="contained" endIcon={<SportsEsports />} onMouseDown={handleJoinGame}>{t("PLAY")}</StyledButtonPrimary>
+          <StyledButtonSecondary variant="outlined" color="secondary" endIcon={<Launch />} onMouseDown={handleAccount}>{t("ACCOUNT")}</StyledButtonSecondary>
         </div>
       </motion.div>
     )

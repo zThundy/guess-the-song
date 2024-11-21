@@ -2,11 +2,13 @@ import classes from "./main.module.css";
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@mui/material";
 import { Person } from "@mui/icons-material";
 
 function Users({ customRef }) {
+  const { t } = useTranslation();
   const [users, setUsers] = useState([
     { self: true, name: 'You' }
   ]);
@@ -82,7 +84,7 @@ function Users({ customRef }) {
             >
               <Badge
                 invisible={!user.self}
-                badgeContent="You"
+                badgeContent={t("YOU")}
                 color="primary"
                 anchorOrigin={{
                   vertical: 'top',

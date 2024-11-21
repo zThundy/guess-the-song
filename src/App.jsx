@@ -45,7 +45,11 @@ function App() {
         setCookie("points", user.points, 365);
         setCookie("level", user.level, 365);
         setCookie("currentRoom", user.currentRoom, 365);
+      })
+      .catch(error => {
+        console.log(error);
       });
+
     return () => {
       console.log("App cleanup");
     }

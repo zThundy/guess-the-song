@@ -9,6 +9,11 @@ const { hasProperty } = require('../utils.ts');
 
 const roomsRouter = router();
 
+roomsRouter.use((req: Request, res: Response, next: Function) => {
+    console.log("Got request on /rooms. URL: " + req.url);
+    next();
+});
+
 roomsRouter.get('/', (req: Request, res: Response) => {
     res.json({ message: 'Rooms works!' });
 });
@@ -68,40 +73,40 @@ roomsRouter.get('/all', async (req: Request, res: Response) => {
 
 roomsRouter.post("/validateInviteCode", async (req: Request, res: Response) => {
     if (req.headers['content-type'] !== 'application/json') {
-        res.status(400).json({ message: 'Invalid content-type' });
+        res.status(400).json({ key: "GENERIC_ERROR", message: 'Invalid content-type' });
         return;
     }
 
     const body = req.body as RoomInstance;
 
     if (!hasProperty(body, 'inviteCode')) {
-        res.status(400).json({ message: 'Invalid body' });
+        res.status(400).json({ key: "GENERIC_ERROR_INVALID_BODY", message: 'Invalid body' });
         return;
     }
 
     try {
         const room = findRoomFromInviteCode(body.inviteCode);
         if (!room) {
-            res.status(404).json({ message: 'Room not found' });
+            res.status(404).json({ key: "JOIN_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
             return;
         }
         res.json(room.get());
     } catch (e: any) {
-        res.status(400).json({ message: e.message });
+        res.status(400).json({ key: "GENERIC_ERROR", message: e.message });
         return;
     }
 });
 
 roomsRouter.post('/validate', async (req: Request, res: Response) => {
     if (req.headers['content-type'] !== 'application/json') {
-        res.status(400).json({ message: 'Invalid content-type' });
+        res.status(400).json({ key: "GENERIC_ERROR", message: 'Invalid content-type' });
         return;
     }
 
     const body = req.body as RoomInstance;
 
     if (!hasProperty(body, 'roomUniqueId')) {
-        res.status(400).json({ message: 'Invalid body' });
+        res.status(400).json({ key: "GENERIC_ERROR_INVALID_BODY", message: 'Invalid body' });
         return;
     }
 
@@ -117,7 +122,7 @@ roomsRouter.post('/validate', async (req: Request, res: Response) => {
         }
         res.json(room.get());
     } catch (e: any) {
-        res.status(400).json({ message: e.message });
+        res.status(400).json({ key: "GENERIC_ERROR", message: e.message });
         return;
     }
 });
