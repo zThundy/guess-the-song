@@ -2,29 +2,25 @@ import classes from "./main.module.css";
 
 import { useEffect, useState } from "react";
 
-import LobbyGame from "./lobbygame/main.jsx";
+import JoinGame from "./joingame/main.jsx";
 import Header from "../maingameheader/main.jsx";
-import PrelobbyGame from "./prelobbygame/main.jsx";
 
 import { motion } from 'framer-motion';
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 const api = require("@helpers/api");
 const { isNumber } = require("@helpers/utils");
 
 function MainGame() {
-  const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();
   const [status, setStatus] = useState("list"); // prelobby, game, create, list
-  const [lobbyId, setLobbyId] = useState("");
 
   useEffect(() => {
     const _lobbyId = String((location.state && location.state.id) || params.id);
     if (isNumber(_lobbyId)) {
       api.validateInviteCode(_lobbyId)
         .then((data) => {
-          setLobbyId(data.inviteCode);
           if (_lobbyId && location.pathname.includes("game")) {
             setStatus("prelobby");
           }
@@ -34,14 +30,12 @@ function MainGame() {
         })
         .catch((error) => {
           console.error(error);
-          setLobbyId("");
-          navigate("/game");
+          setStatus("list");
         });
     } else {
-      setLobbyId("");
-      navigate("/game");
+      setStatus("list");
     }
-  }, []);
+  }, [location]);
 
   return (
     <motion.div
@@ -50,11 +44,8 @@ function MainGame() {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -3000, opacity: 1 }}
     >
-      <Header
-        status={status}
-      />
-      { status === "game" ? <LobbyGame started={status} id={lobbyId} /> : null }
-      { status === "prelobby" ? <PrelobbyGame started={status} id={lobbyId} /> : null }
+      <Header status={status} />
+      <JoinGame started={status} />
     </motion.div>
   )
 }

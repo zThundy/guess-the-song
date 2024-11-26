@@ -39,7 +39,7 @@ function PrelobbyGame({ status, id }) {
         <div className={classes.content_outer}>
           <motion.div id="_content" className={classes.users} ref={constraintsRef}>
             <Typography variant='h6' className={classes.text}>{t("TOSS_USERS_PLACEHOLDER")} 🙃</Typography>
-            {shouldRender ? <Users customRef={constraintsRef} /> : null}
+            {shouldRender ? <Users customRef={constraintsRef} id={id} /> : null}
           </motion.div>
         </div>
 

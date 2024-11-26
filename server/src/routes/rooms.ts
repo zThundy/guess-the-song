@@ -41,7 +41,6 @@ roomsRouter.get('/all', async (req: Request, res: Response) => {
         }
 
         console.log(`Room ${room.getColumn('roomUniqueId')} found, adding users.`);
-
         const users = await db.getUsersInRoom(room.getColumn('roomUniqueId'));
         for (let dbUser of users) {
             let user = getUser(dbUser['uniqueId']);
@@ -82,8 +81,7 @@ roomsRouter.post("/validateInviteCode", async (req: Request, res: Response) => {
         return;
     }
 
-    const body = req.body as RoomInstance;
-
+    const body = req.body as any;
     if (!hasProperty(body, 'inviteCode')) {
         console.error('Invalid body in /validateInviteCode - missing inviteCode');
         res.status(400).json({ key: "GENERIC_ERROR_INVALID_BODY", message: 'Invalid body' });
@@ -97,6 +95,13 @@ roomsRouter.post("/validateInviteCode", async (req: Request, res: Response) => {
             res.status(404).json({ key: "JOIN_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
             return;
         }
+        const user = getUser(body.uniqueId);
+        if (!user) {
+            console.error(`User not found with uniqueId ${body.uniqueId}`);
+            res.status(404).json({ key: "JOIN_ERROR_USER_NOT_FOUND", message: 'User not found' });
+            return;
+        }
+        room.addUser(user);
         res.json(room.get());
     } catch (e: any) {
         console.error(`Error in /validateInviteCode: ${e.message}`);
@@ -121,21 +126,74 @@ roomsRouter.post('/validate', async (req: Request, res: Response) => {
     }
 
     try {
-        let room: Room;
+        let roomData: any;
         if (hasRoom(body.roomUniqueId)) {
-            room = getRoom(body.roomUniqueId);
+            const room = getRoom(body.roomUniqueId);
+            roomData = room.get();
         } else {
-            room = new Room();
+            const room = new Room();
             await room.initRoom(body);
             await room.validateRoom();
             addRoom(room);
+            roomData = room.get();
         }
-        res.json(room.get());
+        if (roomData.isPrivate) {
+            console.warn(`Hiding invite code for room ${roomData.uniqueId}, it was ${roomData.inviteCode}`);
+            roomData.inviteCode = "*****";
+        }
+        res.json(roomData);
     } catch (e: any) {
         console.error(`Error in /validate: ${e.message}`);
         res.status(400).json({ key: "GENERIC_ERROR", message: e.message });
         return;
     }
 });
+
+roomsRouter.get("/users/:inviteCode", async (req: Request, res: Response) => {
+    const { inviteCode } = req.params;
+    if (!inviteCode) {
+        console.error('Invalid inviteCode in /users/:inviteCode');
+        res.status(400).json({ key: "GENERIC_ERROR_INVALID_ROOM_ID", message: 'Invalid inviteCode' });
+        return;
+    }
+
+    try {
+        const room = findRoomFromInviteCode(inviteCode);
+        if (!room) {
+            console.error(`Room not found with inviteCode ${inviteCode}`);
+            res.status(404).json({ key: "GENERIC_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
+            return;
+        }
+        const users = room.getColumn('users');
+        res.json(users);
+    } catch (e: any) {
+        console.error(`Error in /users/:inviteCode: ${e.message}`);
+        res.status(400).json({ key: "GENERIC_ERROR", message: e.message });
+        return;
+    }
+});
+
+// roomsRouter.get('/:roomUniqueId', async (req: Request, res: Response) => {
+//     const { roomUniqueId } = req.params;
+//     if (!roomUniqueId) {
+//         console.error('Invalid roomUniqueId in /rooms/:roomUniqueId');
+//         res.status(400).json({ key: "GENERIC_ERROR_INVALID_ROOM_ID", message: 'Invalid roomUniqueId' });
+//         return;
+//     }
+
+//     try {
+//         const room = getRoom(roomUniqueId);
+//         if (!room) {
+//             console.error(`Room not found with roomUniqueId ${roomUniqueId}`);
+//             res.status(404).json({ key: "GENERIC_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
+//             return;
+//         }
+//         res.json(room.get());
+//     } catch (e: any) {
+//         console.error(`Error in /rooms/:roomUniqueId: ${e.message}`);
+//         res.status(400).json({ key: "GENERIC_ERROR", message: e.message });
+//         return;
+//     }
+// });
 
 export default roomsRouter;

@@ -102,7 +102,8 @@ export function validateInviteCode(inviteCode) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          inviteCode: inviteCode
+          inviteCode: inviteCode,
+          uniqueId: getCookie("uniqueId") || "",
         })
       })
 
@@ -115,15 +116,17 @@ export function validateInviteCode(inviteCode) {
   });
 }
 
-export function getLanguage(lang) {
-  return fetch(`${BASE_URL}/language/${lang}`)
-    .then(response => response.json())
-    .catch(error => {
+export function getRoomUsers(roomUniqueId) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await fetch(`${BASE_URL}/rooms/users/${roomUniqueId}`)
+      if (result.ok) return resolve(await result.json());
+      return reject(_handleError(await result.json()));
+    } catch (error) {
+      reject({ key: "GENERIC_ERROR" });
       console.log(error);
-      if (error.status === 404) return error.json();
-      if (error.status === 400) return error.json();
-      return { key: "GENERIC_ERROR" };
-    });
+    }
+  });
 }
 
 function _handleError(error) {

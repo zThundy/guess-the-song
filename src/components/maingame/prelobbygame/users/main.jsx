@@ -7,15 +7,39 @@ import { useTranslation } from "react-i18next";
 import { Badge } from "@mui/material";
 import { Person } from "@mui/icons-material";
 
-function Users({ customRef }) {
+const api = require("@helpers/api");
+const { getCookie } = require("@helpers/cookies");
+
+function Users({ customRef, id }) {
   const { t } = useTranslation();
   const [users, setUsers] = useState([
-    { self: true, name: 'You', img: "https://gravatar.com/avatar/c56eec28cd69e592df845379bba0f5b6?size=256" },
-    { self: true, name: 'You' }
+    // { self: true, name: 'You', img: "https://gravatar.com/avatar/c56eec28cd69e592df845379bba0f5b6?size=256" },
+    // { self: true, name: 'You' }
   ]);
 
   const [dragDirection, setDragDirection] = useState({ x: 0, y: 0, angle: 0 });
   const [userAngles, setUserAngles] = useState([]);
+
+  useEffect(() => {
+    api.getRoomUsers(id)
+      .then((data) => {
+        setUsers((prev) => {
+          let users = [];
+          for (let i = 0; i < data.length; i++) {
+            users[i] = {
+              self: data[i].uniqueId === getCookie("uniqueId"),
+              name: data[i].username,
+              img: data[i].userImage || "",
+            };
+          }
+          return users;
+        })
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [id]);
 
   useEffect(() => {
     const userAngles = [];

@@ -233,7 +233,8 @@ export default class Room {
 
     addUser(user: User): void {
         console.log(`${user.username} has joined the room.`);
-        this.users.push(user);
+        if (!this.users.some(u => u.uniqueId === user.uniqueId))
+            this.users.push(user);
     }
 
     removeFromRoom(user: User): void {

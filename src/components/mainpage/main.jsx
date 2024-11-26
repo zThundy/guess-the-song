@@ -7,6 +7,7 @@ import MainGame from "../maingame/main";
 import MainCreate from "../maincreate/main";
 import MainErrorPage from "../mainerrorpage/main";
 import MainAccount from "../mainaccount/main";
+import MainGameList from "../mainlistgame/main";
 import Language from './languages';
 
 import { Routes, Route, useLocation } from "react-router-dom";
@@ -43,7 +44,7 @@ function MainPage() {
           <Route
             path="/game"
             title="Song Guesser - Game"
-            Component={MainGame}
+            Component={MainGameList}
           />
           <Route
             path="/game/:id"
