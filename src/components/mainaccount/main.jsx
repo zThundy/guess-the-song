@@ -20,6 +20,7 @@ export default function MainAccount() {
 
   const [hasUsernameChanged, setHasUsernameChanged] = useState(false)
   const [hasUserImageChanged, setHasUserImageChanged] = useState(false)
+  const [canSaveImage, setCanSaveImage] = useState(false)
 
   useEffect(() => {
     if (username !== getCookie('username')) {
@@ -30,11 +31,18 @@ export default function MainAccount() {
     }
     if (userImage !== getCookie('userImage')) {
       setCanNavigateBack(false)
-      const regex = new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png|)/g)
-      if (regex.test(userImage)) {
-        setHasUserImageChanged(t("ERROR_SAVE_CHANGES"))
+      if (userImage.length > 0) {
+        const regex = new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png|)/g)
+        if (regex.test(userImage)) {
+          setHasUserImageChanged(t("ERROR_SAVE_CHANGES"))
+          setCanSaveImage(true)
+        } else {
+          setHasUserImageChanged(t("ERROR_INVALID_URL"))
+          setCanSaveImage(false)
+        }
       } else {
-        setHasUserImageChanged(t("ERROR_INVALID_URL"))
+        setHasUserImageChanged(t("ERROR_SAVE_CHANGES"))
+        setCanSaveImage(true)
       }
     } else {
       setHasUserImageChanged(false)
@@ -72,15 +80,19 @@ export default function MainAccount() {
       api.updateUsername()
       setHasUsernameChanged(false)
     }
-    if (hasUserImageChanged) {
+    if (hasUserImageChanged && canSaveImage) {
       const regex = new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g)
       if (regex.test(userImage)) {
         setHasUserImageChanged(false)
+        setCanSaveImage(true)
         setCookie('userImage', userImage, 365)
+        api.updateUserImage()
       } else {
         if (userImage.length === 0) {
           setHasUserImageChanged(false)
+          setCanSaveImage(true)
           setCookie('userImage', userImage, 365)
+          api.updateUserImage()
         } else {
           setHasUserImageChanged(t("ERROR_INVALID_URL"))
         }

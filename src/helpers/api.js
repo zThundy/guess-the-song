@@ -38,6 +38,21 @@ export function updateUsername() {
     .catch(error => console.log(error));
 }
 
+export function updateUserImage() {
+  return fetch(`${BASE_URL}/account/image`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      userImage: getCookie("userImage") || "",
+      uniqueId: getCookie("uniqueId") || "",
+    })
+  })
+    .then(response => response.json())
+    .catch(error => console.log(error));
+}
+
 export function getLobbies(offset) {
   return new Promise(async (resolve, reject) => {
     try {

@@ -18,6 +18,7 @@ accountRouter.get('/', (req: Request, res: Response) => {
 
 accountRouter.post("/image", async (req: Request, res: Response) => {
     if (req.headers['content-type'] !== 'application/json') {
+        console.error('Invalid content-type:', req.headers['content-type']);
         res.status(400).json({ message: 'Invalid content-type' });
         return;
     }
@@ -25,6 +26,7 @@ accountRouter.post("/image", async (req: Request, res: Response) => {
     const body = req.body as RegisterBody;
 
     if (!hasProperty(body, 'uniqueId')) {
+        console.error('Invalid body in /validateInviteCode - missing uniqueId');
         res.status(400).json({ message: 'Invalid body' });
         return;
     }
@@ -37,12 +39,16 @@ accountRouter.post("/image", async (req: Request, res: Response) => {
             addUser(user);
         }
 
-        const regex = new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g)
-        if (!regex.test(body.userImage)) {
-            res.status(400).json({ message: 'Invalid image URL' });
-            return;
+        if (body.userImage.length > 0) {
+            const regex = new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g)
+            if (!regex.test(body.userImage)) {
+                console.error('Invalid image URL:', body.userImage);
+                res.status(400).json({ message: 'Invalid image URL' });
+                return;
+            }
         }
 
+        console.log(`Updating user ${user.getColumn('uniqueId')} with image ${body.userImage}`);
         if (user.getColumn('userImage') !== body.userImage)
             user.update({ column: 'userImage', value: body.userImage }).save();
         res.json(user.get());
