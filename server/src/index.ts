@@ -49,9 +49,16 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 import accountRouter from "./routes/account";
-app.use('/account', accountRouter);
 import roomsRouter from "./routes/rooms";
-app.use('/rooms', roomsRouter);
+import eventsRouter from "./routes/events";
+
+try {
+    app.use('/account', accountRouter);
+    app.use('/rooms', roomsRouter);
+    app.use('/events', eventsRouter);
+} catch (e: any) {
+    console.error(`Error in routes: ${e.message}`);
+}
 
 https.createServer(certs, app).listen(sport, () => {
     console.info('Server started on https://localhost:' + sport);

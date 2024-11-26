@@ -40,9 +40,9 @@ function MainGameHeader({ onClickBack, canNavigate = true }) {
     setTimeout(() => {
       if (!canNavigate) return;
       if (location.pathname.includes("/game") || location.pathname.includes("/account")) {
-        const _lobbyId = String((location.state && location.state.id) || params.id);
         const reg = /\/game\/[0-9]{5}/s;
         if (reg.test(location.pathname)) {
+          api.unregisterRoomsEventListeners();
           navigate("/game", { state: { shouldAnimate: true } });
         } else {
           navigate("/", { state: { shouldAnimate: true } });

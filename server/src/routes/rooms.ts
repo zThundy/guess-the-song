@@ -4,6 +4,9 @@ import Room from "../room";
 import User from "../user";
 import db from "../sql";
 
+const eventName = "rooms";
+import eventHandler from "../eventsHandler";
+
 const { addRoom, hasRoom, getRoom, getUser, addUser, findRoomFromInviteCode } = require('../states.ts');
 const { hasProperty } = require('../utils.ts');
 
@@ -104,6 +107,7 @@ roomsRouter.post("/validateInviteCode", async (req: Request, res: Response) => {
             return;
         }
         room.addUser(user);
+        eventHandler.sendEvent(eventName, { status: "joined", roomUniqueId: room.getColumn('roomUniqueId'), userId: user.getColumn('uniqueId') });
         res.json(room.get());
     } catch (e: any) {
         console.error(`Error in /validateInviteCode: ${e.message}`);
@@ -203,6 +207,7 @@ roomsRouter.post("/leave", async (req: Request, res: Response) => {
             return;
         }
         room.removeUser(user);
+        eventHandler.sendEvent(eventName, { status: "left", roomUniqueId: room.getColumn('roomUniqueId'), userId: user.getColumn('uniqueId') });
         res.json(room.get());
     } catch (e: any) {
         console.error(`Error in /leave: ${e.message}`);

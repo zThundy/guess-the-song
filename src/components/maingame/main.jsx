@@ -47,7 +47,12 @@ function MainGame() {
 
   useEffect(() => {
     computeLobbyId();
-  }, [location]);
+
+    return () => {
+      // console.log("cleanup");
+      // computeLobbyId();
+    }
+  }, []);
 
   return (
     <motion.div
