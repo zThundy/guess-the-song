@@ -237,7 +237,7 @@ export default class Room {
             this.users.push(user);
     }
 
-    removeFromRoom(user: User): void {
+    removeUser(user: User): void {
         console.log(`${user.username} has left the room.`);
         this.users = this.users.filter(u => u.uniqueId !== user.uniqueId);
     }

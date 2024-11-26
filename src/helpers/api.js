@@ -129,6 +129,21 @@ export function getRoomUsers(roomUniqueId) {
   });
 }
 
+export function leaveRoom(roomUniqueId) {
+  return fetch(`${BASE_URL}/rooms/leave`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      roomUniqueId: roomUniqueId,
+      uniqueId: getCookie("uniqueId") || "",
+    })
+  })
+    .then(response => response.json())
+    .catch(error => console.log(error));
+}
+
 function _handleError(error) {
   if (error.key) return error;
   return { key: "GENERIC_ERROR" };

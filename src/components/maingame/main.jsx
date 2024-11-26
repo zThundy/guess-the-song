@@ -16,32 +16,38 @@ function MainGame() {
   const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();
-  const [status, setStatus] = useState("list"); // prelobby, game, create, list
-  const [lobbyId, setLobbyId] = useState("");
+  const [status, setStatus] = useState("list"); // prelobby, game, create
+  const [currentRoom, setCurrentRoom] = useState({});
 
-  useEffect(() => {
+  const computeLobbyId = () => {
     const _lobbyId = String((location.state && location.state.id) || params.id);
     if (isNumber(_lobbyId)) {
       api.validateInviteCode(_lobbyId)
         .then((data) => {
-          setLobbyId(data.inviteCode);
+          setCurrentRoom(data);
+          // check if state is prelobby
           if (_lobbyId && location.pathname.includes("game")) {
             setStatus("prelobby");
           }
+          // check if state is game
           if (location.state && _lobbyId && location.state.started) {
             setStatus("game");
           }
         })
         .catch((error) => {
           console.error(error);
-          setLobbyId("");
+          setCurrentRoom({});
           navigate("/game");
         });
     } else {
-      setLobbyId("");
+      setCurrentRoom({});
       navigate("/game");
     }
-  }, []);
+  }
+
+  useEffect(() => {
+    computeLobbyId();
+  }, [location]);
 
   return (
     <motion.div
@@ -52,9 +58,21 @@ function MainGame() {
     >
       <Header
         status={status}
+        onClickBack={() => {
+          api.leaveRoom(currentRoom.roomUniqueId)
+            .then(() => {
+              setCurrentRoom({});
+              navigate("/game");
+            })
+            .catch((error) => {
+              console.error(error);
+              setCurrentRoom({});
+              navigate("/game");
+            });
+        }}
       />
-      { status === "game" ? <LobbyGame started={status} id={lobbyId} /> : null }
-      { status === "prelobby" ? <PrelobbyGame started={status} id={lobbyId} /> : null }
+      { status === "game" ? <LobbyGame started={status} id={currentRoom.inviteCode} /> : null }
+      { status === "prelobby" ? <PrelobbyGame started={status} id={currentRoom.inviteCode} /> : null }
     </motion.div>
   )
 }

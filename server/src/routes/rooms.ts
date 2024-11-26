@@ -19,7 +19,7 @@ roomsRouter.get('/', (req: Request, res: Response) => {
 });
 
 roomsRouter.get('/all', async (req: Request, res: Response) => {
-    let { offset, count } = req.query as any;
+    let { offset, count, roomId, inviteCode } = req.query as any;
     if (!offset) offset = 0;
     count = count === 'true' ||
             count === '1' ||
@@ -69,7 +69,9 @@ roomsRouter.get('/all', async (req: Request, res: Response) => {
         resRooms.push(roomData);
     }
 
-    if (count) res.setHeader('X-Total-Count', rooms.length);
+    if (inviteCode) resRooms = resRooms.filter(room => room.inviteCode === inviteCode);
+    if (roomId) resRooms = resRooms.filter(room => room.roomUniqueId === roomId);
+    if (count) res.setHeader('X-Total-Count', resRooms.length);
     // setTimeout(() => res.json(resRooms), 10000);
     res.json(resRooms);
 });
@@ -168,6 +170,42 @@ roomsRouter.get("/users/:inviteCode", async (req: Request, res: Response) => {
         res.json(users);
     } catch (e: any) {
         console.error(`Error in /users/:inviteCode: ${e.message}`);
+        res.status(400).json({ key: "GENERIC_ERROR", message: e.message });
+        return;
+    }
+});
+
+roomsRouter.post("/leave", async (req: Request, res: Response) => {
+    if (req.headers['content-type'] !== 'application/json') {
+        console.error('Invalid content-type in /leave');
+        res.status(400).json({ key: "GENERIC_ERROR", message: 'Invalid content-type' });
+        return;
+    }
+
+    const body = req.body as any;
+    if (!hasProperty(body, 'roomUniqueId') || !hasProperty(body, 'uniqueId')) {
+        console.error('Invalid body in /leave - missing roomUniqueId or uniqueId');
+        res.status(400).json({ key: "GENERIC_ERROR_INVALID_BODY", message: 'Invalid body' });
+        return;
+    }
+
+    try {
+        const room = getRoom(body.roomUniqueId);
+        if (!room) {
+            console.error(`Room not found with roomUniqueId ${body.roomUniqueId}`);
+            res.status(404).json({ key: "GENERIC_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
+            return;
+        }
+        const user = getUser(body.uniqueId);
+        if (!user) {
+            console.error(`User not found with uniqueId ${body.uniqueId}`);
+            res.status(404).json({ key: "GENERIC_ERROR_USER_NOT_FOUND", message: 'User not found' });
+            return;
+        }
+        room.removeUser(user);
+        res.json(room.get());
+    } catch (e: any) {
+        console.error(`Error in /leave: ${e.message}`);
         res.status(400).json({ key: "GENERIC_ERROR", message: e.message });
         return;
     }

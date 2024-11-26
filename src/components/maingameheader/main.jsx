@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+const api = require("@helpers/api");
 const { isNumber } = require("@helpers/utils");
 
 function MainGameHeader({ onClickBack, canNavigate = true }) {
@@ -39,6 +40,7 @@ function MainGameHeader({ onClickBack, canNavigate = true }) {
     setTimeout(() => {
       if (!canNavigate) return;
       if (location.pathname.includes("/game") || location.pathname.includes("/account")) {
+        const _lobbyId = String((location.state && location.state.id) || params.id);
         const reg = /\/game\/[0-9]{5}/s;
         if (reg.test(location.pathname)) {
           navigate("/game", { state: { shouldAnimate: true } });
