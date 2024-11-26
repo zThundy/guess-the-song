@@ -31,7 +31,6 @@ roomsRouter.get('/all', async (req: Request, res: Response) => {
     const rooms = await db.getRooms(offset);
 
     for (let dbRoom of rooms) {
-        console.log(dbRoom);
         let room = getRoom(dbRoom['roomUniqueId']);
         if (!room) {
             console.log(`Room ${dbRoom['roomUniqueId']} not found, creating new room.`);
@@ -62,8 +61,13 @@ roomsRouter.get('/all', async (req: Request, res: Response) => {
         //     continue;
         // }
 
-        resRooms.push(room.get());
-        // console.log(room.getColumn('roomUniqueId'), resRooms);
+        const roomData = room.get();
+        // hide invite code from private rooms
+        if (room.getColumn('isPrivate')) {
+            console.warn(`Hiding invite code for room ${room.getColumn('roomUniqueId')}, it was ${roomData.inviteCode}`);
+            roomData.inviteCode = "*****";
+        }
+        resRooms.push(roomData);
     }
 
     if (count) res.setHeader('X-Total-Count', rooms.length);
@@ -73,6 +77,7 @@ roomsRouter.get('/all', async (req: Request, res: Response) => {
 
 roomsRouter.post("/validateInviteCode", async (req: Request, res: Response) => {
     if (req.headers['content-type'] !== 'application/json') {
+        console.error('Invalid content-type in /validateInviteCode');
         res.status(400).json({ key: "GENERIC_ERROR", message: 'Invalid content-type' });
         return;
     }
@@ -80,6 +85,7 @@ roomsRouter.post("/validateInviteCode", async (req: Request, res: Response) => {
     const body = req.body as RoomInstance;
 
     if (!hasProperty(body, 'inviteCode')) {
+        console.error('Invalid body in /validateInviteCode - missing inviteCode');
         res.status(400).json({ key: "GENERIC_ERROR_INVALID_BODY", message: 'Invalid body' });
         return;
     }
@@ -87,11 +93,13 @@ roomsRouter.post("/validateInviteCode", async (req: Request, res: Response) => {
     try {
         const room = findRoomFromInviteCode(body.inviteCode);
         if (!room) {
+            console.error(`Room not found with invite code ${body.inviteCode}`);
             res.status(404).json({ key: "JOIN_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
             return;
         }
         res.json(room.get());
     } catch (e: any) {
+        console.error(`Error in /validateInviteCode: ${e.message}`);
         res.status(400).json({ key: "GENERIC_ERROR", message: e.message });
         return;
     }
@@ -99,6 +107,7 @@ roomsRouter.post("/validateInviteCode", async (req: Request, res: Response) => {
 
 roomsRouter.post('/validate', async (req: Request, res: Response) => {
     if (req.headers['content-type'] !== 'application/json') {
+        console.error('Invalid content-type in /validate');
         res.status(400).json({ key: "GENERIC_ERROR", message: 'Invalid content-type' });
         return;
     }
@@ -106,6 +115,7 @@ roomsRouter.post('/validate', async (req: Request, res: Response) => {
     const body = req.body as RoomInstance;
 
     if (!hasProperty(body, 'roomUniqueId')) {
+        console.error('Invalid body in /validate - missing roomUniqueId');
         res.status(400).json({ key: "GENERIC_ERROR_INVALID_BODY", message: 'Invalid body' });
         return;
     }
@@ -122,6 +132,7 @@ roomsRouter.post('/validate', async (req: Request, res: Response) => {
         }
         res.json(room.get());
     } catch (e: any) {
+        console.error(`Error in /validate: ${e.message}`);
         res.status(400).json({ key: "GENERIC_ERROR", message: e.message });
         return;
     }

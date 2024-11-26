@@ -34,7 +34,6 @@ const theme = createTheme({
 
 function App() {
   useEffect(() => {
-    console.log("App useEffect");
     api.userAction()
       .then(user => {
         setCookie("username", user.username, 365);
@@ -51,7 +50,6 @@ function App() {
       });
 
     return () => {
-      console.log("App cleanup");
     }
   }, []);
 

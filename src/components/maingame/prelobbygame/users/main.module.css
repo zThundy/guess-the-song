@@ -24,5 +24,13 @@
 }
 
 .user svg {
-  font-size: 2.5rem;
+  position: relative;
+  font-size: 5.5rem;
+}
+
+.user img {
+  position: relative;
+  width: 100%;
+  display: block;
+  object-fit: contain;
 }

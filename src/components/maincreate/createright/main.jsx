@@ -1,9 +1,10 @@
 import "./main.css";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState } from "react";
 
 import { Typography, TextField, Button, styled } from "@mui/material";
 import { LockOpen, LockOutlined } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 const StyledButtonPrimary = styled(Button)({
   background: 'linear-gradient(45deg, #ffab2b 30%, #ffc86f 90%)',
@@ -27,6 +28,7 @@ const StyledButtonPrimary = styled(Button)({
 });
 
 function CreateLobbyRight({ setGlobalChoices, create }) {
+  const { t } = useTranslation();
   const [choices, setChoices] = useState({});
 
   const handleInputChange = (type, e) => {
@@ -84,17 +86,17 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
   return (
       <div className="createRightContainer">
         <Typography variant="h4" className="createRightTitle">
-          Room settings
+          {t("CREATE_ROOM_TITLE")}
         </Typography>
         <div className="createRightInputContainer">
           <div className="createRightInput">
             <TextField
               InputLabelProps={{ shrink: true }}
               className="input"
-              label="ROOM NAME"
+              label={t("CREATE_LABEL_ROOM_NAME")}
               color="secondary"
               error={isErrored()}
-              helperText={isErrored() ? "Please enter a room name" : ""}
+              helperText={isErrored() ? t("CREATE_ERROR_ROOM_NAME") : ""}
               InputProps={{
                 inputProps: { maxLength: 30 },
                 fullWidth: true,
@@ -107,10 +109,10 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
             <TextField
               InputLabelProps={{ shrink: true }}
               className="input"
-              label="MAX PLAYERS"
+              label={t("CREATE_LABEL_MAX_PLAYERS")}
               color="secondary"
               type="number"
-              helperText={"Min: 2, Max: 15"}
+              helperText={t("CREATE_DESCRIPTION_MAX_PLAYERS", [2, 15])}
               InputProps={{
                 inputProps: { min: 2, max: 15 },
                 type: "number",
@@ -125,10 +127,10 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
             <TextField
               InputLabelProps={{ shrink: true }}
               className="input"
-              label="ROUNDS"
+              label={t("CREATE_LABEL_ROUNDS")}
               color="secondary"
               type="number"
-              helperText={"Min: 2, Max: 20"}
+              helperText={t("CREATE_DESCRIPTION_ROUNDS", [2, 20])}
               InputProps={{
                 inputProps: { min: 2, max: 20 },
                 type: "number",
@@ -150,7 +152,7 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
             fullWidth
             disableRipple
           >
-            Public
+            {t("CREATE_PUBLIC")}
             <LockOpen />
           </Button>
           <Button
@@ -162,7 +164,7 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
             fullWidth
             disableRipple
           >
-            Private
+            {t("CREATE_PRIVATE")}
             <LockOutlined />
           </Button>
         </div>
@@ -174,7 +176,7 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
             size="large"
             onClick={handleCreate}
           >
-            Create
+            {t("CREATE_BUTTON")}
           </StyledButtonPrimary>
         </div>
       </div>

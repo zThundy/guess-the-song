@@ -2,6 +2,7 @@ import "./main.css";
 
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 import { MusicNote, Videocam, Movie, SportsEsports, HourglassBottom } from "@mui/icons-material";
 import { Button } from "@mui/material";
@@ -67,6 +68,7 @@ const _generes = [
 ]
 
 function DifficutlyButtons({ setGlobalChoices, choices, setChoices }) {
+  const { t } = useTranslation();
   const [selectedDifficulty, setSelectedDifficulty] = useState(1);
 
   const handleMouseClick = (e) => {
@@ -91,9 +93,9 @@ function DifficutlyButtons({ setGlobalChoices, choices, setChoices }) {
       transition={{ duration: 0.3 }}
       className="createSelectDifficulty"
     >
-      <Button disableRipple variant="contained" data-id="1" className={"easy " + (selectedDifficulty === 1 ? "selected" : "")} onMouseDown={handleMouseClick}>Easy</Button>
-      <Button disableRipple variant="contained" data-id="2" className={"normal " + (selectedDifficulty === 2 ? "selected" : "")} onMouseDown={handleMouseClick}>Normal</Button>
-      <Button disableRipple variant="contained" data-id="3" className={"hard " + (selectedDifficulty === 3 ? "selected" : "")} onMouseDown={handleMouseClick}>Hard</Button>
+      <Button disableRipple variant="contained" data-id="1" className={"easy " + (selectedDifficulty === 1 ? "selected" : "")} onMouseDown={handleMouseClick}>{t("EASY")}</Button>
+      <Button disableRipple variant="contained" data-id="2" className={"normal " + (selectedDifficulty === 2 ? "selected" : "")} onMouseDown={handleMouseClick}>{t("NORMAL")}</Button>
+      <Button disableRipple variant="contained" data-id="3" className={"hard " + (selectedDifficulty === 3 ? "selected" : "")} onMouseDown={handleMouseClick}>{t("HARD")}</Button>
     </motion.div>
   )
 }

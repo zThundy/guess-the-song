@@ -75,7 +75,7 @@ function JoinGameModal({ on, toggle }) {
     if (isNaN(Number(code))) return setSubmitted(t("JOIN_ERROR_CODE_TYPE"));
     api.validateInviteCode(code)
       .then((data) => {
-        navigate("/game", { state: { id: data.inviteCode } });
+        navigate("/game/" + data.inviteCode, { state: { id: data.inviteCode } });
       })
       .catch((error) => {
         console.log(error);

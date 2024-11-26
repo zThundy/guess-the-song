@@ -10,6 +10,7 @@ import { Person } from "@mui/icons-material";
 function Users({ customRef }) {
   const { t } = useTranslation();
   const [users, setUsers] = useState([
+    { self: true, name: 'You', img: "https://gravatar.com/avatar/c56eec28cd69e592df845379bba0f5b6?size=256" },
     { self: true, name: 'You' }
   ]);
 
@@ -25,11 +26,11 @@ function Users({ customRef }) {
   const calculateIconRotation = (e, i) => {
     const newX = e.clientX;
     const newY = e.clientY;
-    if (newX !== dragDirection.x || newY !== dragDirection.y) {
-      setDragDirection((prev) => {
+    setDragDirection((prev) => {
+      if (newX !== prev.x || newY !== prev.y) {
         const angle = Math.atan2(newY - prev.y, newX - prev.x);
         const angleInDegrees = (angle * (180 / Math.PI) + 360) % 360;
-        if (Math.abs(angleInDegrees - prev.angle) > 16) {
+        if (Math.abs(angleInDegrees - prev.angle) > 32) {
           setUserAngles((prev) => {
             const newArray = [...prev];
             if (!newArray[i]) newArray[i] = 0;
@@ -38,12 +39,17 @@ function Users({ customRef }) {
               return newArray;
             }
           });
-          return { x: newX, y: newY, angle: angleInDegrees };
+          if (angleInDegrees !== prev.angle)
+            return { x: newX, y: newY, angle: angleInDegrees };
+          else
+            return { x: newX, y: newY, angle: prev.angle };
         }
         else
           return { x: newX, y: newY, angle: prev.angle };
-      });
-    }
+      } else {
+        return prev;
+      }
+    });
   }
 
   return (
@@ -94,7 +100,8 @@ function Users({ customRef }) {
                   transform: `rotate(${((userAngles && Number(userAngles[i]) !== 0 ? Number(Math.floor(userAngles[i])) : -90) + 90)}deg)`,
                 }}
               >
-                <Person />
+                {/* <Person /> */}
+                {user.img && user.img.length > 0 ? <img src={user.img} alt={user.name} onDragStart={(e) => e.preventDefault()} /> : <Person />}
               </Badge>
             </motion.div>
           )

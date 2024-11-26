@@ -38,10 +38,13 @@ export default class Room {
         this.genre = data.genre;
         this.difficulty = data.difficulty;
 
+        // check types
+        if (typeof this.roomUniqueId !== 'string') this.roomUniqueId = String(this.roomUniqueId);
+
         console.log(`Room "${this.roomUniqueId || "UNK"}" class has been initialized - ROOM NOT YET READY.`);
     }
 
-    private update(key: string, value: any): void {
+    public update(key: string, value: any): void {
         if (key in this) {
             console.log(`Updating ${key} to ${value}`);
             (this as any)[key] = value;
@@ -120,6 +123,7 @@ export default class Room {
                 }
 
                 if (dbRoom.inviteCode !== this.inviteCode) {
+                    if (typeof dbRoom.inviteCode !== 'string') dbRoom.inviteCode = String(dbRoom.inviteCode);
                     this.update('inviteCode', dbRoom.inviteCode);
                 }
 

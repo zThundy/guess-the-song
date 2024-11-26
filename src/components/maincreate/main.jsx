@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react';
 import { Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import Header from "../maingameheader/main.jsx";
 import CreateLobbyLeft from "./createleft/main.jsx";
@@ -12,6 +13,7 @@ import CreateLobbyRight from "./createright/main.jsx";
 const api = require("@helpers/api");
 
 function MainCreate() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [alertTitle, setAlertTitle] = useState("");
   const [globalChoices, setGlobalChoices] = useState({});
@@ -24,18 +26,16 @@ function MainCreate() {
 
   const createRoom = () => {
     if (globalChoices.category === undefined) {
-      setAlertTitle("Please select a category");
+      setAlertTitle(t("CREATE_GENERIC_ERROR_CATEGORY"));
       return;
     }
     if (globalChoices.genre === undefined) {
-      setAlertTitle("Please select a genre");
+      setAlertTitle(t("CREATE_GENERIC_ERROR_GENRE"));
       return;
     }
-    console.log(globalChoices);
     api.createRoom(globalChoices)
       .then((data) => {
-        navigate("/game", { state: { id: data.inviteCode } });
-        // window.location.href = `/game/${data.roomUniqueId}`;
+        navigate("/game/" + data.inviteCode, { state: { id: data.inviteCode } });
       })
       .catch((error) => {
         console.log(error);

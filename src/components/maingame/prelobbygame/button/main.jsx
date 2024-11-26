@@ -11,7 +11,7 @@ function StartButton({ id }) {
   const [hover, setHover] = useState(false);
 
   const handleButtonClick = () => {
-    navigate("/game", { state: { started: true, id } });
+    navigate("/game/" + id, { state: { started: true } });
   }
 
   const changeHover = (e, hover) => {

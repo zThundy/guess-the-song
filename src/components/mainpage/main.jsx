@@ -46,6 +46,11 @@ function MainPage() {
             Component={MainGame}
           />
           <Route
+            path="/game/:id"
+            title="Song Guesser - Game"
+            Component={MainGame}
+          />
+          <Route
             path="/create"
             title="Song Guesser - Create"
             Component={MainCreate}

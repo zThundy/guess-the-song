@@ -19,7 +19,7 @@ function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inv
     api.validateInviteCode(inviteCode)
       .then((data) => {
         console.log(data);
-        navigate("/game", { state: { id: data.inviteCode } });
+        navigate("/game/" + data.inviteCode, { state: { id: data.inviteCode } });
       })
       .catch((error) => {
         console.log(error);
@@ -30,7 +30,7 @@ function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inv
     <div className="lobbyContainer">
       <div className="lobbyTextContainer">
         <span className="name">
-          <img src={"/assets/vinyl" + generatedNumber + ".png"} alt="vinyl" />
+          <img src={"/assets/vinyls/vinyl" + generatedNumber + ".png"} alt="vinyl" />
           {name}
         </span>
         <div className="lobbyInfoTextContainer">

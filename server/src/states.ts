@@ -43,7 +43,10 @@ export const removeRoom = (roomId: string) => {
 };
 
 export const findRoomFromInviteCode = (inviteCode: string) => {
+    if (typeof inviteCode !== "string") inviteCode = String(inviteCode);
     for (let room of rooms.values()) {
+        // convert every time the invite code to a string
+        if (typeof room.inviteCode !== "string") room.update("inviteCode", String(room.inviteCode));
         if (room.inviteCode === inviteCode) {
             return room;
         }
