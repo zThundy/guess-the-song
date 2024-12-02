@@ -8,6 +8,7 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 
 const { getAllowedLanguages } = require("@helpers/language");
+const { socket } = require("@helpers/socket");
 
 const apiKey = "Gkfk5_77WBzwXWEjxu-J3Q";
 const loadPath = `https://api.i18nexus.com/project_resources/translations/{{lng}}/{{ns}}.json?api_key=${apiKey}`;

@@ -12,8 +12,7 @@ const api = require("@helpers/api");
 function MainGame() {
 
   useEffect(() => {
-    api.registerRoomsEventListeners();
-  })
+  }, []);
 
   return (
     <motion.div

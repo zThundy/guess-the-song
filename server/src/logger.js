@@ -155,13 +155,26 @@ async function writeLog(type, ...args) {
 function log(...args) {
     // check if one of the args is "SQL", if so, write to console.sql
     if (logLevel === "verbose")
-        if (args.includes("SQL-LOG")) {
-            // remove SQL-LOG from args
-            args = args.filter(arg => arg !== "SQL-LOG");
-            writeLog("SQL", ...args);
-        } else {
-            // if loglevel is verbose, write to log
-            writeLog("LOG", ...args);
+        switch (args[0]) {
+            case "SQL-LOG":
+                // remove SQL-LOG from args
+                args = args.filter(arg => arg !== "SQL-LOG");
+                writeLog("SQL", ...args);
+                break;
+            case "EVENTS-LOG":
+                // remove EVENTS-LOG from args
+                args = args.filter(arg => arg !== "EVENTS-LOG");
+                writeLog("EVENTS", ...args);
+                break;
+            case "SOCKET-LOG":
+                // remove SOCKET-LOG from args
+                args = args.filter(arg => arg !== "SOCKET-LOG");
+                writeLog("SOCKET", ...args);
+                break;
+            default:
+                // if loglevel is verbose, write to log
+                writeLog("LOG", ...args);
+                break;
         }
 }
 

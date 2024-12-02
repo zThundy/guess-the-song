@@ -7,6 +7,7 @@ import { hasProperty } from './utils';
 import db from './sql';
 
 const { getUser, addUser } = require('./states');
+const WSWrapper = require('./wswrapper');
 
 export default class Room {
     public roomUniqueId: string = '';
@@ -48,6 +49,7 @@ export default class Room {
         if (key in this) {
             console.log(`Updating ${key} to ${value}`);
             (this as any)[key] = value;
+            WSWrapper.send({ route: "room", type: 'update', column: key, value: value });
         } else {
             console.error(`Invalid key: ${key}`);
         }
@@ -209,6 +211,9 @@ export default class Room {
 
                 db.createRoom(this.get());
             }
+
+            console.log(`Room ${this.roomUniqueId} validated.`);
+            WSWrapper.send({ route: "room", type: 'validate', room: this.get() });
         } catch (e: any) {
             console.error(`Error validating room: ${e.message}`);
             throw e;
@@ -232,13 +237,16 @@ export default class Room {
     }
 
     addUser(user: User): void {
-        console.log(`${user.username} has joined the room.`);
-        if (!this.users.some(u => u.uniqueId === user.uniqueId))
+        if (!this.users.some(u => u.uniqueId === user.uniqueId)) {
             this.users.push(user);
+            WSWrapper.send({ route: "room", type: 'user-join', user: user.get(), room: this.get() });
+            console.log(`${user.username} has joined the room.`);
+        }
     }
 
     removeUser(user: User): void {
         console.log(`${user.username} has left the room.`);
+        WSWrapper.send({ route: "room", type: 'user-leave', user: user.get(), room: this.get() });
         this.users = this.users.filter(u => u.uniqueId !== user.uniqueId);
     }
 

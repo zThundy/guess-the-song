@@ -51,6 +51,7 @@ accountRouter.post("/image", async (req: Request, res: Response) => {
         console.log(`Updating user ${user.getColumn('uniqueId')} with image ${body.userImage}`);
         if (user.getColumn('userImage') !== body.userImage)
             user.update({ column: 'userImage', value: body.userImage }).save();
+
         res.json(user.get());
     } else {
         res.status(400).json({ message: 'Invalid body' });
@@ -78,6 +79,7 @@ accountRouter.post("/username", async (req: Request, res: Response) => {
             addUser(user);
         }
         user.update({ column: 'username', value: body.username });
+
         res.json(user.save().get());
     } else {
         res.status(400).json({ message: 'Invalid body' });

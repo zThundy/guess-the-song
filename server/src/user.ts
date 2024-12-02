@@ -6,6 +6,8 @@ import {
 
 import db from './sql';
 
+const WSWrapper = require('./wswrapper');
+
 export default class User {
     public uniqueId: string = '';
     public username: string = '';
@@ -34,6 +36,7 @@ export default class User {
 
     update(data: UpdateUser) {
         if (data.column in this) {
+            WSWrapper.send({ route: "user", type: 'update', column: data.column, value: data.value });
             console.log(`Updating ${data.column} to ${data.value}`);
             (this as any)[data.column] = data.value;
         } else {
@@ -121,5 +124,7 @@ export default class User {
             db.createUser(this.get());
             console.log('User created in databse.');
         }
+
+        WSWrapper.send({ route: "user", type: 'validate', user: this.get() });
     }
 }

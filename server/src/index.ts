@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 dotenv.config();
 const { } = require('./logger');
 
+const WSWrapper = require('./wswrapper');
+
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
@@ -50,28 +52,29 @@ app.get('/', (req: Request, res: Response) => {
 
 import accountRouter from "./routes/account";
 import roomsRouter from "./routes/rooms";
-import eventsRouter from "./routes/events";
 
 try {
     app.use('/account', accountRouter);
     app.use('/rooms', roomsRouter);
-    app.use('/events', eventsRouter);
 } catch (e: any) {
     console.error(`Error in routes: ${e.message}`);
 }
 
-https.createServer(certs, app).listen(sport, () => {
+const sServer = https.createServer(certs, app)
+sServer.listen(sport, () => {
     console.info('Server started on https://localhost:' + sport);
 });
 
 // redirect http to https
-http.createServer((req: Request, res: Response) => {
+const server = http.createServer((req: Request, res: Response) => {
     const host = (req.headers.host || '').replace(/:\d+/, ':' + sport);
-    // change port to https port
     const url = 'https://' + host + req.url;
     console.log('Redirecting to ' + url);
     res.writeHead(301, { 'Location': url });
     res.end();
-}).listen(port, () => {
-    console.info('Server started on http://localhost:' + port);
+})
+server.listen(port, () => {
+    console.info('Websocket server started on ws://localhost:' + port);
 });
+
+WSWrapper.init(sServer);

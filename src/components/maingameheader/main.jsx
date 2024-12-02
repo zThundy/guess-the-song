@@ -42,7 +42,6 @@ function MainGameHeader({ onClickBack, canNavigate = true }) {
       if (location.pathname.includes("/game") || location.pathname.includes("/account")) {
         const reg = /\/game\/[0-9]{5}/s;
         if (reg.test(location.pathname)) {
-          api.unregisterRoomsEventListeners();
           navigate("/game", { state: { shouldAnimate: true } });
         } else {
           navigate("/", { state: { shouldAnimate: true } });

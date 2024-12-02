@@ -17,9 +17,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@types/websocket": "^1.0.10",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "websocket": "^1.0.35"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
