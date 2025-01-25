@@ -30,7 +30,7 @@ function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inv
     <div className="lobbyContainer">
       <div className="lobbyTextContainer">
         <span className="name">
-          <img src={"/assets/vinyls/vinyl" + generatedNumber + ".png"} alt="vinyl" />
+          <img src={"/public/assets/vinyls/vinyl" + generatedNumber + ".png"} alt="vinyl" />
           {name}
         </span>
         <div className="lobbyInfoTextContainer">

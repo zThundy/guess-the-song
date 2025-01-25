@@ -33,8 +33,7 @@ function List({ showList, currentLang, setLang }) {
             value={item.value}
             onClick={() => handleChange({ target: { value: item.value } })}
           >
-            {/* <img src={`https://flagsapi.com/${item.flagCode.toUpperCase()}/flat/64.png`} alt={item.text} /> */}
-            <img src={`/assets/flags/${item.flagCode.toUpperCase()}.png`} alt={item.text} />
+            <img src={`/public/assets/flags/${item.flagCode.toUpperCase()}.png`} alt={item.text} />
             <span>{item.text}</span>
           </div>
         );

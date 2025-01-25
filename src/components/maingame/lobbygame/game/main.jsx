@@ -76,7 +76,7 @@ function Game() {
         <StyledLinearProgress variant="determinate" color="secondary" value={Number(progress)} />
 
         <div className={classes.vinyl_container}>
-          <img src={"/assets/vinyls/vinyl" + generatedNumber + ".png"} alt="vinyl" className={classes.vinyl} />
+          <img src={"/public/assets/vinyls/vinyl" + generatedNumber + ".png"} alt="vinyl" className={classes.vinyl} />
         </div>
 
         <Grid container className={classes.choices}>
