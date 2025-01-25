@@ -6,8 +6,9 @@ import style from './languages.module.css';
 import { useTranslation } from "react-i18next";
 import { ClickAwayListener } from '@mui/material';
 
-const { setCookie, getCookie } = require("@helpers/cookies")
-const { getAllowedLanguagesDetails } = require("@helpers/language");
+import { setCookie, getCookie } from "helpers/cookies"
+import { getAllowedLanguagesDetails } from "helpers/language";
+
 const languages = getAllowedLanguagesDetails();
 
 function List({ showList, currentLang, setLang }) {

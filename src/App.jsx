@@ -6,8 +6,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import "./index.css";
 import { useEffect } from "react";
 
-const { setCookie } = require("@helpers/cookies");
-const api = require("@helpers/api");
+import { setCookie } from "helpers/cookies";
+import api from "helpers/api";
 
 const theme = createTheme({
   status: {

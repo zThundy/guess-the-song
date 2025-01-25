@@ -1,14 +1,14 @@
 const BASE_URL = 'https://localhost:8443';
-const { getCookie } = require('@helpers/cookies');
+import { getCookie } from 'helpers/cookies';
 
-export function getBase() {
+function getBase() {
   fetch(`${BASE_URL}`)
     .then(response => response.json())
     .then(data => console.log(data))
     .catch(error => console.log(error));
 }
 
-export function userAction() {
+function userAction() {
   return fetch(`${BASE_URL}/account/validate`, {
     method: 'POST',
     headers: {
@@ -23,7 +23,7 @@ export function userAction() {
     .catch(error => console.log(error));
 }
 
-export function updateUsername() {
+function updateUsername() {
   return fetch(`${BASE_URL}/account/username`, {
     method: 'POST',
     headers: {
@@ -38,7 +38,7 @@ export function updateUsername() {
     .catch(error => console.log(error));
 }
 
-export function updateUserImage() {
+function updateUserImage() {
   return fetch(`${BASE_URL}/account/image`, {
     method: 'POST',
     headers: {
@@ -53,7 +53,7 @@ export function updateUserImage() {
     .catch(error => console.log(error));
 }
 
-export function getLobbies(offset) {
+function getLobbies(offset) {
   return new Promise(async (resolve, reject) => {
     try {
       const httpParams = new URLSearchParams();
@@ -70,7 +70,7 @@ export function getLobbies(offset) {
   });
 }
 
-export function createRoom(data) {
+function createRoom(data) {
   return fetch(`${BASE_URL}/rooms/validate`, {
     method: 'POST',
     headers: {
@@ -93,7 +93,7 @@ export function createRoom(data) {
     .catch(error => console.log(error));
 }
 
-export function validateInviteCode(inviteCode) {
+function validateInviteCode(inviteCode) {
   return new Promise(async (resolve, reject) => {
     try {
       const result = await fetch(`${BASE_URL}/rooms/validateInviteCode`, {
@@ -116,7 +116,7 @@ export function validateInviteCode(inviteCode) {
   });
 }
 
-export function getRoomUsers(roomUniqueId) {
+function getRoomUsers(roomUniqueId) {
   return new Promise(async (resolve, reject) => {
     try {
       const result = await fetch(`${BASE_URL}/rooms/users/${roomUniqueId}`)
@@ -129,7 +129,7 @@ export function getRoomUsers(roomUniqueId) {
   });
 }
 
-export function leaveRoom(roomUniqueId) {
+function leaveRoom(roomUniqueId) {
   return fetch(`${BASE_URL}/rooms/leave`, {
     method: 'POST',
     headers: {
@@ -147,4 +147,16 @@ export function leaveRoom(roomUniqueId) {
 function _handleError(error) {
   if (error.key) return error;
   return { key: "GENERIC_ERROR" };
+}
+
+export default {
+  getBase,
+  userAction,
+  updateUsername,
+  updateUserImage,
+  getLobbies,
+  createRoom,
+  validateInviteCode,
+  getRoomUsers,
+  leaveRoom,
 }

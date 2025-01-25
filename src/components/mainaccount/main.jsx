@@ -9,8 +9,8 @@ import { motion } from 'framer-motion'
 import { Button, TextField } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 
-const { setCookie, getCookie } = require("@helpers/cookies")
-const api = require("@helpers/api")
+import { setCookie, getCookie } from 'helpers/cookies'
+import api from 'helpers/api'
 
 export default function MainAccount() {
   const { t } = useTranslation();

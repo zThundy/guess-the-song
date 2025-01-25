@@ -9,8 +9,8 @@ import PrelobbyGame from "./prelobbygame/main.jsx";
 import { motion } from 'framer-motion';
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
-const api = require("@helpers/api");
-const { isNumber } = require("@helpers/utils");
+import api from "helpers/api";
+import { isNumber } from "helpers/utils";
 
 function MainGame() {
   const navigate = useNavigate();
