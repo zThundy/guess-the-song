@@ -4,7 +4,7 @@ import viteTsconfigPaths from 'vite-tsconfig-paths'
 import browserslistToEsbuild from 'browserslist-to-esbuild'
 import reactRefresh from '@vitejs/plugin-react-refresh'
 import commonjs from 'vite-plugin-commonjs';
-import svgr from 'vite-plugin-svgr';
+// import svgr from 'vite-plugin-svgr';
 
 import path from 'path'
 
@@ -22,11 +22,6 @@ export default defineConfig({
         viteTsconfigPaths(),
         reactRefresh(),
         commonjs(),
-        svgr({
-            include: [
-                'src/**/*.svg',
-            ],
-        }),
     ],
     build: {
         // --> ["chrome79", "edge92", "firefox91", "safari13.1"]
@@ -45,6 +40,9 @@ export default defineConfig({
         open: true,
         // this sets a default port to 3000  
         port: 3000,
+        hmr: {
+            overlay: true,
+        },
     },
     optimizeDeps: {
         force: false,
