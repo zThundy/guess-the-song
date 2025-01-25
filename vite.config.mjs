@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
-import browserslistToEsbuild from 'browserslist-to-esbuild'
-import reactRefresh from '@vitejs/plugin-react-refresh'
-import commonjs from 'vite-plugin-commonjs';
+// import reactRefresh from '@vitejs/plugin-react-refresh'
+// import browserslistToEsbuild from 'browserslist-to-esbuild'
+// import commonjs from 'vite-plugin-commonjs';
 // import svgr from 'vite-plugin-svgr';
 
 import path from 'path'
@@ -20,12 +20,13 @@ export default defineConfig({
             },
         }),
         viteTsconfigPaths(),
-        reactRefresh(),
-        commonjs(),
+        // reactRefresh(),
+        // commonjs(),
+        // svgr(),
     ],
     build: {
         // --> ["chrome79", "edge92", "firefox91", "safari13.1"]
-        target: browserslistToEsbuild(),
+        // target: browserslistToEsbuild(),
         outDir: 'build',
     },
     resolve: {
@@ -51,5 +52,17 @@ export default defineConfig({
                 '.js': 'jsx',
             },
         },
+    },
+    test: {
+        globals: true,
+        environment: 'jsdom',
+        setupFiles: './src/setupTests.ts',
+        css: true,
+        reporters: ['verbose'],
+        coverage: {
+            reporter: ['text', 'json', 'html'],
+            include: ['src/**/*'],
+            exclude: [],
+        }
     },
 })
