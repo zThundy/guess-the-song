@@ -134,6 +134,8 @@ class SQLiteClass {
     constructor() {
         this.checkPath();
 
+        console.log("SQL-LOG", 'Connecting to the database at ' + this.dbPath);
+
         this.db = new this.engine.cached.Database(this.dbPath, (err: Error) => {
             if (err) return console.error(err.message);
             try {
