@@ -10,7 +10,7 @@ import Header from "../maingameheader/main.jsx";
 import CreateLobbyLeft from "./createleft/main.jsx";
 import CreateLobbyRight from "./createright/main.jsx";
 
-const api = require("@helpers/api");
+import api from "helpers/api";
 
 function MainCreate() {
   const { t } = useTranslation();

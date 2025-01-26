@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Button, ButtonGroup } from "@mui/material";
 import { LockOutlined, LockOpen } from "@mui/icons-material";
 
-const api = require("@helpers/api");
+import api from "helpers/api";
 
 function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inviteCode }) {
   const { t } = useTranslation();
@@ -30,7 +30,7 @@ function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inv
     <div className="lobbyContainer">
       <div className="lobbyTextContainer">
         <span className="name">
-          <img src={"/assets/vinyls/vinyl" + generatedNumber + ".png"} alt="vinyl" />
+          <img src={"/public/assets/vinyls/vinyl" + generatedNumber + ".png"} alt="vinyl" />
           {name}
         </span>
         <div className="lobbyInfoTextContainer">

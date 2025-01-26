@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const api = require("@helpers/api");
-const { isNumber } = require("@helpers/utils");
+import api from "helpers/api";
+import { isNumber } from "helpers/utils";
 
 function MainGameHeader({ onClickBack, canNavigate = true }) {
   const { t } = useTranslation();

@@ -11,7 +11,7 @@ import { Add, Close, Login, East } from '@mui/icons-material';
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
 
-const api = require("@helpers/api");
+import api from "helpers/api";
 
 const StyledButtonPrimary = styled(Button)({
   color: "white",

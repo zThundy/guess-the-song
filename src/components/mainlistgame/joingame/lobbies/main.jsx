@@ -6,7 +6,7 @@ import { CircularProgress } from "@mui/material";
 
 import JoinableLobby from "./lobby/main.jsx";
 
-const api = require("@helpers/api");
+import api from "helpers/api";
 
 function Lobbies() {
   const { t } = useTranslation();

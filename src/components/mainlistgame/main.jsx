@@ -7,7 +7,7 @@ import Header from "../maingameheader/main.jsx";
 
 import { motion } from 'framer-motion';
 
-const api = require("@helpers/api");
+import api from "helpers/api";
 
 function MainGame() {
 

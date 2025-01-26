@@ -8,8 +8,8 @@ import { motion } from 'framer-motion';
 import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const api = require("@helpers/api");
-const { getCookie } = require("@helpers/cookies");
+import api from "helpers/api";
+import { getCookie } from "helpers/cookies";
 
 function PrelobbyGame({ status, id }) {
   const { t } = useTranslation();
