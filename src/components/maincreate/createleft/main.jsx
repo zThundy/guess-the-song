@@ -93,9 +93,9 @@ function DifficutlyButtons({ setGlobalChoices, choices, setChoices }) {
       transition={{ duration: 0.3 }}
       className="createSelectDifficulty"
     >
-      <Button disableRipple variant="contained" data-id="1" className={"easy " + (selectedDifficulty === 1 ? "selected" : "")} onMouseDown={handleMouseClick}>{t("EASY")}</Button>
-      <Button disableRipple variant="contained" data-id="2" className={"normal " + (selectedDifficulty === 2 ? "selected" : "")} onMouseDown={handleMouseClick}>{t("NORMAL")}</Button>
-      <Button disableRipple variant="contained" data-id="3" className={"hard " + (selectedDifficulty === 3 ? "selected" : "")} onMouseDown={handleMouseClick}>{t("HARD")}</Button>
+      <Button disableRipple variant="contained" data-id="1" className={"easy " + (selectedDifficulty === 1 ? "selected" : "")} onMouseDown={handleMouseClick}>{t("DIFFICULTY_1")}</Button>
+      <Button disableRipple variant="contained" data-id="2" className={"normal " + (selectedDifficulty === 2 ? "selected" : "")} onMouseDown={handleMouseClick}>{t("DIFFICULTY_2")}</Button>
+      <Button disableRipple variant="contained" data-id="3" className={"hard " + (selectedDifficulty === 3 ? "selected" : "")} onMouseDown={handleMouseClick}>{t("DIFFICULTY_3")}</Button>
     </motion.div>
   )
 }

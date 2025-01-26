@@ -93,7 +93,7 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
             <TextField
               InputLabelProps={{ shrink: true }}
               className="input"
-              label={t("CREATE_LABEL_ROOM_NAME")}
+              label={t("CREATE_LABEL_ROOM_NAME").toUpperCase()}
               color="secondary"
               error={isErrored()}
               helperText={isErrored() ? t("CREATE_ERROR_ROOM_NAME") : ""}
@@ -109,7 +109,7 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
             <TextField
               InputLabelProps={{ shrink: true }}
               className="input"
-              label={t("CREATE_LABEL_MAX_PLAYERS")}
+              label={t("CREATE_LABEL_MAX_PLAYERS").toUpperCase()}
               color="secondary"
               type="number"
               helperText={t("CREATE_DESCRIPTION_MAX_PLAYERS", [2, 15])}
@@ -127,7 +127,7 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
             <TextField
               InputLabelProps={{ shrink: true }}
               className="input"
-              label={t("CREATE_LABEL_ROUNDS")}
+              label={t("CREATE_LABEL_ROUNDS").toUpperCase()}
               color="secondary"
               type="number"
               helperText={t("CREATE_DESCRIPTION_ROUNDS", [2, 20])}

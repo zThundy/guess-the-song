@@ -1,15 +1,15 @@
-import "./main.css";
+import style from "./main.module.css";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { Button, ButtonGroup } from "@mui/material";
+import { Button, ButtonGroup, Grid } from "@mui/material";
 import { LockOutlined, LockOpen } from "@mui/icons-material";
 
 import api from "helpers/api";
 
-function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inviteCode }) {
+function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inviteCode, difficulty }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
@@ -27,21 +27,29 @@ function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inv
   }
 
   return (
-    <div className="lobbyContainer">
-      <div className="lobbyTextContainer">
-        <span className="name">
-          <img src={"/public/assets/vinyls/vinyl" + generatedNumber + ".png"} alt="vinyl" />
+    <div className={style.lobbyContainer}>
+      <div className={style.lobbyTextContainer}>
+        <span className={style.name}>
+          <img src={"/assets/vinyls/vinyl" + generatedNumber + ".png"} alt="vinyl" />
           {name}
         </span>
-        <div className="lobbyInfoTextContainer">
-          <span className="players">{playersInLobby.length} / {maxPlayers}</span>
-          <span className="genre">{genre.toUpperCase()}</span>
-          <span className="category">{category.toUpperCase()}</span>
+        <div className={style.lobbyInfoTextContainer}>
+          <Grid className={style.playersTable} container>
+            <Grid item xs={3} className={style.title}>{t("PLAYERS").toUpperCase()}</Grid>
+            <Grid item xs={3} className={style.title}>{t("CATEGORY").toUpperCase()}</Grid>
+            <Grid item xs={3} className={style.title}>{t("GENRE").toUpperCase()}</Grid>
+            <Grid item xs={3} className={style.title}>{t("DIFFICULTY").toUpperCase()}</Grid>
+
+            <Grid item xs={3}>{playersInLobby.length} / {maxPlayers}</Grid>
+            <Grid item xs={3}>{category.toUpperCase()}</Grid>
+            <Grid item xs={3}>{genre.toUpperCase()}</Grid>
+            <Grid item xs={3}>{t("DIFFICULTY_" + difficulty.toString().toUpperCase())}</Grid>
+          </Grid>
         </div>
       </div>
-      <ButtonGroup className="joinButtonContainer" variant="contained" aria-label="outlined primary button group">
-        <Button className="joinButton" disabled={locked} onClick={handleJoinGame}>{t("JOIN")}</Button>
-        { locked ? <LockOutlined className="joinLockedIcon" color="error" /> : <LockOpen className="joinLockedIcon" color="success" /> }
+      <ButtonGroup className={style.joinButtonContainer} variant="contained" aria-label="outlined primary button group">
+        <Button className={style.joinButton} disabled={locked} onClick={handleJoinGame}>{t("JOIN")}</Button>
+        {locked ? <LockOutlined className={style.joinLockedIcon} color="error" /> : <LockOpen className={style.joinLockedIcon} color="success" />}
       </ButtonGroup>
     </div>
   )

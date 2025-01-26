@@ -33,7 +33,7 @@ function List({ showList, currentLang, setLang }) {
             value={item.value}
             onClick={() => handleChange({ target: { value: item.value } })}
           >
-            <img src={`/public/assets/flags/${item.flagCode.toUpperCase()}.png`} alt={item.text} />
+            <img src={`/assets/flags/${item.flagCode.toLowerCase()}.png`} alt={item.text} />
             <span>{item.text}</span>
           </div>
         );
@@ -81,7 +81,7 @@ export default function Language({ }) {
     <ClickAwayListener onClickAway={() => setShowList(false)}>
       <div className={style.main}>
         <div className={`${style.currentLanguage} ${showList ? style.active : null}`} onClick={() => setShowList(!showList)}>
-          <img src={`https://flagsapi.com/${languages.find((item) => item.value === lang).flagCode.toUpperCase()}/flat/64.png`} alt={languages.find((item) => item.value === lang).text} />
+          <img src={`/assets/flags/${languages.find((item) => item.value === lang).flagCode.toLowerCase()}.png`} alt={languages.find((item) => item.value === lang).text} />
           <span>{languages.find((item) => item.value === lang).text}</span>
         </div>
 

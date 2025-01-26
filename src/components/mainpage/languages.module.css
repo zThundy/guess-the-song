@@ -69,6 +69,6 @@
   }
 
   .languageItem:hover {
-    background-color: #b67e29;
+    background-color: rgba(255, 175, 89, 0.9);
   }
 }

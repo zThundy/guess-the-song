@@ -9,7 +9,7 @@
   margin: .3rem auto .3rem auto;
 }
 
-.lobbyContainer > * {
+.lobbyContainer>* {
   margin: 1rem;
 }
 
@@ -23,38 +23,44 @@
   margin: .6rem auto .6rem auto;
   padding: .4rem;
   user-select: none;
-}
 
-.lobbyTextContainer .name {
-  font-size: 1.2rem;
-  text-align: left;
-  display: inline-flex;
-}
+  .name {
+    font-size: 1.2rem;
+    text-align: left;
+    display: inline-flex;
 
-.lobbyTextContainer .genre {
-  font-size: .8rem;
-  text-align: left;
-  padding-left: 2rem;
-}
+    img {
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-right: .4rem;
+      display: inline-flex;
+      animation: spin 5s linear infinite;
+    }
+  }
 
-.lobbyTextContainer .category {
-  font-size: .8rem;
-  text-align: left;
-  padding-left: 2rem;
-}
+  .lobbyInfoTextContainer {
+    margin-top: .5rem;
+    position: relative;
+    width: 50%;
+    background-color: rgb(255, 174, 94);
+    padding: .5rem;
+    font-size: .8rem;
+    border-radius: .6rem;
+    
+    .playersTable {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
 
-.lobbyTextContainer .players {
-  font-size: .8rem;
-  text-align: left;
-  padding-left: 2rem;
-}
-
-.name img {
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-right: .4rem;
-  display: inline-flex;
-  animation: spin 5s linear infinite;
+      .title {
+        font-weight: bold;
+        font-size: 1rem;
+        text-decoration: underline;
+      }
+    }
+  }
 }
 
 .joinButtonContainer {
