@@ -251,9 +251,11 @@ export default class Room {
     }
 
     removeUser(user: User): void {
-        console.log(`${user.username} has left the room.`);
-        WSWrapper.send({ route: "room", type: 'user-leave', user: user.get(), room: this.get() });
-        this.users = this.users.filter(u => u.uniqueId !== user.uniqueId);
+        if (this.users.some(u => u.uniqueId === user.uniqueId)) {
+            WSWrapper.send({ route: "room", type: 'user-leave', user: user.get(), room: this.get() });
+            this.users = this.users.filter(u => u.uniqueId !== user.uniqueId);
+            console.log(`${user.username} has left the room.`);
+        };
     }
 
     isInRoom(user: User): boolean {
