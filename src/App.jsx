@@ -4,10 +4,10 @@ import { BrowserRouter } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import "./index.css";
-import { useEffect } from "react";
 
 import { setCookie } from "helpers/cookies";
 import api from "helpers/api";
+import { useOnMountUnsafe } from "helpers/remountUnsafe.jsx";
 
 const theme = createTheme({
   status: {
@@ -33,7 +33,8 @@ const theme = createTheme({
 });
 
 function App() {
-  useEffect(() => {
+  useOnMountUnsafe(() => {
+    console.log("App mounted");
     api.userAction()
       .then(user => {
         setCookie("username", user.username, 365);

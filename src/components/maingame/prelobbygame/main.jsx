@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 
 import api from "helpers/api";
 import { getCookie } from "helpers/cookies";
+import { useOnMountUnsafe } from "helpers/remountUnsafe.jsx";
 import socket from 'helpers/socket';
 
 function PrelobbyGame({ status, id }) {
@@ -19,7 +20,7 @@ function PrelobbyGame({ status, id }) {
   const [users, setUsers] = useState([]);
   const center = constraintsRef.current?.getBoundingClientRect();
 
-  useEffect(() => {
+  useOnMountUnsafe(() => {
     console.log("PrelobbyGame", id);
     api.getRoomUsers(id)
       .then((data) => {
