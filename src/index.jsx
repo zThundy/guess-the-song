@@ -9,7 +9,7 @@ import { initReactI18next } from "react-i18next";
 import CssBaseline from '@mui/material/CssBaseline';
 
 import { getAllowedLanguages } from 'helpers/language';
-// import socket from 'helpers/socket';
+import socket from 'helpers/socket';
 
 const apiKey = "Gkfk5_77WBzwXWEjxu-J3Q";
 const loadPath = `https://api.i18nexus.com/project_resources/translations/{{lng}}/{{ns}}.json?api_key=${apiKey}`;

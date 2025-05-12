@@ -41,7 +41,7 @@
   .lobbyInfoTextContainer {
     margin-top: .5rem;
     position: relative;
-    width: 50%;
+    width: 100%;
     background-color: rgb(255, 174, 94);
     padding: .5rem;
     font-size: .8rem;

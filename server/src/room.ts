@@ -238,9 +238,15 @@ export default class Room {
 
     addUser(user: User): void {
         if (!this.users.some(u => u.uniqueId === user.uniqueId)) {
+            // get users in room and send ws message to all users in room
+            const users = this.users.map(u => u.get());
             this.users.push(user);
-            WSWrapper.send({ route: "room", type: 'user-join', user: user.get(), room: this.get() });
+            for (const u of users) {
+                console.log(`Sending user join message to ${u.username}`);
+                WSWrapper.send({ route: "room", type: 'user-join', user: user.get(), room: this.get() });
+            }
             console.log(`${user.username} has joined the room.`);
+            // WSWrapper.send({ route: "room", type: 'user-join', user: user.get(), room: this.get() });
         }
     }
 

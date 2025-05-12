@@ -8,9 +8,9 @@ class WSWrapper {
     }
 
     private originIsAllowed(request: any) {
-        // console.log("SOCKET-LOG", "Checking origin:", request.origin);
-        // console.log("SOCKET-LOG", "Request headers:", request.httpRequest.headers);
-        // console.log("SOCKET-LOG", "Request header protocol:", request.httpRequest.headers['sec-websocket-protocol']);
+        console.log("SOCKET-LOG", "Checking origin:", request.origin);
+        console.log("SOCKET-LOG", "Request headers:", request.httpRequest.headers);
+        console.log("SOCKET-LOG", "Request header protocol:", request.httpRequest.headers['sec-websocket-protocol']);
 
         if (!request.httpRequest.headers['sec-websocket-protocol'] || request.httpRequest.headers['sec-websocket-protocol'] !== "sg-protocol") {
             console.log("SOCKET-LOG", "Invalid protocol, rejecting connection.");
@@ -22,6 +22,8 @@ class WSWrapper {
     }
 
     init(sServer: any) {
+        console.log("SOCKET-LOG", "Initializing WSWrapper.");
+
         // WebSocket server
         this.ws = new WebSocketServer({
             httpServer: sServer,

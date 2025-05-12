@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 
 import api from "helpers/api";
 import { getCookie } from "helpers/cookies";
+import socket from 'helpers/socket';
 
 function PrelobbyGame({ status, id }) {
   const { t } = useTranslation();
@@ -19,8 +20,10 @@ function PrelobbyGame({ status, id }) {
   const center = constraintsRef.current?.getBoundingClientRect();
 
   useEffect(() => {
+    console.log("PrelobbyGame", id);
     api.getRoomUsers(id)
       .then((data) => {
+        console.log("getRoomUsers", data, id);
         setUsers((prev) => {
           let users = [];
           for (let i = 0; i < data.length; i++) {
@@ -28,11 +31,50 @@ function PrelobbyGame({ status, id }) {
               self: data[i].uniqueId === getCookie("uniqueId"),
               name: data[i].username,
               img: data[i].userImage || "",
+              uniqueId: data[i].uniqueId,
             };
           }
           return users;
         })
-        console.log(data);
+
+        socket.addListener("user-join", (data) => {
+          console.log("user-join", data, id);
+          if (data.room.inviteCode === id) {
+            setUsers((prev) => {
+              let users = [...prev];
+              // check if user already exists
+              if (users.find((user) => user.uniqueId === data.user.uniqueId)) {
+                console.log("user already exists", data.user.uniqueId);
+                return users;
+              }
+              users.push({
+                self: data.user.uniqueId === getCookie("uniqueId"),
+                name: data.username,
+                img: data.userImage || "",
+                uniqueId: data.user.uniqueId,
+              });
+              console.log("added users", users);
+              return users;
+            })
+          }
+        });
+
+        socket.addListener("user-leave", (data) => {
+          console.log("user-leave", data, id);
+          if (data.room.inviteCode === id) {
+            setUsers((prev) => {
+              let users = [...prev];
+              console.log("users", users, data.user.uniqueId);
+              // check if user already exists
+              if (!users.find((user) => user.uniqueId === data.user.uniqueId)) {
+                console.log("user already exists", data.user.uniqueId);
+                return users;
+              }
+              users = users.filter((user) => user.uniqueId !== data.user.uniqueId);
+              return users;
+            })
+          }
+        });
       })
       .catch((error) => {
         console.error(error);
