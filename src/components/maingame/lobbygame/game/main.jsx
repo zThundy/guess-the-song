@@ -1,6 +1,6 @@
 import classes from "./main.module.css";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Button, Grid, LinearProgress, styled } from "@mui/material";
 
@@ -44,7 +44,7 @@ function Game() {
   const [guessed, setGuessed] = useState("0");
   const [msLeft, setMsLeft] = useState(maxSeconds * 1000);
   const [started, setStarted] = useState(false);
-  const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
+  const [generatedNumber] = useMemo((Math.floor(Math.random() * 15) + 1));
 
   const handleGuess = (e) => {
     if (guessed !== "0") return;

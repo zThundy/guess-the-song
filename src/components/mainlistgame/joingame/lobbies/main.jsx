@@ -7,11 +7,13 @@ import { CircularProgress } from "@mui/material";
 import JoinableLobby from "./lobby/main.jsx";
 
 import api from "helpers/api";
+import socket from "helpers/socket";
 
 function Lobbies() {
   const { t } = useTranslation();
   const [lobbies, setLobbies] = useState(null);
   const [resultsReady, setResultsReady] = useState(false);
+  const [errored, setError] = useState(false);
   const ref = createRef();
 
   useEffect(() => {
@@ -20,13 +22,64 @@ function Lobbies() {
         if (lobbies && lobbies.length > 0) setLobbies(lobbies);
         else setLobbies([]);
         setResultsReady(true);
+        setError(false);
       })
       .catch((error) => {
         setResultsReady(false);
+        setError(true);
         setLobbies([]);
         console.log(error);
       });
+
+    socket.addListener("lobby-refresh", (r) => {
+      if (r.data) {
+        if (r.data.roomId) {
+          setLobbies((prev) => {
+            let lobbies = [...prev];
+            if (lobbies.find((lobby) => lobby.roomId === r.data.roomId)) {
+              // update lobby
+              lobbies = lobbies.map((lobby) => {
+                if (lobby.roomId === r.data.roomId) {
+                  return {
+                    ...lobby,
+                    users: r.data.users,
+                    maxPlayers: r.data.maxPlayers,
+                    locked: r.data.isPrivate ? true : false || r.data.users.length >= r.data.maxPlayers,
+                  }
+                }
+                return lobby;
+              });
+              console.log("updated lobby", lobbies);
+              return lobbies;
+            }
+            lobbies.push(r.data);
+            console.log("added lobby", lobbies);
+            return lobbies;
+          })
+        }
+      }
+    });
   }, []);
+
+  useEffect(() => {
+    if (errored) {
+      const refreshInterval = setInterval(() => {
+        api.getLobbies(0)
+          .then((lobbies) => {
+            if (lobbies && lobbies.length > 0) setLobbies(lobbies);
+            else setLobbies([]);
+            setResultsReady(true);
+            setError(false);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }, 5000);
+      return () => {
+        clearInterval(refreshInterval);
+      }
+    }
+  }, [errored]);
 
   useEffect(() => {
     if (!resultsReady) return;

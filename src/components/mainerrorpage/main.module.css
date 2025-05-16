@@ -1,4 +1,4 @@
-.errorContainer {
+.container {
   background-color: white;
   width: 30%;
   margin: 0 auto;
@@ -13,6 +13,17 @@
   z-index: 4;
 }
 
-.errorContainer p {
-  margin: 0 auto 2rem auto;
+.container .error {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 1.5rem;
+  text-align: center;
+  color: #000000;
+}
+
+.container .subtitle {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #9C9C9C;
+  margin: 0.5rem 0 1.5rem 0;
 }

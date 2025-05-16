@@ -1,13 +1,14 @@
 import MainPage from "./components/mainpage/main";
+import ConnectionCheck from "./ConnectionCheck";
 
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import "./index.css";
 
 import { setCookie } from "helpers/cookies";
 import api from "helpers/api";
-import { useOnMountUnsafe } from "helpers/remountUnsafe.jsx";
+import { useOnMountUnsafe } from "helpers/remountUnsafe";
 
 const theme = createTheme({
   status: {
@@ -33,10 +34,14 @@ const theme = createTheme({
 });
 
 function App() {
+
   useOnMountUnsafe(() => {
-    console.log("App mounted");
     api.userAction()
       .then(user => {
+        if (!user) {
+          throw new Error("User not found");
+        }
+
         setCookie("username", user.username, 365);
         setCookie("uniqueId", user.uniqueId, 365);
         setCookie("userImage", user.userImage, 365);
@@ -57,6 +62,7 @@ function App() {
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
+        <ConnectionCheck />
         <MainPage />
       </ThemeProvider>
     </BrowserRouter>

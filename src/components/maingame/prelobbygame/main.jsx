@@ -21,7 +21,6 @@ function PrelobbyGame({ status, id }) {
   const center = constraintsRef.current?.getBoundingClientRect();
 
   useOnMountUnsafe(() => {
-    console.log("PrelobbyGame", id);
     api.getRoomUsers(id)
       .then((data) => {
         console.log("getRoomUsers", data, id);

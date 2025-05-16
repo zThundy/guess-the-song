@@ -18,7 +18,7 @@ function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inv
   const handleJoinGame = () => {
     api.validateInviteCode(inviteCode)
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         navigate("/game/" + data.inviteCode, { state: { id: data.inviteCode } });
       })
       .catch((error) => {

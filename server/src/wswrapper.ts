@@ -71,6 +71,13 @@ class WSWrapper {
                                 console.log("SOCKET-LOG", 'Received Binary Message of ' + message.binaryData.length + ' bytes');
                                 connection.sendBytes(message.binaryData);
                                 break;
+                            case "pong":
+                                console.log("SOCKET-LOG", 'Received Pong Message: ' + message.utf8Data);
+                                connection.sendUTF(message.utf8Data);
+                                break;
+                            default:
+                                console.log("SOCKET-LOG", 'Received Unknown Message Type: ' + message.type);
+                                break;
                         }
                     });
 
