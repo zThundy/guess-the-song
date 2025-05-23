@@ -8,6 +8,7 @@ import JoinableLobby from "./lobby/main.jsx";
 
 import api from "helpers/api";
 import socket from "helpers/socket";
+import { useOnMountUnsafe } from "helpers/remountUnsafe";
 
 function Lobbies() {
   const { t } = useTranslation();
@@ -16,7 +17,7 @@ function Lobbies() {
   const [errored, setError] = useState(false);
   const ref = createRef();
 
-  useEffect(() => {
+  useOnMountUnsafe(() => {
     api.getLobbies(0)
       .then((lobbies) => {
         if (lobbies && lobbies.length > 0) setLobbies(lobbies);
@@ -31,36 +32,73 @@ function Lobbies() {
         console.log(error);
       });
 
+    // receive single lobby update of the list
     socket.addListener("lobby-refresh", (r) => {
+      console.log("lobby-refresh", r);
       if (r.data) {
-        if (r.data.roomId) {
-          setLobbies((prev) => {
-            let lobbies = [...prev];
-            if (lobbies.find((lobby) => lobby.roomId === r.data.roomId)) {
-              // update lobby
-              lobbies = lobbies.map((lobby) => {
-                if (lobby.roomId === r.data.roomId) {
-                  return {
-                    ...lobby,
-                    users: r.data.users,
-                    maxPlayers: r.data.maxPlayers,
-                    locked: r.data.isPrivate ? true : false || r.data.users.length >= r.data.maxPlayers,
-                  }
+        if (r.data.room && r.data.room.roomUniqueId) {
+          switch (r.action) {
+            case "delete":
+              setLobbies((prev) => {
+                let lobbies = [...prev];
+                // check if lobby exists
+                if (lobbies.find((lobby) => lobby.roomUniqueId === r.data.room.roomUniqueId)) {
+                  // remove lobby
+                  lobbies = lobbies.filter((lobby) => lobby.roomUniqueId !== r.data.room.roomUniqueId);
+                  console.log("removed lobby", r.data.room.roomUniqueId);
                 }
-                return lobby;
+                return lobbies;
               });
-              console.log("updated lobby", lobbies);
-              return lobbies;
-            }
-            lobbies.push(r.data);
-            console.log("added lobby", lobbies);
-            return lobbies;
-          })
+              break;
+            case "update":
+              setLobbies((prev) => {
+                let lobbies = [...prev];
+                if (lobbies.find((lobby) => lobby.roomUniqueId === r.data.room.roomUniqueId)) {
+                  // update lobby
+                  lobbies = lobbies.map((lobby) => {
+                    if (lobby.roomUniqueId === r.data.room.roomUniqueId) {
+                      console.log("updated lobby", r.data.room);
+                      lobby.category = r.data.room.category;
+                      lobby.difficulty = r.data.room.difficulty;
+                      lobby.genre = r.data.room.genre;
+                      lobby.inviteCode = r.data.room.inviteCode;
+                      lobby.isPrivate = r.data.room.isPrivate;
+                      lobby.maxPlayers = r.data.room.maxPlayers;
+                      lobby.roomName = r.data.room.roomName;
+                      lobby.users = r.data.room.users;
+                      lobby.roomOwner = r.data.room.roomOwner;
+                      lobby.rounds = r.data.room.rounds;
+                    }
+                    return lobby;
+                  });
+                  console.log("updated lobby", lobbies);
+                  return lobbies;
+                }
+                console.log("added lobby", r.data.room);
+                // add lobby
+                lobbies.push({
+                  category: r.data.room.category,
+                  difficulty: r.data.room.difficulty,
+                  genre: r.data.room.genre,
+                  inviteCode: r.data.room.inviteCode,
+                  isPrivate: r.data.room.isPrivate,
+                  maxPlayers: r.data.room.maxPlayers,
+                  roomName: r.data.room.roomName,
+                  users: r.data.room.users,
+                  roomUniqueId: r.data.room.roomUniqueId,
+                  roomOwner: r.data.room.roomOwner,
+                  rounds: r.data.room.rounds,
+                });
+                return lobbies;
+              })
+              break;
+          }
         }
       }
     });
   }, []);
 
+  // maybe redo? idk
   useEffect(() => {
     if (errored) {
       const refreshInterval = setInterval(() => {
@@ -120,7 +158,7 @@ function Lobbies() {
               <JoinableLobby
                 key={index}
                 name={lobby.roomName}
-                players={lobby.users}
+                players={lobby.users.length}
                 maxPlayers={lobby.maxPlayers}
                 locked={lobby.isPrivate ? true : false || lobby.users.length >= lobby.maxPlayers}
                 category={lobby.category}

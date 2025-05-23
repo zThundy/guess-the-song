@@ -24,7 +24,7 @@ export default class Room {
     public currentRound: number = 0;
     public users: User[] = [];
 
-    constructor() {}
+    constructor() { }
 
     public async initRoom(data: RoomInstance): Promise<void> {
         if (!hasProperty(data, 'roomUniqueId')) throw new Error('Invalid room id');
@@ -45,11 +45,17 @@ export default class Room {
         console.log(`Room "${this.roomUniqueId || "UNK"}" class has been initialized - ROOM NOT YET READY.`);
     }
 
+    public deleteRoom(): void {
+        console.log(`Deleting room ${this.roomUniqueId}`);
+        WSWrapper.send({ route: "room", type: "lobby-refresh", action: "delete", data: { room: this.get() } });
+        db.deleteRoom(this.roomUniqueId);
+    }
+
     public update(key: string, value: any): void {
         if (key in this) {
             console.log(`Updating ${key} to ${value}`);
             (this as any)[key] = value;
-            WSWrapper.send({ route: "room", type: 'update', column: key, value: value });
+            // WSWrapper.send({ route: "room", type: 'update', column: key, value: value });
         } else {
             console.error(`Invalid key: ${key}`);
         }
@@ -177,6 +183,8 @@ export default class Room {
 
                 // random 5 numbers code
                 this.inviteCode = Math.random().toString().substring(2, 7);
+                // add 0 if the generated code is less than 5 characters
+                if (this.inviteCode.length < 5) this.inviteCode = "0" + this.inviteCode;
 
                 if (!this.maxPlayers || this.maxPlayers === 0 || this.maxPlayers > 15 || this.maxPlayers < 2 || typeof this.maxPlayers !== 'number') {
                     console.warn(`Invalid max players input for room ${this.roomUniqueId}, setting to 8. (Current: ${this.maxPlayers})`);
@@ -210,10 +218,11 @@ export default class Room {
                 }
 
                 db.createRoom(this.get());
+                WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room: this.get() } });
             }
 
             console.log(`Room ${this.roomUniqueId} validated.`);
-            WSWrapper.send({ route: "room", type: 'validate', room: this.get() });
+            // WSWrapper.send({ route: "room", type: 'validate', room: this.get() });
         } catch (e: any) {
             console.error(`Error validating room: ${e.message}`);
             throw e;
@@ -243,23 +252,32 @@ export default class Room {
             this.users.push(user);
             for (const u of users) {
                 console.log(`Sending user join message to ${u.username}`);
-                WSWrapper.send({ route: "room", type: 'user-join', user: user.get(), room: this.get() });
+                WSWrapper.send({ route: "room", type: 'user-join', data: { user: user.get(), room: this.get() } });
             }
-            console.log(`${user.username} has joined the room.`);
-            // WSWrapper.send({ route: "room", type: 'user-join', user: user.get(), room: this.get() });
         }
+        console.log(`${user.username} has joined the room.`);
+        let room = this.get();
+        if (room.isPrivate) room.inviteCode = "*****";
+        WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room } });
     }
 
     removeUser(user: User): void {
         if (this.users.some(u => u.uniqueId === user.uniqueId)) {
-            WSWrapper.send({ route: "room", type: 'user-leave', user: user.get(), room: this.get() });
+            WSWrapper.send({ route: "room", type: 'user-leave', data: { user: user.get(), room: this.get() } });
             this.users = this.users.filter(u => u.uniqueId !== user.uniqueId);
             console.log(`${user.username} has left the room.`);
         };
+        let room = this.get();
+        if (room.isPrivate) room.inviteCode = "*****";
+        WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room } });
     }
 
     isInRoom(user: User): boolean {
         return this.users.some(u => u.uniqueId === user.uniqueId);
+    }
+
+    isEmpty(): boolean {
+        return this.users.length === 0;
     }
 }
 

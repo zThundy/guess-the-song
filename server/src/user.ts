@@ -6,8 +6,6 @@ import {
 
 import db from './sql';
 
-const WSWrapper = require('./wswrapper');
-
 export default class User {
     public uniqueId: string = '';
     public username: string = '';
@@ -17,6 +15,8 @@ export default class User {
     public points: number = 0;
     public level: number = 0;
     public currentRoom: string = '';
+
+    private lastSave: Date = new Date();
     // maybe circular on currentRoom????
 
     constructor(uniqueId: string|undefined|null, username: string|undefined|null, userImage: string|undefined|null) {
@@ -24,25 +24,42 @@ export default class User {
         this.uniqueId = uniqueId || '';
         this.userImage = userImage || '';
 
+        this.lastSave = new Date();
+        // save user to db every 5 minutes using lastSave
+        setInterval(() => {
+            const currentDate = new Date();
+            const diffTime = Math.abs(currentDate.getTime() - this.lastSave.getTime());
+            const diffMinutes = Math.ceil(diffTime / (1000 * 60));
+            if (diffMinutes >= 5) {
+                this.save();
+            }
+        }, 5 * 60 * 1000); // 5 minutes
+
         console.log('User added as class.');
     }
 
     save() {
-        console.log(`Updating user ${this.username}, ${this.uniqueId}`);
+        console.log(`Saving user ${this.username}, ${this.uniqueId}`);
         db.updateUser(this.get());
         db.updateUserData(this.get());
+        db.updateLastLogin(this.get());
+
+        this.lastSave = new Date();
         return this;
     }
 
     update(data: UpdateUser) {
-        if (data.column in this) {
-            WSWrapper.send({ route: "user", type: 'update', column: data.column, value: data.value });
-            console.log(`Updating ${data.column} to ${data.value}`);
-            (this as any)[data.column] = data.value;
-        } else {
-            console.error(`Invalid column: ${data.column}`);
+        try {
+            if (data.column in this) {
+                console.log(`Updating ${data.column} to ${data.value}`);
+                (this as any)[data.column] = data.value;
+            } else {
+                console.error(`Invalid column: ${data.column}`);
+            }
+            return this;
+        } catch (e) {
+            console.error('Error updating user:', e);
         }
-        return this;
     }
 
     get() {
@@ -124,7 +141,5 @@ export default class User {
             db.createUser(this.get());
             console.log('User created in databse.');
         }
-
-        WSWrapper.send({ route: "user", type: 'validate', user: this.get() });
     }
 }

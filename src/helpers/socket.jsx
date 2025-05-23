@@ -69,26 +69,30 @@ class WSWrapper {
         };
 
         this.connection.onmessage = event => {
-            // if string convert to json
-            let data = event.data;
-            if (typeof data === 'string') {
-                try {
-                    data = JSON.parse(data);
-                } catch (e) {
-                    this._error('Error parsing JSON', e);
+            try {
+                // if string convert to json
+                let data = event.data;
+                if (typeof data === 'string') {
+                    try {
+                        data = JSON.parse(data);
+                    } catch (e) {
+                        this._error('Error parsing JSON', e);
+                    }
                 }
-            }
-            // check if data is an object and has a type property
-            if (typeof data === 'object' && data !== null && data.type) {
-                // check if listeners has the type
-                if (this.listeners.has(data.type)) {
-                    // call all listeners with the data
-                    this.listeners.get(data.type).forEach(callback => callback(data));
+                // check if data is an object and has a type property
+                if (typeof data === 'object' && data !== null && data.type) {
+                    // check if listeners has the type
+                    if (this.listeners.has(data.type)) {
+                        // call all listeners with the data
+                        this.listeners.get(data.type).forEach(callback => callback(data));
+                    } else {
+                        this._error('No listener for type: ', data.type);
+                    }
                 } else {
-                    this._error('No listener for type: ', data.type);
+                    this._error('Invalid data: ', data);
                 }
-            } else {
-                this._error('Invalid data: ', data);
+            } catch (error) {
+                this._error('Error processing message: ', error);
             }
         };
     }

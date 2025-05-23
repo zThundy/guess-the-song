@@ -1,6 +1,6 @@
 import style from "./main.module.css";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -13,7 +13,6 @@ function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inv
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
-  const [playersInLobby] = useState(players);
 
   const handleJoinGame = () => {
     api.validateInviteCode(inviteCode)
@@ -40,7 +39,7 @@ function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inv
             <Grid item xs={3} className={style.title}>{t("GENRE").toUpperCase()}</Grid>
             <Grid item xs={3} className={style.title}>{t("DIFFICULTY").toUpperCase()}</Grid>
 
-            <Grid item xs={3}>{playersInLobby.length} / {maxPlayers}</Grid>
+            <Grid item xs={3}>{players} / {maxPlayers}</Grid>
             <Grid item xs={3}>{category.toUpperCase()}</Grid>
             <Grid item xs={3}>{genre.toUpperCase()}</Grid>
             <Grid item xs={3}>{t("DIFFICULTY_" + difficulty.toString().toUpperCase())}</Grid>

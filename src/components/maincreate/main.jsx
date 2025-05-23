@@ -35,7 +35,15 @@ function MainCreate() {
     }
     api.createRoom(globalChoices)
       .then((data) => {
-        navigate("/game/" + data.inviteCode, { state: { id: data.inviteCode } });
+        api.validateInviteCode(data.inviteCode)
+          .then((data) => {
+            navigate("/game/" + data.inviteCode, { state: { id: data.inviteCode } });
+          })
+          .catch((error) => {
+            console.log(error);
+            // setSubmitted(t(error.key));
+          });
+        // navigate("/game/" + data.inviteCode, { state: { id: data.inviteCode } });
       })
       .catch((error) => {
         console.log(error);

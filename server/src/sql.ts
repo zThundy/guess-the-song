@@ -398,6 +398,15 @@ class SQLiteClass {
         //     if (SHOULD_LOG) console.log("SQL-LOG", 'User data updated.');
         // });
     }
+
+    public async updateLastLogin(data: UserInstance) {
+        const sql = `UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE uniqueId = ?`;
+        await this.syncRun(sql, [data.uniqueId]);
+        // this.db.run(sql, [data.uniqueId], (err: Error) => {
+        //     if (err) console.error(err.message);
+        //     if (SHOULD_LOG) console.log("SQL-LOG", 'User last login updated.');
+        // });
+    }
 }
 
 export default new SQLiteClass();

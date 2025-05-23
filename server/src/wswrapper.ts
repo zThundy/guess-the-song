@@ -1,4 +1,6 @@
 const WebSocketServer = require('websocket').server;
+import { addUser, getUser } from './states';
+import User from './user';
 
 class WSWrapper {
     private ws: any;
@@ -38,7 +40,7 @@ class WSWrapper {
             socket.on("error", (e: any) => {
                 console.error("SOCKET-LOG", "Error in WSWrapper:", e.message);
             });
-            
+
             socket.on("close", (e: any) => {
                 console.log("SOCKET-LOG", "WSWrapper socket closed.");
             });
@@ -61,19 +63,50 @@ class WSWrapper {
                     }
 
                     const connection = request.accept("sg-protocol", request.origin);
-                    connection.on('message', (message: any) => {
+                    connection.on('message', async (message: any) => {
                         switch (message.type) {
                             case 'utf8':
-                                console.log("SOCKET-LOG", 'Received Message: ' + message.utf8Data);
-                                connection.sendUTF(message.utf8Data);
+                                try {
+                                    console.log("SOCKET-LOG", 'Received UTF8 Message: ' + message.utf8Data);
+                                    // decode utf8 from json
+                                    let data = JSON.parse(message.utf8Data);
+                                    // check if data is an object
+                                    if (typeof data === "object") {
+                                        // check if data has a route
+                                        switch (data.type) {
+                                            case 'ping':
+                                                if (data.data && data.data.user) {
+                                                    connection.sendUTF(JSON.stringify({ type: 'pong', data: { time: new Date() } }));
+                                                    let user = getUser(data.data.user);
+                                                    if (!user) {
+                                                        user = new User(data.data.user, data.data.username, data.data.userImage);
+                                                        await user.validateUser()
+                                                        addUser(user);
+                                                    } else {
+                                                        let date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+                                                        console.log("SOCKET-LOG", 'Updating user last_login to: ' + date);
+                                                        user.update({ column: 'last_login', value: date });
+                                                    }
+                                                } else {
+                                                    // connection.sendUTF(JSON.stringify({ type: 'pong' }));
+                                                    console.log("SOCKET-LOG", 'Received ping message without user data.');
+                                                }
+                                                break;
+                                            default:
+                                                console.log("SOCKET-LOG", 'Received unknown message type: ' + data.type);
+                                                break;
+                                        }
+
+                                    } else {
+                                        console.log("SOCKET-LOG", 'Received non-object data: ' + message.utf8Data);
+                                    }
+                                } catch (e: any) {
+                                    console.error("SOCKET-LOG", "Error in WSWrapper:", e.message);
+                                }
                                 break;
                             case 'binary':
                                 console.log("SOCKET-LOG", 'Received Binary Message of ' + message.binaryData.length + ' bytes');
                                 connection.sendBytes(message.binaryData);
-                                break;
-                            case "pong":
-                                console.log("SOCKET-LOG", 'Received Pong Message: ' + message.utf8Data);
-                                connection.sendUTF(message.utf8Data);
                                 break;
                             default:
                                 console.log("SOCKET-LOG", 'Received Unknown Message Type: ' + message.type);

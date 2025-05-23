@@ -3,10 +3,9 @@ import { RoomInstance } from "../../types/room_types";
 import Room from "../room";
 import User from "../user";
 import db from "../sql";
+import { removeRoom } from "../states";
 
-const eventName = "rooms";
-
-const { addRoom, hasRoom, getRoom, getUser, addUser, findRoomFromInviteCode } = require('../states.ts');
+const { addRoom, hasRoom, getRoom, getUser, addUser, findRoomFromInviteCode, findRoomFromRoomOwner } = require('../states.ts');
 const { hasProperty } = require('../utils.ts');
 
 const roomsRouter = router();
@@ -93,17 +92,22 @@ roomsRouter.post("/validateInviteCode", async (req: Request, res: Response) => {
     }
 
     try {
-        const room = findRoomFromInviteCode(body.inviteCode);
-        if (!room) {
-            console.error(`Room not found with invite code ${body.inviteCode}`);
-            res.status(404).json({ key: "JOIN_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
-            return;
-        }
         const user = getUser(body.uniqueId);
         if (!user) {
             console.error(`User not found with uniqueId ${body.uniqueId}`);
             res.status(404).json({ key: "JOIN_ERROR_USER_NOT_FOUND", message: 'User not found' });
             return;
+        }
+        let room = findRoomFromRoomOwner(body.uniqueId);
+        if (!room) {
+            console.error(`Room not found with roomOwner ${body.uniqueId}, trying inviteCode ${body.inviteCode}`);
+            //////            
+            room = findRoomFromInviteCode(body.inviteCode);
+            if (!room) {
+                console.error(`Room not found with invite code ${body.inviteCode}`);
+                res.status(404).json({ key: "JOIN_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
+                return;
+            }
         }
         room.addUser(user);
         res.json(room.get());
@@ -205,6 +209,16 @@ roomsRouter.post("/leave", async (req: Request, res: Response) => {
             return;
         }
         room.removeUser(user);
+
+        // check if room is empty
+        if (room.getColumn('users').length === 0) {
+            console.log(`Room ${room.getColumn('roomUniqueId')} is empty, deleting room.`);
+            await room.deleteRoom(room.getColumn('roomUniqueId'));
+            removeRoom(room.getColumn('roomUniqueId'));
+        } else {
+            await db.removeUserFromRoom(user.getColumn('uniqueId'), room.getColumn('roomUniqueId'));
+        }
+
         res.json(room.get());
     } catch (e: any) {
         console.error(`Error in /leave: ${e.message}`);

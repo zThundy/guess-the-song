@@ -44,6 +44,8 @@ export const removeRoom = (roomId: string) => {
 
 export const findRoomFromInviteCode = (inviteCode: string) => {
     if (typeof inviteCode !== "string") inviteCode = String(inviteCode);
+    if (inviteCode.length < 1) return null;
+    if (inviteCode === "*****") return null;
     for (let room of rooms.values()) {
         // convert every time the invite code to a string
         if (typeof room.inviteCode !== "string") room.update("inviteCode", String(room.inviteCode));
@@ -53,3 +55,14 @@ export const findRoomFromInviteCode = (inviteCode: string) => {
     }
     return null;
 };
+
+// return room from ownerId and if it is empty
+export const findRoomFromRoomOwner = (roomOwner: string) => {
+    if (typeof roomOwner !== "string") roomOwner = String(roomOwner);
+    for (let room of rooms.values()) {
+        if (room.isEmpty() && room.roomOwner === roomOwner) {
+            return room;
+        }
+    }
+    return null;
+}
