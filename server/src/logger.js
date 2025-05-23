@@ -73,6 +73,7 @@ function translateSize(size) {
         "GB": 1024 * 1024 * 1024,
         "TB": 1024 * 1024 * 1024 * 1024
     };
+    if (!sizes[rotateAt.slice(-2)]) size = "50MB";
     const sizeSplit = size.split("");
     const sizeNumber = parseInt(sizeSplit.slice(0, sizeSplit.length - 2).join(""));
     const sizeType = sizeSplit.slice(sizeSplit.length - 2).join("");
