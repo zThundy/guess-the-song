@@ -20,6 +20,7 @@ export default class Room {
     public category: string = '';
     public genre: string = '';
     public difficulty: number = 0;
+    public started: boolean = false;
 
     public currentRound: number = 0;
     public users: User[] = [];
@@ -38,6 +39,7 @@ export default class Room {
         this.category = data.category;
         this.genre = data.genre;
         this.difficulty = data.difficulty;
+        this.started = data.started || false;
 
         // check types
         if (typeof this.roomUniqueId !== 'string') this.roomUniqueId = String(this.roomUniqueId);
@@ -241,6 +243,7 @@ export default class Room {
             genre: this.genre,
             difficulty: this.difficulty,
             inviteCode: this.inviteCode,
+            started: this.started,
             users: this.users.map(u => u.get())
         };
     }
@@ -278,6 +281,17 @@ export default class Room {
 
     isEmpty(): boolean {
         return this.users.length === 0;
+    }
+
+    // game section
+    start(): void {
+        if (this.users.length < 2) {
+            console.error(`Not enough players to start the game.`);
+            return;
+        }
+        this.started = true;
+        console.log(`Starting game in room ${this.roomUniqueId}`);
+        WSWrapper.send({ route: "room", type: 'game-start', data: { room: this.get() } });
     }
 }
 

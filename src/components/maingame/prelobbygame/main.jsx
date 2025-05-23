@@ -73,6 +73,9 @@ function PrelobbyGame({ status, id }) {
             })
           }
         });
+
+        socket.addListener("game-start", (r) => {
+        });
       })
       .catch((error) => {
         console.error(error);

@@ -144,6 +144,21 @@ function leaveRoom(roomUniqueId) {
     .catch(error => console.log(error));
 }
 
+function startGame(roomUniqueId) {
+  return fetch(`${BASE_URL}/rooms/start/${roomUniqueId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      roomUniqueId: roomUniqueId,
+      uniqueId: getCookie("uniqueId") || "",
+    })
+  })
+    .then(response => response.json())
+    .catch(error => console.log(error));
+}
+
 function _handleError(error) {
   if (error.key) return error;
   return { key: "GENERIC_ERROR" };
@@ -159,4 +174,5 @@ export default {
   validateInviteCode,
   getRoomUsers,
   leaveRoom,
+  startGame
 }

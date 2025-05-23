@@ -5,8 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from "react-i18next";
 
-import { useOnMountUnsafe } from "helpers/remountUnsafe";
-import socket from 'helpers/socket';
+// import { useOnMountUnsafe } from "helpers/remountUnsafe";
+// import socket from 'helpers/socket';
+import api from "helpers/api";
 
 function StartButton({ id }) {
   const { t } = useTranslation();
@@ -14,7 +15,11 @@ function StartButton({ id }) {
   const [hover, setHover] = useState(false);
 
   const handleButtonClick = () => {
-    navigate("/game/" + id, { state: { started: true } });
+    api.startGame(id)
+      .then((data) => {
+        navigate("/game/" + id, { state: { started: true } });
+      });
+
   }
 
   const changeHover = (e, hover) => {

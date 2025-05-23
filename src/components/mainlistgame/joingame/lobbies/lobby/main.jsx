@@ -4,12 +4,12 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { Button, ButtonGroup, Grid } from "@mui/material";
-import { LockOutlined, LockOpen } from "@mui/icons-material";
+import { Button, ButtonGroup, Grid, Tooltip } from "@mui/material";
+import { LockOutlined, LockOpen, HeadphonesOutlined } from "@mui/icons-material";
 
 import api from "helpers/api";
 
-function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inviteCode, difficulty }) {
+function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inviteCode, difficulty, started }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
@@ -48,7 +48,8 @@ function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inv
       </div>
       <ButtonGroup className={style.joinButtonContainer} variant="contained" aria-label="outlined primary button group">
         <Button className={style.joinButton} disabled={locked} onClick={handleJoinGame}>{t("JOIN")}</Button>
-        {locked ? <LockOutlined className={style.joinLockedIcon} color="error" /> : <LockOpen className={style.joinLockedIcon} color="success" />}
+        {locked ? <Tooltip title={t("CREATE_PRIVATE")} placement="top"><LockOutlined className={style.joinLockedIcon} color="error" /></Tooltip> : <Tooltip title={t("CREATE_PUBLIC")} placement="top"><LockOpen className={style.joinLockedIcon} color="success" /></Tooltip>}
+        {started ? <Tooltip title={t("LOBBY_STARTED")} placement="top"><HeadphonesOutlined className={style.joinLockedIcon} color="error" /></Tooltip> : <Tooltip title={t("LOBBY_WAITING")} placement="top"><HeadphonesOutlined className={style.joinLockedIcon} color="success" /></Tooltip>}
       </ButtonGroup>
     </div>
   )

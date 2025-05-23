@@ -165,6 +165,7 @@ function Lobbies() {
                 genre={lobby.genre}
                 difficulty={lobby.difficulty}
                 inviteCode={lobby.inviteCode}
+                started={lobby.started}
               />
             ))
           }

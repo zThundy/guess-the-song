@@ -109,6 +109,11 @@ roomsRouter.post("/validateInviteCode", async (req: Request, res: Response) => {
                 return;
             }
         }
+        if (room.started) {
+            console.error(`Room ${room.getColumn('roomUniqueId')} is already started`);
+            res.status(400).json({ key: "JOIN_ERROR_ROOM_STARTED", message: 'Room is already started' });
+            return;
+        }
         room.addUser(user);
         res.json(room.get());
     } catch (e: any) {
@@ -222,6 +227,54 @@ roomsRouter.post("/leave", async (req: Request, res: Response) => {
         res.json(room.get());
     } catch (e: any) {
         console.error(`Error in /leave: ${e.message}`);
+        res.status(400).json({ key: "GENERIC_ERROR", message: e.message });
+        return;
+    }
+});
+
+roomsRouter.post("/start/:roomUniqueId", async (req: Request, res: Response) => {
+    if (req.headers['content-type'] !== 'application/json') {
+        console.error('Invalid content-type in /start/:roomUniqueId');
+        res.status(400).json({ key: "GENERIC_ERROR", message: 'Invalid content-type' });
+        return;
+    }
+
+    const { roomUniqueId } = req.params;
+    if (!roomUniqueId) {
+        console.error('Invalid roomUniqueId in /start/:roomUniqueId');
+        res.status(400).json({ key: "GENERIC_ERROR_INVALID_ROOM_ID", message: 'Invalid roomUniqueId' });
+        return;
+    }
+
+    const body = req.body as any;
+    if (!hasProperty(body, 'uniqueId')) {
+        console.error('Invalid body in /start/:roomUniqueId - missing uniqueId');
+        res.status(400).json({ key: "GENERIC_ERROR_INVALID_BODY", message: 'Invalid body' });
+        return;
+    }
+
+    try {
+        const room = getRoom(roomUniqueId);
+        if (!room) {
+            console.error(`Room not found with roomUniqueId ${roomUniqueId}`);
+            res.status(404).json({ key: "GENERIC_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
+            return;
+        }
+        const user = getUser(body.uniqueId);
+        if (!user) {
+            console.error(`User not found with uniqueId ${body.uniqueId}`);
+            res.status(404).json({ key: "GENERIC_ERROR_USER_NOT_FOUND", message: 'User not found' });
+            return;
+        }
+        if (room.getColumn('roomOwner') !== user.getColumn('uniqueId')) {
+            console.error(`User ${user.getColumn('uniqueId')} is not the room owner ${room.getColumn('roomOwner')}`);
+            res.status(403).json({ key: "GENERIC_ERROR_NOT_ROOM_OWNER", message: 'User is not the room owner' });
+            return;
+        }
+        room.start(user);
+        res.json(room.get());
+    } catch (e: any) {
+        console.error(`Error in /start/:roomUniqueId: ${e.message}`);
         res.status(400).json({ key: "GENERIC_ERROR", message: e.message });
         return;
     }

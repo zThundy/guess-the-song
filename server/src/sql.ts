@@ -122,6 +122,12 @@ class SQLiteClass {
             column: "created_at",
             type: "TIMESTAMP",
             default: "CURRENT_TIMESTAMP"
+        },
+        {
+            table: "rooms",
+            column: "started",
+            type: "BOOLEAN",
+            default: '0'
         }
     ]
 
@@ -303,6 +309,15 @@ class SQLiteClass {
         }
 
         return false;
+    }
+
+    public async setRoomStarted(roomUniqueId: string, started: boolean): Promise<void> {
+        try {
+            const query = `UPDATE rooms SET started = ? WHERE roomUniqueId = ?`;
+            await this.syncRun(query, [started, roomUniqueId]);
+        } catch (err: any) {
+            console.error(err.message);
+        }
     }
 
     // USERS

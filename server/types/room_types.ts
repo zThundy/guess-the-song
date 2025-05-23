@@ -10,6 +10,7 @@ type RoomInstance = {
     difficulty: number;
     inviteCode: string;
     roomUniqueId: string;
+    started: boolean;
 };
 
 type RoomList = RoomInstance[];
