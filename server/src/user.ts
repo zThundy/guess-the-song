@@ -33,7 +33,7 @@ export default class User {
             if (diffMinutes >= 5) {
                 this.save();
             }
-        }, 5 * 60 * 1000); // 5 minutes
+        }, 5 * 1000); // 5 seconds
 
         console.log('User added as class.');
     }
