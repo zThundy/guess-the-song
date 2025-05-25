@@ -1,19 +1,15 @@
 import classes from "./main.module.css";
 
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 
 import JoinGame from "./joingame/main.jsx";
 import Header from "../maingameheader/main.jsx";
 
 import { motion } from 'framer-motion';
 
-import api from "helpers/api";
+// import api from "helpers/api";
 
 function MainGame() {
-
-  useEffect(() => {
-  }, []);
-
   return (
     <motion.div
       className={classes.main}

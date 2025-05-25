@@ -1,4 +1,5 @@
 import MainPage from "./components/mainpage/main";
+import Notifications from "./components/notifications/main";
 import ConnectionCheck from "./ConnectionCheck";
 
 import { BrowserRouter, useNavigate } from "react-router-dom";
@@ -62,6 +63,7 @@ function App() {
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
+        <Notifications />
         <ConnectionCheck />
         <MainPage />
       </ThemeProvider>

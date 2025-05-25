@@ -1,0 +1,45 @@
+
+.notificationsContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 30vw;
+  max-height: 100%;
+  overflow-y: auto;
+  z-index: 1000;
+  overflow: hidden;
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+}
+
+.notification {
+  width: fit-content;
+  border-radius: 0.25rem;
+  padding: 10px;
+  margin: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  display: flex;
+  font-size: 0.9rem;
+}
+
+.info {
+  background-color: #17a2b8;
+  color: #A9F4FF;
+}
+
+.success {
+  background-color: #28a745;
+  color: #E6F9E6;
+}
+
+.warning {
+  background-color: #ffc107;
+  color: #5F5A49;
+}
+
+.error {
+  background-color: #dc3545;
+  color: #F8D7DA;
+}

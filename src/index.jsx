@@ -48,8 +48,10 @@ root.render(
   <React.StrictMode>
     <React.Profiler id="App" onRender={onRender}>
       <React.Profiler id="ConnectionCheck" onRender={onRender}>
-        <CssBaseline />
-        <App />
+        <React.Profiler id="Notifications" onRender={onRender}>
+          <CssBaseline />
+          <App />
+        </React.Profiler>
       </React.Profiler>
     </React.Profiler>
   </React.StrictMode>
