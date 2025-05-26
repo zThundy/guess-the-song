@@ -9,6 +9,7 @@ import JoinableLobby from "./lobby/main.jsx";
 import api from "helpers/api";
 import socket from "helpers/socket";
 import { useOnMountUnsafe } from "helpers/remountUnsafe";
+import { useEventEmitter } from "helpers/eventEmitter";
 
 function Lobbies() {
   const { t } = useTranslation();
@@ -16,8 +17,9 @@ function Lobbies() {
   const [resultsReady, setResultsReady] = useState(false);
   const [errored, setError] = useState(false);
   const ref = createRef();
+  const eventEmitter = useEventEmitter();
 
-  useOnMountUnsafe(() => {
+  const getLobbiesAPI = () => {
     api.getLobbies(0)
       .then((lobbies) => {
         if (lobbies && lobbies.length > 0) setLobbies(lobbies);
@@ -29,8 +31,12 @@ function Lobbies() {
         setResultsReady(false);
         setError(true);
         setLobbies([]);
-        console.log(error);
+        eventEmitter.emit("notify", "error", t("ERROR_FETCHING_LOBBIES"));
       });
+  }
+
+  useOnMountUnsafe(() => {
+    getLobbiesAPI();
 
     // receive single lobby update of the list
     socket.addListener("lobby-refresh", (r) => {
@@ -96,6 +102,15 @@ function Lobbies() {
         }
       }
     });
+
+    eventEmitter.on("refreshLobbies", () => {
+      getLobbiesAPI();
+    })
+
+    return () => {
+      socket.removeListener("lobby-refresh");
+      eventEmitter.off("refreshLobbies");
+    }
   }, []);
 
   // maybe redo? idk

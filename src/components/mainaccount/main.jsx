@@ -11,6 +11,8 @@ import { useTranslation } from 'react-i18next'
 
 import { setCookie, getCookie } from 'helpers/cookies'
 import api from 'helpers/api'
+import { useEventEmitter } from 'helpers/eventEmitter'
+// import { useOnMountUnsafe } from 'helpers/remountUnsafe.jsx'
 
 export default function MainAccount() {
   const { t } = useTranslation();
@@ -21,6 +23,8 @@ export default function MainAccount() {
   const [hasUsernameChanged, setHasUsernameChanged] = useState(false)
   const [hasUserImageChanged, setHasUserImageChanged] = useState(false)
   const [canSaveImage, setCanSaveImage] = useState(false)
+
+  const eventEmitter = useEventEmitter()
 
   useEffect(() => {
     if (username !== getCookie('username')) {
@@ -49,7 +53,7 @@ export default function MainAccount() {
     }
   }, [username, userImage])
 
-  const onClickBack = ({ event, location }) => {}
+  const onClickBack = ({ event, location }) => { }
 
   const updateUsername = (e) => {
     // prevent spaces in username
@@ -78,6 +82,14 @@ export default function MainAccount() {
       }
       setCookie('username', username, 365)
       api.updateUsername()
+        .then(() => {
+          eventEmitter.emit("notify", "success", t("USERNAME_UPDATED"))
+        })
+        .catch((error) => {
+          console.error(error)
+          eventEmitter.emit("notify", "error", t(error.key || "GENERIC_ERROR"))
+        });
+
       setHasUsernameChanged(false)
     }
     if (hasUserImageChanged && canSaveImage) {
@@ -87,12 +99,26 @@ export default function MainAccount() {
         setCanSaveImage(true)
         setCookie('userImage', userImage, 365)
         api.updateUserImage()
+          .then(() => {
+            eventEmitter.emit("notify", "success", t("USER_IMAGE_UPDATED"))
+          })
+          .catch((error) => {
+            console.error(error)
+            eventEmitter.emit("notify", "error", t(error.key || "GENERIC_ERROR"))
+          });
       } else {
         if (userImage.length === 0) {
           setHasUserImageChanged(false)
           setCanSaveImage(true)
           setCookie('userImage', userImage, 365)
           api.updateUserImage()
+            .then(() => {
+              eventEmitter.emit("notify", "success", t("USER_IMAGE_UPDATED"))
+            })
+            .catch((error) => {
+              console.error(error)
+              eventEmitter.emit("notify", "error", t(error.key || "GENERIC_ERROR"))
+            });
         } else {
           setHasUserImageChanged(t("ERROR_INVALID_URL"))
         }

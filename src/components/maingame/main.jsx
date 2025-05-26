@@ -11,6 +11,7 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 import api from "helpers/api";
 import { isNumber } from "helpers/utils";
+import { useEventEmitter } from "helpers/eventEmitter";
 
 function MainGame() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ function MainGame() {
   const location = useLocation();
   const [status, setStatus] = useState("list"); // prelobby, game, create
   const [currentRoom, setCurrentRoom] = useState({});
+  const eventEmitter = useEventEmitter();
 
   const computeLobbyId = () => {
     const _lobbyId = String((location.state && location.state.id) || params.id);
@@ -38,6 +40,7 @@ function MainGame() {
           console.error(error);
           setCurrentRoom({});
           navigate("/game");
+          eventEmitter.emit("notify", "error", t(error.key || "GENERIC_ERROR"));
         });
     } else {
       setCurrentRoom({});
@@ -76,8 +79,8 @@ function MainGame() {
             });
         }}
       />
-      { status === "game" ? <LobbyGame started={status} id={currentRoom.inviteCode} /> : null }
-      { status === "prelobby" ? <PrelobbyGame started={status} id={currentRoom.inviteCode} /> : null }
+      { status === "game" ? <LobbyGame started={status} id={currentRoom.inviteCode} roomUniqueId={currentRoom.roomUniqueId} /> : null }
+      { status === "prelobby" ? <PrelobbyGame started={status} id={currentRoom.inviteCode} roomUniqueId={currentRoom.roomUniqueId} /> : null }
     </motion.div>
   )
 }

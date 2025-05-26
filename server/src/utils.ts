@@ -1,5 +1,10 @@
 
 export function hasProperty(o: object, k: string) {
+    console.log(`Checking if object has property: ${k} in`, o);
+    if (typeof o !== 'object' || o === null) {
+        console.error('Provided value is not a valid object:', o);
+        return false;
+    }
     return Object.keys(o).includes(k);
 };
 

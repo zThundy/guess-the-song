@@ -27,8 +27,11 @@ export default class Room {
 
     constructor() { }
 
+    // destructor to initialize the room with data
+
+
     public async initRoom(data: RoomInstance): Promise<void> {
-        if (!hasProperty(data, 'roomUniqueId')) throw new Error('Invalid room id');
+        if (!hasProperty(data, 'roomUniqueId')) throw new Error('Invalid room id while initializing room.');
 
         this.roomUniqueId = data.roomUniqueId;
         this.roomOwner = data.roomOwner;
@@ -43,6 +46,40 @@ export default class Room {
 
         // check types
         if (typeof this.roomUniqueId !== 'string') this.roomUniqueId = String(this.roomUniqueId);
+
+        const roomPingUsersInterval = setInterval(() => {
+            if (this.users.length > 0) {
+                this.users.forEach(user => {
+                    WSWrapper.send({ route: "room", type: 'game-ping', data: { user: user.get(), room: this.get() } });
+
+                    // check if the last ping of the user is more than 30 seconds ago, if so remove it from the roomm
+                    const lastPing = new Date(user.userLastRoomPing);
+                    const currentTime = new Date();
+                    const diffTime = Math.abs(currentTime.getTime() - lastPing.getTime());
+                    const diffSeconds = Math.ceil(diffTime / 1000);
+                    if (diffSeconds > 30) {
+                        console.warn(`User ${user.username} (${user.uniqueId}) has not pinged in the last 30 seconds, removing from room.`);
+                        this.removeUser(user);
+                    }
+                });
+            } else {
+                clearInterval(roomPingUsersInterval);
+            }
+        }, 10 * 1000); // every 10 seconds
+
+        WSWrapper.on("game-pong", (r: any) => {
+            const data = r.data;
+            if (data && data.roomUniqueId && data.roomUniqueId === this.roomUniqueId) {
+                if (data.uniqueId && data.uniqueId.length > 0) {
+                    // check if the user is in the room
+                    const user = getUser(data.uniqueId);
+                    if (user) {
+                        user.update({ column: 'userLastRoomPing', value: new Date().toISOString() });
+                        console.log(`User ${user.username} (${user.uniqueId}) pinged the room.`);
+                    }
+                }
+            }
+        });
 
         console.log(`Room "${this.roomUniqueId || "UNK"}" class has been initialized - ROOM NOT YET READY.`);
     }
@@ -262,6 +299,10 @@ export default class Room {
         let room = this.get();
         if (room.isPrivate) room.inviteCode = "*****";
         WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room } });
+        user.update({ column: "userLastRoomPing", value: new Date().toISOString() });
+        user.update({ column: "currentRoom", value: this.roomUniqueId });
+        // keep this commented, maybe we need it... idk.
+        // db.updateUser(user.get());
     }
 
     removeUser(user: User): void {
@@ -273,6 +314,10 @@ export default class Room {
         let room = this.get();
         if (room.isPrivate) room.inviteCode = "*****";
         WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room } });
+        user.update({ column: "currentRoom", value: '' });
+        user.update({ column: "userLastRoomPing", value: new Date().toISOString() });
+        // keep this commented, maybe we need it... idk.
+        // db.updateUser(user.get());
     }
 
     isInRoom(user: User): boolean {
@@ -284,14 +329,15 @@ export default class Room {
     }
 
     // game section
-    start(): void {
+    start(): boolean {
         if (this.users.length < 2) {
             console.error(`Not enough players to start the game.`);
-            return;
+            return false;
         }
         this.started = true;
         console.log(`Starting game in room ${this.roomUniqueId}`);
         WSWrapper.send({ route: "room", type: 'game-start', data: { room: this.get() } });
+        return true;
     }
 }
 

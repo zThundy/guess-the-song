@@ -32,7 +32,7 @@ const db = new sqlite3.Database('./data/db.sqlite');
 //     0
 // );
 
-for (let i = 2; i <= 1000; i++) {
+for (let i = 2; i <= 100; i++) {
     db.run(`INSERT INTO rooms(
         id,
         roomUniqueId,
@@ -51,7 +51,7 @@ for (let i = 2; i <= 1000; i++) {
         ${i},
         'room-${i}',
         'user-${i}',
-        'invite-code-${i}',
+        ${Math.random().toString().substring(2, 7)},
         'Room ${i}',
         ${Math.floor(Math.random() * 10) + 1},
         ${Math.floor(Math.random() * 10) + 1},

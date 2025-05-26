@@ -8,16 +8,23 @@ import { useTranslation } from "react-i18next";
 // import { useOnMountUnsafe } from "helpers/remountUnsafe";
 // import socket from 'helpers/socket';
 import api from "helpers/api";
+import { useEventEmitter } from "helpers/eventEmitter";
 
-function StartButton({ id }) {
+function StartButton({ id, roomUniqueId }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [hover, setHover] = useState(false);
+  const eventEmitter = useEventEmitter();
 
   const handleButtonClick = () => {
-    api.startGame(id)
+    api.startGame(roomUniqueId)
       .then((data) => {
         navigate("/game/" + id, { state: { started: true } });
+      })
+      .catch((error) => {
+        console.error(error);
+        // Handle error, e.g., show a notification
+        eventEmitter.emit("notify", "error", t(error.key || "GENERIC_ERROR"));
       });
 
   }

@@ -7,21 +7,25 @@ import { useTranslation } from "react-i18next";
 import { Button, ButtonGroup, Grid, Tooltip } from "@mui/material";
 import { LockOutlined, LockOpen, HeadphonesOutlined } from "@mui/icons-material";
 
+import { useEventEmitter } from "helpers/eventEmitter";
 import api from "helpers/api";
 
 function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inviteCode, difficulty, started }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
+  const eventEmitter = useEventEmitter();
 
   const handleJoinGame = () => {
     api.validateInviteCode(inviteCode)
       .then((data) => {
         // console.log(data);
-        navigate("/game/" + data.inviteCode, { state: { id: data.inviteCode } });
+        navigate("/game/" + data.inviteCode, { state: { id: data.inviteCode, roomUniqueId: data.roomUniqueId } });
       })
       .catch((error) => {
         console.log(error);
+        eventEmitter.emit("notify", "error", t(error.key || "GENERIC_ERROR"));
+        if (error.key === "GENERIC_ERROR_ROOM_NOT_FOUND") eventEmitter.emit("refreshLobbies");
       });
   }
 

@@ -2,7 +2,6 @@ import classes from "./main.module.css";
 
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react';
-import { Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -11,13 +10,13 @@ import CreateLobbyLeft from "./createleft/main.jsx";
 import CreateLobbyRight from "./createright/main.jsx";
 
 import api from "helpers/api";
+import { useEventEmitter } from "helpers/eventEmitter";
 
 function MainCreate() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [alertTitle, setAlertTitle] = useState("");
   const [globalChoices, setGlobalChoices] = useState({});
-  useEffect(() => { if (alertTitle) setTimeout(() => setAlertTitle(""), 11000) }, [alertTitle]);
+  const eventEmitter = useEventEmitter();
 
   const computeSetChoices = (data) => {
     globalChoices[data.type] = data.value;
@@ -26,11 +25,11 @@ function MainCreate() {
 
   const createRoom = () => {
     if (globalChoices.category === undefined) {
-      setAlertTitle(t("CREATE_GENERIC_ERROR_CATEGORY"));
+      eventEmitter.emit("notify", "error", t("CREATE_GENERIC_ERROR_CATEGORY"));
       return;
     }
     if (globalChoices.genre === undefined) {
-      setAlertTitle(t("CREATE_GENERIC_ERROR_GENRE"));
+      eventEmitter.emit("notify", "error", t("CREATE_GENERIC_ERROR_GENRE"));
       return;
     }
     api.createRoom(globalChoices)
@@ -41,13 +40,12 @@ function MainCreate() {
           })
           .catch((error) => {
             console.log(error);
-            // setSubmitted(t(error.key));
+            eventEmitter.emit("notify", "error", t(error.key || "GENERIC_ERROR"));
           });
-        // navigate("/game/" + data.inviteCode, { state: { id: data.inviteCode } });
       })
       .catch((error) => {
         console.log(error);
-        setAlertTitle(error.message);
+        eventEmitter.emit("notify", "error", t(error.key));
       });
   }
 
@@ -58,12 +56,6 @@ function MainCreate() {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -3000, opacity: 1 }}
     >
-      {
-        alertTitle !== "" &&
-        <Alert severity="error" className={classes.alert}>
-          {alertTitle}
-        </Alert>
-      }
       <Header status="create" />
       <div className={classes.content}>
         <CreateLobbyLeft

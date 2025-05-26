@@ -15,6 +15,7 @@ export default class User {
     public points: number = 0;
     public level: number = 0;
     public currentRoom: string = '';
+    public userLastRoomPing: Date = new Date();
 
     private lastSave: Date = new Date();
     // maybe circular on currentRoom????
@@ -51,7 +52,7 @@ export default class User {
     update(data: UpdateUser) {
         try {
             if (data.column in this) {
-                console.log(`Updating ${data.column} to ${data.value}`);
+                console.log(`Updating ${data.column} to ${data.value} for user ${this.username}, ${this.uniqueId}`);
                 (this as any)[data.column] = data.value;
             } else {
                 console.error(`Invalid column: ${data.column}`);
@@ -114,6 +115,14 @@ export default class User {
 
             if (dbUser.last_login !== this.last_login) {
                 this.update({ column: 'last_login', value: dbUser.last_login });
+            }
+
+            if (dbUser.currentRoom !== this.currentRoom) {
+                this.update({ column: 'currentRoom', value: dbUser.currentRoom });
+            }
+
+            if (dbUser.userLastRoomPing !== this.userLastRoomPing) {
+                this.update({ column: 'userLastRoomPing', value: dbUser.userLastRoomPing });
             }
 
             console.log('User validated.');

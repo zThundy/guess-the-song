@@ -33,4 +33,5 @@
   width: 100%;
   display: block;
   object-fit: contain;
+  border-radius: 50%;
 }

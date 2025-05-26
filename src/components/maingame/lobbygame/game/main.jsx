@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Button, Grid, LinearProgress, styled } from "@mui/material";
 
+import { useOnMountUnsafe } from "helpers/remountUnsafe";
+
 const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
   borderRadius: 4,
@@ -44,7 +46,7 @@ function Game() {
   const [guessed, setGuessed] = useState("0");
   const [msLeft, setMsLeft] = useState(maxSeconds * 1000);
   const [started, setStarted] = useState(false);
-  const [generatedNumber] = useMemo((Math.floor(Math.random() * 15) + 1));
+  const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
 
   const handleGuess = (e) => {
     if (guessed !== "0") return;
@@ -53,7 +55,7 @@ function Game() {
     setStarted(true);
   }
 
-  useEffect(() => {
+  useOnMountUnsafe(() => {
     if (!started) return;
     const step = 10;
     const interval = setInterval(() => {

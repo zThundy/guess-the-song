@@ -4,9 +4,11 @@ import User from './user';
 
 class WSWrapper {
     private ws: any;
+    private listeners: { [key: string]: Function[] };
 
     constructor() {
         this.ws = null;
+        this.listeners = {};
     }
 
     private originIsAllowed(request: any) {
@@ -67,7 +69,7 @@ class WSWrapper {
                         switch (message.type) {
                             case 'utf8':
                                 try {
-                                    console.log("SOCKET-LOG", 'Received UTF8 Message: ' + message.utf8Data);
+                                    // console.log("SOCKET-LOG", 'Received UTF8 Message: ' + message.utf8Data);
                                     // decode utf8 from json
                                     let data = JSON.parse(message.utf8Data);
                                     // check if data is an object
@@ -84,16 +86,23 @@ class WSWrapper {
                                                         addUser(user);
                                                     } else {
                                                         let date = new Date().toISOString().slice(0, 19).replace('T', ' ');
-                                                        console.log("SOCKET-LOG", 'Updating user last_login to: ' + date);
+                                                        // console.log("SOCKET-LOG", 'Updating user last_login to: ' + date);
                                                         user.update({ column: 'last_login', value: date });
                                                     }
                                                 } else {
                                                     // connection.sendUTF(JSON.stringify({ type: 'pong' }));
-                                                    console.log("SOCKET-LOG", 'Received ping message without user data.');
+                                                    console.log("SOCKET-LOG", 'Received ping message without user data. Ignoring.');
                                                 }
                                                 break;
                                             default:
-                                                console.log("SOCKET-LOG", 'Received unknown message type: ' + data.type);
+                                                console.log("SOCKET-LOG", 'Received unknown message type: ' + data.type + ". Calling listeners for this type.");
+                                                this.listeners[data.type]?.forEach((callback: Function) => {
+                                                    try {
+                                                        callback(data);
+                                                    } catch (e: any) {
+                                                        console.error("SOCKET-LOG", "Error in WSWrapper message handler:", e.message);
+                                                    }
+                                                });
                                                 break;
                                         }
 
@@ -109,7 +118,7 @@ class WSWrapper {
                                 connection.sendBytes(message.binaryData);
                                 break;
                             default:
-                                console.log("SOCKET-LOG", 'Received Unknown Message Type: ' + message.type);
+                                console.log("SOCKET-LOG", 'Received Unknown (Default) Message Type: ' + message.type);
                                 break;
                         }
                     });
@@ -127,10 +136,28 @@ class WSWrapper {
         });
     }
 
+    on(event: string, callback: Function) {
+        if (!this.ws) return console.error("SOCKET-LOG", "WSWrapper not initialized.");
+
+        this.listeners[event] = this.listeners[event] || [];
+        this.listeners[event].push(callback);
+    }
+
+    off(event: string, callback: Function) {
+        if (!this.ws) return console.error("SOCKET-LOG", "WSWrapper not initialized.");
+
+        if (this.listeners[event]) {
+            this.listeners[event] = this.listeners[event].filter((cb: Function) => cb !== callback);
+        }
+    }
+
     send(data: any) {
         if (!this.ws) return console.error("SOCKET-LOG", "WSWrapper not initialized.");
 
-        if (typeof data === "object") data = JSON.stringify(data);
+        if (typeof data === "object") {
+            data.serverTime = new Date().toISOString();
+            data = JSON.stringify(data);
+        }
 
         this.ws.connections.forEach((connection: any) => {
             connection.sendUTF(data);

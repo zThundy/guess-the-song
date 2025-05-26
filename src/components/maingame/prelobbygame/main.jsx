@@ -13,7 +13,7 @@ import { getCookie } from "helpers/cookies";
 import { useOnMountUnsafe } from "helpers/remountUnsafe.jsx";
 import socket from 'helpers/socket';
 
-function PrelobbyGame({ status, id }) {
+function PrelobbyGame({ status, id, roomUniqueId }) {
   const { t } = useTranslation();
   const constraintsRef = useRef(null);
   const [shouldRender, setShouldRender] = useState(false);
@@ -23,7 +23,6 @@ function PrelobbyGame({ status, id }) {
   useOnMountUnsafe(() => {
     api.getRoomUsers(id)
       .then((data) => {
-        console.log("getRoomUsers", data, id);
         setUsers((prev) => {
           let users = [];
           for (let i = 0; i < data.length; i++) {
@@ -48,8 +47,8 @@ function PrelobbyGame({ status, id }) {
               }
               users.push({
                 self: r.data.user.uniqueId === getCookie("uniqueId"),
-                name: r.data.username,
-                img: r.data.userImage || "",
+                name: r.data.user.username,
+                img: r.data.user.userImage || "",
                 uniqueId: r.data.user.uniqueId,
               });
               console.log("added users", users);
@@ -75,11 +74,32 @@ function PrelobbyGame({ status, id }) {
         });
 
         socket.addListener("game-start", (r) => {
+          console.log("game-start", r);
         });
       })
       .catch((error) => {
         console.error(error);
       });
+
+      socket.addListener("game-ping", (r) => {
+        console.log("game-ping", r);
+
+        socket.send({
+          type: "game-pong",
+          data: {
+            roomUniqueId: roomUniqueId,
+            uniqueId: getCookie("uniqueId") || "",
+            id: id,
+          }
+        })
+      });
+
+      return () => {
+        socket.removeListener("user-join");
+        socket.removeListener("user-leave");
+        socket.removeListener("game-start");
+        socket.removeListener("game-ping");
+      }
   }, [])
 
   useEffect(() => {
@@ -110,7 +130,7 @@ function PrelobbyGame({ status, id }) {
           </motion.div>
         </div>
 
-        <StartButton id={id} />
+        <StartButton id={id} roomUniqueId={roomUniqueId} />
       </div>
     </motion.div>
   )

@@ -52,6 +52,18 @@ class SQLiteClass {
             default: "CURRENT_TIMESTAMP"
         },
         {
+            table: "users",
+            column: "userLastRoomPing",
+            type: "TIMESTAMP",
+            default: "CURRENT_TIMESTAMP"
+        },
+        {
+            table: "users",
+            column: "currentRoom",
+            type: "TEXT",
+            default: '0'
+        },
+        {
             table: 'userData',
             column: 'points',
             type: 'INTEGER',
@@ -232,8 +244,8 @@ class SQLiteClass {
 
     public async getRoom(roomUniqueId: string): Promise<any> {
         try {
-            const query = `SELECT * FROM rooms WHERE roomUniqueId = ?`;
-            const data = await this.syncGet(query, [roomUniqueId]);
+            const query = `SELECT * FROM rooms WHERE roomUniqueId = ? OR inviteCode = ?`;
+            const data = await this.syncGet(query, [roomUniqueId, roomUniqueId]);
             return data.result;
         } catch (err: any) {
             console.error(err.message);

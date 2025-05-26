@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { t } from "i18next";
 
 import api from "helpers/api";
+import { useEventEmitter } from "helpers/eventEmitter";
 
 const StyledButtonPrimary = styled(Button)({
   color: "white",
@@ -63,6 +64,7 @@ function JoinGameModal({ on, toggle }) {
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
   const inputRef = useRef(null);
+  const eventEmitter = useEventEmitter();
 
   useEffect(() => {
     if (on) setSubmitted(false);
@@ -80,6 +82,7 @@ function JoinGameModal({ on, toggle }) {
       .catch((error) => {
         console.log(error);
         setSubmitted(t(error.key));
+        eventEmitter.emit("notify", "error", t(error.key || "GENERIC_ERROR"));
       });
   }
 
@@ -137,7 +140,7 @@ function JoinGameModal({ on, toggle }) {
                   if (e.key === "Backspace") inputRef.current.value = inputRef.current.value.slice(0, -1);
 
                   if (isNaN(Number(e.key))) return;
-                  // else if (inputRef.current.value.length >= 5) return;
+                  else if (inputRef.current.value.length >= 5) return;
                   else inputRef.current.value += e.key;
                 }}
               />

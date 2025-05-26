@@ -95,19 +95,33 @@ roomsRouter.post("/validateInviteCode", async (req: Request, res: Response) => {
         const user = getUser(body.uniqueId);
         if (!user) {
             console.error(`User not found with uniqueId ${body.uniqueId}`);
-            res.status(404).json({ key: "JOIN_ERROR_USER_NOT_FOUND", message: 'User not found' });
+            res.status(404).json({ key: "GENERIC_ERROR_USER_NOT_FOUND", message: 'User not found' });
             return;
         }
         let room = findRoomFromRoomOwner(body.uniqueId);
         if (!room) {
             console.error(`Room not found with roomOwner ${body.uniqueId}, trying inviteCode ${body.inviteCode}`);
-            //////            
             room = findRoomFromInviteCode(body.inviteCode);
             if (!room) {
-                console.error(`Room not found with invite code ${body.inviteCode}`);
-                res.status(404).json({ key: "JOIN_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
-                return;
+                console.error(`Room not found with invite code ${body.inviteCode}, trying db`);
+                const dbRoom = await db.getRoom(body.inviteCode);
+                if (!dbRoom[0]) {
+                    console.error(`Room not found with invite code ${body.inviteCode}`);
+                    res.status(404).json({ key: "GENERIC_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
+                    return;
+                }
+                room = new Room();
+                await room.initRoom(dbRoom[0]);
+                await room.validateRoom();
+                addRoom(room);
             }
+        }
+        if (room.users.length === 0) {
+            console.error(`Room ${room.getColumn('roomUniqueId')} is empty, deleting room.`);
+            await room.deleteRoom(room.getColumn('roomUniqueId'));
+            removeRoom(room.getColumn('roomUniqueId'));
+            res.status(404).json({ key: "GENERIC_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
+            return;
         }
         if (room.started) {
             console.error(`Room ${room.getColumn('roomUniqueId')} is already started`);
@@ -131,7 +145,6 @@ roomsRouter.post('/validate', async (req: Request, res: Response) => {
     }
 
     const body = req.body as RoomInstance;
-
     if (!hasProperty(body, 'roomUniqueId')) {
         console.error('Invalid body in /validate - missing roomUniqueId');
         res.status(400).json({ key: "GENERIC_ERROR_INVALID_BODY", message: 'Invalid body' });
@@ -139,6 +152,12 @@ roomsRouter.post('/validate', async (req: Request, res: Response) => {
     }
 
     try {
+        const user = getUser(body.roomOwner);
+        if (!user) {
+            console.error(`User not found with uniqueId ${body.roomOwner}`);
+            res.status(404).json({ key: "GENERIC_ERROR_USER_NOT_FOUND", message: 'User not found' });
+            return;
+        }
         let roomData: any;
         if (hasRoom(body.roomUniqueId)) {
             const room = getRoom(body.roomUniqueId);
@@ -148,6 +167,7 @@ roomsRouter.post('/validate', async (req: Request, res: Response) => {
             await room.initRoom(body);
             await room.validateRoom();
             addRoom(room);
+            room.addUser(user);
             roomData = room.get();
         }
         if (roomData.isPrivate) {
@@ -271,7 +291,11 @@ roomsRouter.post("/start/:roomUniqueId", async (req: Request, res: Response) => 
             res.status(403).json({ key: "GENERIC_ERROR_NOT_ROOM_OWNER", message: 'User is not the room owner' });
             return;
         }
-        room.start(user);
+        if (!room.start(user)) {
+            console.error(`Room ${room.getColumn('roomUniqueId')} could not be started`);
+            res.status(400).json({ key: "GENERIC_ERROR_ROOM_NOT_STARTED", message: 'Room could not be started. Not enough players.' });
+            return;
+        }
         res.json(room.get());
     } catch (e: any) {
         console.error(`Error in /start/:roomUniqueId: ${e.message}`);
