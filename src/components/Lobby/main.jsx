@@ -7,52 +7,38 @@ import PrelobbyGame from "components/Lobby/prelobbygame/main";
 
 import { motion } from 'framer-motion';
 import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import api from "helpers/api";
 import { isNumber } from "helpers/utils";
 import { useEventEmitter } from "helpers/eventEmitter";
 
-async function fetchLobbyData() {
+function MainGame() {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [currentRoom, setCurrentRoom] = useState({});
   const location = useLocation();
   const params = useParams();
   const eventEmitter = useEventEmitter();
 
-  const _lobbyId = String((location.state && location.state.id) || params.id);
-  if (isNumber(_lobbyId)) {
-    try {
-      return await api.validateInviteCode(_lobbyId)
-    } catch(e) {
-      eventEmitter.emit("notify", "error", t(error.key || "GENERIC_ERROR"));
-      return false
-    }
-    // api.validateInviteCode(_lobbyId)
-    //   .then((data) => {
-    //     setCurrentRoom(() => { return data });
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //     setCurrentRoom({});
-    //     navigate("/game");
-    //   });
-  } else {
-    // setCurrentRoom({});
-    // navigate("/game");
-    return false
-  }
-}
-
-function Loading() {
-  return (
-    <>Loading...</>
-  )
-}
-
-function MainGame() {
-  const navigate = useNavigate();
-  // const [currentRoom, setCurrentRoom] = useState({});
-  const currentRoom = use(fetchLobbyData())
-
   const computeLobbyId = () => {
+    const _lobbyId = String((location.state && location.state.id) || params.id);
+    if (isNumber(_lobbyId)) {
+      api.validateInviteCode(_lobbyId)
+        .then((data) => {
+          setCurrentRoom(() => { return data });
+        })
+        .catch((error) => {
+          console.error(error);
+          eventEmitter.emit("notify", "error", t(error.key || "GENERIC_ERROR"))
+          setCurrentRoom({});
+          navigate("/game");
+        });
+    } else {
+      setCurrentRoom({});
+      navigate("/game");
+      eventEmitter.emit("notify", "error", t("GENERIC_ERROR"))
+    }
   }
 
   useEffect(() => {
@@ -81,9 +67,8 @@ function MainGame() {
             });
         }}
       />
-      <Suspense fallback={<Loading />}>
-        <PrelobbyGame room={currentRoom} />
-      </Suspense>
+
+      {currentRoom && currentRoom.inviteCode ? <PrelobbyGame room={currentRoom} /> : null}
     </motion.div>
   )
 }

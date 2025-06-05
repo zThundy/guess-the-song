@@ -21,7 +21,6 @@ function PrelobbyGame({ room }) {
   const center = constraintsRef.current?.getBoundingClientRect();
 
   useOnMountUnsafe(() => {
-    console.log(room.inviteCode, room.roomUniqueId)
     api.getRoomUsers(room.inviteCode)
       .then((data) => {
         setUsers((prev) => {
@@ -127,7 +126,7 @@ function PrelobbyGame({ room }) {
         <div className={classes.content_outer}>
           <motion.div id="_content" className={classes.users} ref={constraintsRef}>
             <Typography variant='h6' className={classes.text}>{t("TOSS_USERS_PLACEHOLDER")} 🙃</Typography>
-            {shouldRender ? <Users customRef={constraintsRef} users={users} /> : null}
+            {shouldRender && (room.users && room.users.length > 0) ? <Users customRef={constraintsRef} users={users} /> : null}
           </motion.div>
         </div>
 

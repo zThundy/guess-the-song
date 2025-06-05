@@ -52,58 +52,55 @@ function Users({ customRef, users }) {
       {
         users.map((user, i) => {
           return (
-            <AnimatePresence>
-              <motion.div
-                key={user.uniqueId}
-                id={"prelobbyUser-" + i}
-                className={`
+            <motion.div
+              id={"prelobbyUser-" + i}
+              className={`
                   ${classes.user}
                   ${classes.grab}
                 `}
-                drag
-                dragConstraints={customRef}
-                dragSnapToOrigin={false}
-                dragPropagation={false}
-                dragElastic={0.1}
-                whileDrag={{
-                  scale: 1.2,
-                  backgroundColor: user.self ? 'rgba(204,102,0,1)' : 'rgba(255,171,43,1)',
+              drag
+              dragConstraints={customRef}
+              dragSnapToOrigin={false}
+              dragPropagation={false}
+              dragElastic={0.1}
+              whileDrag={{
+                scale: 1.2,
+                backgroundColor: user.self ? 'rgba(204,102,0,1)' : 'rgba(255,171,43,1)',
+              }}
+              onDragStart={(e) => {
+                const target = document.getElementById("prelobbyUser-" + i);
+                target.classList.add(classes.grabbing);
+                target.classList.remove(classes.grab);
+              }}
+              onDrag={(e) => { calculateIconRotation(e, i) }}
+              onDragEnd={(e) => {
+                const target = document.getElementById("prelobbyUser-" + i);
+                target.classList.remove(classes.grabbing);
+                target.classList.add(classes.grab);
+              }}
+              style={{
+                left: ((i * 3) + 4) + 'rem',
+              }}
+              initial={{ opacity: 0, scale: 0.0 }}
+              animate={{ opacity: 1, scale: 1.0 }}
+              exit={{ opacity: 0, scale: 0.0 }}
+            >
+              <Badge
+                invisible={!user.self}
+                badgeContent={t("YOU")}
+                color="primary"
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
                 }}
-                onDragStart={(e) => {
-                  const target = document.getElementById("prelobbyUser-" + i);
-                  target.classList.add(classes.grabbing);
-                  target.classList.remove(classes.grab);
+                sx={{
+                  transform: `rotate(${((userAngles && Number(userAngles[i]) !== 0 ? Number(Math.floor(userAngles[i])) : -90) + 90)}deg)`,
                 }}
-                onDrag={(e) => { calculateIconRotation(e, i) }}
-                onDragEnd={(e) => {
-                  const target = document.getElementById("prelobbyUser-" + i);
-                  target.classList.remove(classes.grabbing);
-                  target.classList.add(classes.grab);
-                }}
-                style={{
-                  left: ((i * 3) + 4) + 'rem',
-                }}
-                initial={{ opacity: 0, scale: 0.0 }}
-                animate={{ opacity: 1, scale: 1.0 }}
-                exit={{ opacity: 0, scale: 0.0 }}
               >
-                <Badge
-                  invisible={!user.self}
-                  badgeContent={t("YOU")}
-                  color="primary"
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                  }}
-                  sx={{
-                    transform: `rotate(${((userAngles && Number(userAngles[i]) !== 0 ? Number(Math.floor(userAngles[i])) : -90) + 90)}deg)`,
-                  }}
-                >
-                  {/* <Person /> */}
-                  {user.img && user.img.length > 0 ? <img src={user.img} alt={user.name} onDragStart={(e) => e.preventDefault()} /> : <Person />}
-                </Badge>
-              </motion.div>
-            </AnimatePresence>
+                {/* <Person /> */}
+                {user.img && user.img.length > 0 ? <img src={user.img} alt={user.name} onDragStart={(e) => e.preventDefault()} /> : <Person />}
+              </Badge>
+            </motion.div>
           )
         })
       }

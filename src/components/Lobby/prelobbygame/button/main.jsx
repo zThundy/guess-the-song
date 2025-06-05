@@ -32,12 +32,6 @@ function StartButton({ room }) {
   // const changeHover = (e, hover) => {
   //   setHover(hover);
   // }
-  const box = {
-    width: 100,
-    height: 100,
-    backgroundColor: "#9911ff",
-    borderRadius: 5,
-  }
 
   return (
     <div className={classes.container}>
