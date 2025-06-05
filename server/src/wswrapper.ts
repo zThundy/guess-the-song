@@ -95,7 +95,7 @@ class WSWrapper {
                                                 }
                                                 break;
                                             default:
-                                                console.log("SOCKET-LOG", 'Received unknown message type: ' + data.type + ". Calling listeners for this type.");
+                                                console.debug("SOCKET-LOG", 'Received unknown message type: ' + data.type + ". Calling listeners for this type.");
                                                 this.listeners[data.type]?.forEach((callback: Function) => {
                                                     try {
                                                         callback(data);

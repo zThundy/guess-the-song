@@ -225,7 +225,7 @@ export default class Room {
                 // add 0 if the generated code is less than 5 characters
                 if (this.inviteCode.length < 5) this.inviteCode = "0" + this.inviteCode;
 
-                if (!this.maxPlayers || this.maxPlayers === 0 || this.maxPlayers > 15 || this.maxPlayers < 2 || typeof this.maxPlayers !== 'number') {
+                if (!this.maxPlayers || this.maxPlayers === 0 || this.maxPlayers > 15 || this.maxPlayers < 2 || isNaN(Number(this.maxPlayers))) {
                     console.warn(`Invalid max players input for room ${this.roomUniqueId}, setting to 8. (Current: ${this.maxPlayers})`);
                     this.maxPlayers = 8;
                 }
@@ -322,6 +322,10 @@ export default class Room {
 
     isInRoom(user: User): boolean {
         return this.users.some(u => u.uniqueId === user.uniqueId);
+    }
+
+    isFull(): boolean {
+        return this.users.length >= this.maxPlayers;
     }
 
     isEmpty(): boolean {

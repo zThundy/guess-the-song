@@ -52,7 +52,7 @@ export default class User {
     update(data: UpdateUser) {
         try {
             if (data.column in this) {
-                console.log(`Updating ${data.column} to ${data.value} for user ${this.username}, ${this.uniqueId}`);
+                console.debug(`Updating ${data.column} to ${data.value} for user ${this.username}, ${this.uniqueId}`);
                 (this as any)[data.column] = data.value;
             } else {
                 console.error(`Invalid column: ${data.column}`);

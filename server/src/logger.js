@@ -22,6 +22,7 @@ console.log = log;
 console.info = info;
 console.warn = warn;
 console.error = error;
+console.debug = verbose;
 
 console.log("------------------------- LOG STARTED -------------------------");
 console.log(`Log level: ${logLevel}. Log rotation at: ${rotateAt}`);
@@ -116,7 +117,7 @@ function rotate() {
     });
 }
 
-async function writeLog(type, ...args) {
+async function writeLog(type, shouldSystemPrint, ...args) {
     try {
         // rotate log file
         await rotate();
@@ -145,7 +146,7 @@ async function writeLog(type, ...args) {
         // create message
         const message = Array.from(args).join(" ") + "\r\n"
         // write to stdout
-        process.stdout.write(`[${type}] ${message}`);
+        if (shouldSystemPrint) process.stdout.write(`[${type}] ${message}`);
         // write to log file
         logStream.write(`[${type}] ${message}`);
     } catch (err) {
@@ -160,39 +161,44 @@ function log(...args) {
             case "SQL-LOG":
                 // remove SQL-LOG from args
                 args = args.filter(arg => arg !== "SQL-LOG");
-                writeLog("SQL", ...args);
+                writeLog("SQL", true, ...args);
                 break;
             case "EVENTS-LOG":
                 // remove EVENTS-LOG from args
                 args = args.filter(arg => arg !== "EVENTS-LOG");
-                writeLog("EVENTS", ...args);
+                writeLog("EVENTS", true, ...args);
                 break;
             case "SOCKET-LOG":
                 // remove SOCKET-LOG from args
                 args = args.filter(arg => arg !== "SOCKET-LOG");
-                writeLog("SOCKET", ...args);
+                writeLog("SOCKET", true, ...args);
                 break;
             default:
                 // if loglevel is verbose, write to log
-                writeLog("LOG", ...args);
+                writeLog("LOG", true, ...args);
                 break;
         }
 }
 
 function info(...args) {
-    writeLog("INFO", ...args);
+    writeLog("INFO", true, ...args);
 }
 
 function warn(...args) {
     // if loglevel is verbose or warn, write to log
     if (logLevel === "verbose" || logLevel === "warn")
-        writeLog("WARN", ...args);
+        writeLog("WARN", true, ...args);
 }
 
 function error(...args) {
     // if loglevel is verbose or error, write to log
     if (logLevel === "verbose" || logLevel === "error")
-        writeLog("ERROR", ...args);
+        writeLog("ERROR", true, ...args);
+}
+
+function verbose(...args) {
+    if (logLevel === "verbose")
+        writeLog("VERBOSE", false, ...args)
 }
 
 module.exports = {
