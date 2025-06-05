@@ -58,7 +58,7 @@ export default class Room {
                     const diffTime = Math.abs(currentTime.getTime() - lastPing.getTime());
                     const diffSeconds = Math.ceil(diffTime / 1000);
                     if (diffSeconds > 30) {
-                        console.warn(`User ${user.username} (${user.uniqueId}) has not pinged in the last 30 seconds, removing from room.`);
+                        console.warn(`User ${user.username} (${user.uniqueId}) has not pinged in the last 30 seconds, removing from room ${this.roomUniqueId}.`);
                         this.removeUser(user);
                     }
                 });
@@ -75,7 +75,7 @@ export default class Room {
                     const user = getUser(data.uniqueId);
                     if (user) {
                         user.update({ column: 'userLastRoomPing', value: new Date().toISOString() });
-                        console.log(`User ${user.username} (${user.uniqueId}) pinged the room.`);
+                        console.log(`User ${user.username} (${user.uniqueId}) pinged the room ${this.roomUniqueId}.`);
                     }
                 }
             }
@@ -295,7 +295,7 @@ export default class Room {
                 WSWrapper.send({ route: "room", type: 'user-join', data: { user: user.get(), room: this.get() } });
             }
         }
-        console.log(`${user.username} has joined the room.`);
+        console.log(`${user.username} has joined the room ${this.roomUniqueId}.`);
         let room = this.get();
         if (room.isPrivate) room.inviteCode = "*****";
         WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room } });
@@ -309,7 +309,7 @@ export default class Room {
         if (this.users.some(u => u.uniqueId === user.uniqueId)) {
             WSWrapper.send({ route: "room", type: 'user-leave', data: { user: user.get(), room: this.get() } });
             this.users = this.users.filter(u => u.uniqueId !== user.uniqueId);
-            console.log(`${user.username} has left the room.`);
+            console.log(`${user.username} has left the room ${this.roomUniqueId}.`);
         };
         let room = this.get();
         if (room.isPrivate) room.inviteCode = "*****";
