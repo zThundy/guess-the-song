@@ -3,7 +3,7 @@ import classes from './main.module.css'
 
 import { useEffect, useState } from 'react'
 
-import Header from '../maingameheader/main'
+import Header from '../Header/main'
 
 import { motion } from 'framer-motion'
 import { Button, TextField } from '@mui/material'

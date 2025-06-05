@@ -3,7 +3,7 @@ import classes from "./main.module.css";
 // import { useEffect, useState } from "react";
 
 import JoinGame from "./joingame/main.jsx";
-import Header from "../maingameheader/main.jsx";
+import Header from "../Header/main.jsx";
 
 import { motion } from 'framer-motion';
 

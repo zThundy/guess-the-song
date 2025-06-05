@@ -1,5 +1,5 @@
-import MainPage from "./components/mainpage/main";
-import Notifications from "./components/notifications/main";
+import MainPage from "components/Routes/main";
+import Notifications from "components/Notifications/main";
 import ConnectionCheck from "./ConnectionCheck";
 
 import { BrowserRouter, useNavigate } from "react-router-dom";

@@ -2,12 +2,12 @@ import style from "./main.module.css";
 
 import wave from "./wave.svg";
 
-import MainForm from "../mainform/main";
-import MainGame from "../maingame/main";
-import MainCreate from "../maincreate/main";
-import MainErrorPage from "../mainerrorpage/main";
-import MainAccount from "../mainaccount/main";
-import MainGameList from "../mainlistgame/main";
+import MainForm from "components/LandingPage/main";
+import MainGame from "components/Lobby/main";
+import MainCreate from "components/CreateLobby/main";
+import MainErrorPage from "components/Error/main";
+import MainAccount from "components/Account/main";
+import MainGameList from "components/GamesList/main";
 import Language from './languages';
 
 import { Routes, Route, useLocation } from "react-router-dom";
@@ -77,8 +77,13 @@ function MainPage() {
           />
           <Route
             path="/game"
-            title="Song Guesser - Game"
+            title="Song Guesser - Games"
             Component={MainGameList}
+          />
+          <Route
+            path="/game/:id"
+            title="Song Guesser - Lobby"
+            Component={MainGame}
           />
           <Route
             path="/game/:id"

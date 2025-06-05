@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Badge } from "@mui/material";
 import { Person } from "@mui/icons-material";
 
-function Users({ customRef, id, users }) {
+function Users({ customRef, users }) {
   const { t } = useTranslation();
   const [dragDirection, setDragDirection] = useState({ x: 0, y: 0, angle: 0 });
   const [userAngles, setUserAngles] = useState([]);

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import Header from "../maingameheader/main.jsx";
+import Header from "../Header/main.jsx";
 import CreateLobbyLeft from "./createleft/main.jsx";
 import CreateLobbyRight from "./createright/main.jsx";
 

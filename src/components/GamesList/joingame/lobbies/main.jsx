@@ -74,6 +74,7 @@ function Lobbies() {
                       lobby.users = r.data.room.users;
                       lobby.roomOwner = r.data.room.roomOwner;
                       lobby.rounds = r.data.room.rounds;
+                      lobby.started = r.data.room.started;
                     }
                     return lobby;
                   });
@@ -94,6 +95,7 @@ function Lobbies() {
                   roomUniqueId: r.data.room.roomUniqueId,
                   roomOwner: r.data.room.roomOwner,
                   rounds: r.data.room.rounds,
+                  started: r.data.room.started,
                 });
                 return lobbies;
               })

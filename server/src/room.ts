@@ -75,7 +75,7 @@ export default class Room {
                     const user = getUser(data.uniqueId);
                     if (user) {
                         user.update({ column: 'userLastRoomPing', value: new Date().toISOString() });
-                        console.log(`User ${user.username} (${user.uniqueId}) pinged the room ${this.roomUniqueId}.`);
+                        console.debug(`User ${user.username} (${user.uniqueId}) pinged the room ${this.roomUniqueId}.`);
                     }
                 }
             }
@@ -341,6 +341,7 @@ export default class Room {
         this.started = true;
         console.log(`Starting game in room ${this.roomUniqueId}`);
         WSWrapper.send({ route: "room", type: 'game-start', data: { room: this.get() } });
+        WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room: this.get() } });
         return true;
     }
 }

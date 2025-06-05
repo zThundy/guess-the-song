@@ -1,7 +1,7 @@
 import classes from "./main.module.css";
 
-import Users from "./users/main.jsx";
-import StartButton from "./button/main.jsx";
+import Users from "components/Lobby/prelobbygame/users/main";
+import StartButton from "components/Lobby/prelobbygame/button/main";
 
 import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
@@ -13,7 +13,7 @@ import { getCookie } from "helpers/cookies";
 import { useOnMountUnsafe } from "helpers/remountUnsafe.jsx";
 import socket from 'helpers/socket';
 
-function PrelobbyGame({ status, id, roomUniqueId }) {
+function PrelobbyGame({ room }) {
   const { t } = useTranslation();
   const constraintsRef = useRef(null);
   const [shouldRender, setShouldRender] = useState(false);
@@ -21,7 +21,8 @@ function PrelobbyGame({ status, id, roomUniqueId }) {
   const center = constraintsRef.current?.getBoundingClientRect();
 
   useOnMountUnsafe(() => {
-    api.getRoomUsers(id)
+    console.log(room.inviteCode, room.roomUniqueId)
+    api.getRoomUsers(room.inviteCode)
       .then((data) => {
         setUsers((prev) => {
           let users = [];
@@ -37,7 +38,7 @@ function PrelobbyGame({ status, id, roomUniqueId }) {
         })
 
         socket.addListener("user-join", (r) => {
-          if (r.data.room.inviteCode === id) {
+          if (r.data.room.inviteCode === room.inviteCode) {
             setUsers((prev) => {
               let users = [...prev];
               // check if user already exists
@@ -58,7 +59,7 @@ function PrelobbyGame({ status, id, roomUniqueId }) {
         });
 
         socket.addListener("user-leave", (r) => {
-          if (r.data.room.inviteCode === id) {
+          if (r.data.room.inviteCode === room.inviteCode) {
             setUsers((prev) => {
               let users = [...prev];
               console.log("users", users, r.data.user.uniqueId);
@@ -87,9 +88,9 @@ function PrelobbyGame({ status, id, roomUniqueId }) {
         socket.send({
           type: "game-pong",
           data: {
-            roomUniqueId: roomUniqueId,
+            roomUniqueId: room.roomUniqueId,
             uniqueId: getCookie("uniqueId") || "",
-            id: id,
+            id: room.inviteCode,
           }
         })
       });
@@ -126,11 +127,11 @@ function PrelobbyGame({ status, id, roomUniqueId }) {
         <div className={classes.content_outer}>
           <motion.div id="_content" className={classes.users} ref={constraintsRef}>
             <Typography variant='h6' className={classes.text}>{t("TOSS_USERS_PLACEHOLDER")} 🙃</Typography>
-            {shouldRender ? <Users customRef={constraintsRef} id={id} users={users} /> : null}
+            {shouldRender ? <Users customRef={constraintsRef} users={users} /> : null}
           </motion.div>
         </div>
 
-        <StartButton id={id} roomUniqueId={roomUniqueId} />
+        <StartButton room={room} />
       </div>
     </motion.div>
   )
