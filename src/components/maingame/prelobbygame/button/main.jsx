@@ -13,7 +13,7 @@ import { useEventEmitter } from "helpers/eventEmitter";
 function StartButton({ id, roomUniqueId }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [hover, setHover] = useState(false);
+  // const [hover, setHover] = useState(false);
   const eventEmitter = useEventEmitter();
 
   const handleButtonClick = () => {
@@ -29,25 +29,33 @@ function StartButton({ id, roomUniqueId }) {
 
   }
 
-  const changeHover = (e, hover) => {
-    setHover(hover);
+  // const changeHover = (e, hover) => {
+  //   setHover(hover);
+  // }
+  const box = {
+    width: 100,
+    height: 100,
+    backgroundColor: "#9911ff",
+    borderRadius: 5,
   }
 
   return (
     <div className={classes.container}>
-      <div
+      <motion.div
         variant='contained'
         color='primary'
+        whileHover={{ duration: 0.6, scale: 1.2 }}
+        whileTap={{ duration: 0.1, scale: 0.8 }}
         className={classes.button}
         onClick={handleButtonClick}
         onMouseEnter={(e) => {
-          changeHover(e, true);
+          // changeHover(e, true);
         }}
         onMouseLeave={(e) => {
-          changeHover(e, false);
+          // changeHover(e, false);
         }}
       >
-        <AnimatePresence>
+        {/* <AnimatePresence>
           {hover ? <motion.div
             key={"bg1"}
             initial={{ width: "0%", opacity: 0 }}
@@ -55,9 +63,9 @@ function StartButton({ id, roomUniqueId }) {
             exit={{ width: "0%", opacity: 0 }}
             transition={{ delay: 0, duration: .3, ease: "easeInOut" }}
             className={`${classes.bg} ${classes.bg1}`}></motion.div> : null}
-        </AnimatePresence>
+        </AnimatePresence> */}
         <span className={classes.text}>{t("START_GAME")}</span>
-      </div>
+      </motion.div>
     </div>
   )
 }

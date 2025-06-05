@@ -1,8 +1,9 @@
-import "./main.css";
+import style from "./main.module.css";
+import modal from "./modal.module.css";
 
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import Lobbies from "./lobbies/main";
 
@@ -61,98 +62,93 @@ const StyledButtonPrimary = styled(Button)({
 
 function JoinGameModal({ on, toggle }) {
   const { t } = useTranslation();
-  const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const eventEmitter = useEventEmitter();
 
-  useEffect(() => {
-    if (on) setSubmitted(false);
-  }, [on]);
-
   const handleJoinGame = () => {
+    let message
     const code = inputRef.current.value;
-    if (code === "") return setSubmitted(t("JOIN_ERROR_GAME_CODE"));
-    if (code.length !== 5) return setSubmitted(t("JOIN_ERROR_CODE_LENGTH"));
-    if (isNaN(Number(code))) return setSubmitted(t("JOIN_ERROR_CODE_TYPE"));
+    if (code === "") message = t("JOIN_ERROR_GAME_CODE");
+    if (code.length !== 5 && !message) message = t("JOIN_ERROR_CODE_LENGTH");
+    if (isNaN(Number(code)) && !message) message = t("JOIN_ERROR_CODE_TYPE");
     api.validateInviteCode(code)
       .then((data) => {
         navigate("/game/" + data.inviteCode, { state: { id: data.inviteCode } });
       })
       .catch((error) => {
         console.log(error);
-        setSubmitted(t(error.key));
-        eventEmitter.emit("notify", "error", t(error.key || "GENERIC_ERROR"));
+        if (error.key && !message) message = error.key;
+        eventEmitter.emit("notify", "error", t(message || "GENERIC_ERROR"));
       });
   }
 
   return (
-    <Zoom in={on} timeout={300} unmountOnExit>
-      <motion.div
-        initial={{
-          backgroundColor: "rgba(0, 0, 0, 0.6)",
-          borderRadius: "200rem",
-        }}
-        animate={{
-          backgroundColor: "rgba(0, 0, 0, 0.2)",
-          borderRadius: "0rem",
-        }}
-        exit={{
-          backgroundColor: "rgba(0, 0, 0, 0.6)",
-          borderRadius: "200rem",
-        }}
-        className={"joinGameModal " + (!on ? "fadeOutModal" : "")}
-      >
-        <ClickAwayListener onClickAway={() => toggle(false)}>
-          <motion.div
-            initial={{ scale: 1 }}
-            animate={{ scale: [1.2, 1] }}
-            exit={{ scale: 1 }}
-            transition={{ delay: 0.3 }}
-            className="modalContainer"
-          >
-            <Button className="modalCloseButton" onClick={() => toggle(false)}>
-              <Close />
-            </Button>
-            <Typography variant="h4" className="modalTitle">{t("JOIN_GAME_MODAL_TITLE")}</Typography>
-            <Typography variant="body1" className="modalText">{t("JOIN_GAME_MODAL_DESCRIPTION")}</Typography>
-            <Paper
-              className="modalInput"
-              component="form"
-              sx={{
-                p: '2px 4px',
-                display: 'flex',
-                alignItems: 'center',
-                width: 400
-              }}
+      <Zoom in={on} timeout={300} unmountOnExit>
+        <motion.div
+          initial={{
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            borderRadius: "200rem",
+          }}
+          animate={{
+            backgroundColor: "rgba(0, 0, 0, 0.2)",
+            borderRadius: "0rem",
+          }}
+          exit={{
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            borderRadius: "200rem",
+          }}
+          // className={"joinGameModal " + (!on ? "fadeOutModal" : "")}
+          className={modal.joinGameModal}
+        >
+          <ClickAwayListener onClickAway={() => toggle(false)}>
+            <motion.div
+              initial={{ scale: 1 }}
+              animate={{ scale: [1.2, 1] }}
+              exit={{ scale: 1 }}
+              transition={{ delay: 0.3 }}
+              className={modal.modalContainer}
             >
-              <InputBase
-                autoFocus
-                sx={{ ml: 1, flex: 1 }}
-                placeholder={t("JOIN_GAME_MODAL_PLACEHOLDER")}
-                inputProps={{ 'aria-label': 'enter game code' }}
-                inputRef={inputRef}
-                onChange={() => setSubmitted(false)}
-                onKeyDown={(e) => {
-                  e.preventDefault();
-                  if (e.key === "Enter") handleJoinGame();
-                  if (e.key === "Escape") toggle(false);
-                  if (e.key === "Backspace") inputRef.current.value = inputRef.current.value.slice(0, -1);
-
-                  if (isNaN(Number(e.key))) return;
-                  else if (inputRef.current.value.length >= 5) return;
-                  else inputRef.current.value += e.key;
+              <Button className={modal.modalCloseButton} onClick={() => toggle(false)}>
+                <Close />
+              </Button>
+              <Typography variant="h4" className={modal.modalTitle}>{t("JOIN_GAME_MODAL_TITLE")}</Typography>
+              <Typography variant="body1" className={modal.modalText}>{t("JOIN_GAME_MODAL_DESCRIPTION")}</Typography>
+              <Paper
+                className={modal.modalInput}
+                component="form"
+                sx={{
+                  p: '2px 4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: 400
                 }}
-              />
-              <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleJoinGame}>
-                <East />
-              </IconButton>
-            </Paper>
-            { submitted ? <Typography variant="body1" className="modalError">{submitted}</Typography> : null }
-          </motion.div>
-        </ClickAwayListener>
-      </motion.div>
-    </Zoom>
+              >
+                <InputBase
+                  autoFocus
+                  sx={{ ml: 1, flex: 1 }}
+                  placeholder={t("JOIN_GAME_MODAL_PLACEHOLDER")}
+                  inputProps={{ 'aria-label': 'enter game code' }}
+                  inputRef={inputRef}
+                  onKeyDown={(e) => {
+                    e.preventDefault();
+                    if (e.key === "Enter") handleJoinGame();
+                    if (e.key === "Escape") toggle(false);
+                    if (e.key === "Backspace") inputRef.current.value = inputRef.current.value.slice(0, -1);
+
+                    if (isNaN(Number(e.key))) return;
+                    else if (inputRef.current.value.length >= 5) return;
+                    else inputRef.current.value += e.key;
+                  }}
+                />
+                <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleJoinGame}>
+                  <East />
+                </IconButton>
+              </Paper>
+            </motion.div>
+          </ClickAwayListener>
+        </motion.div>
+      </Zoom>
   );
 }
 
@@ -175,12 +171,12 @@ function JoinGame({ status }) {
   return (
     <>
       <JoinGameModal status={status} on={joinGameToggle} toggle={setJoinGameToggle} />
-      <div className="joinOrCreateContainer">
-        <div className="joinOrCreateButtons">
+      <div className={style.joinOrCreateContainer}>
+        <div className={style.joinOrCreateButtons}>
           <StyledButtonPrimary variant="contained" endIcon={<Add />} onClick={handleCreateGame}>{t("JOIN_GAME_SCREEN_BUTTON_1")}</StyledButtonPrimary>
           <StyledButtonPrimary variant="contained" endIcon={<Login />} onClick={handleJoinGame}>{t("JOIN_GAME_SCREEN_BUTTON_2")}</StyledButtonPrimary>
         </div>
-        <div className="joinOrCreateListOfLobbies">
+        <div className={style.joinOrCreateListOfLobbies}>
           <Lobbies />
         </div>
       </div>

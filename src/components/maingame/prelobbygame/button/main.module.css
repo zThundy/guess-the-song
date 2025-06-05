@@ -14,7 +14,7 @@
   width: 40%;
   height: 40%;
   border: 1px solid #f5f5f5;
-  border-radius: 5rem;
+  border-radius: 1rem;
   font-size: 1.5rem;
   font-weight: 600;
   color: white;
@@ -23,13 +23,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.2s;
   overflow: hidden;
 }
 
 .button:hover {
-  font-size: 1.8rem;
-  transform: translateY(-1rem) scale(1.1);
+  /* font-size: 1.8rem; */
+  /* transform: translateY(-1rem) scale(1.1); */
   box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
 }
 
@@ -44,17 +43,5 @@
   height: 100%;
   width: 0%;
   display: inline;
-}
-
-.button .bg1 {
-  background: linear-gradient(90deg, rgba(255 170 43 / 0) 0%, rgb(255 194 101) 50%, rgba(255 170 43 / 0) 100%);
-}
-
-.button .bg2 {
-  background-color: green;
-}
-
-.button .bg3 {
-  background-color: blue;
 }
 

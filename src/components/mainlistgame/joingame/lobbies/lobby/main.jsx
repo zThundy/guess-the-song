@@ -5,12 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { Button, ButtonGroup, Grid, Tooltip } from "@mui/material";
-import { LockOutlined, LockOpen, HeadphonesOutlined } from "@mui/icons-material";
+import { LockOutlined, LockOpen, HeadphonesOutlined, Block } from "@mui/icons-material";
 
 import { useEventEmitter } from "helpers/eventEmitter";
 import api from "helpers/api";
 
-function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inviteCode, difficulty, started }) {
+function JoinableLobby({ name, players, maxPlayers, locked, full, category, genre, inviteCode, difficulty, started }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
@@ -52,8 +52,9 @@ function JoinableLobby({ name, players, maxPlayers, locked, category, genre, inv
       </div>
       <ButtonGroup className={style.joinButtonContainer} variant="contained" aria-label="outlined primary button group">
         <Button className={style.joinButton} disabled={locked} onClick={handleJoinGame}>{t("JOIN")}</Button>
-        {locked ? <Tooltip title={t("CREATE_PRIVATE")} placement="top"><LockOutlined className={style.joinLockedIcon} color="error" /></Tooltip> : <Tooltip title={t("CREATE_PUBLIC")} placement="top"><LockOpen className={style.joinLockedIcon} color="success" /></Tooltip>}
-        {started ? <Tooltip title={t("LOBBY_STARTED")} placement="top"><HeadphonesOutlined className={style.joinLockedIcon} color="error" /></Tooltip> : <Tooltip title={t("LOBBY_WAITING")} placement="top"><HeadphonesOutlined className={style.joinLockedIcon} color="success" /></Tooltip>}
+        {locked && !full ? <Tooltip title={t("CREATE_PRIVATE")} placement="top"><LockOutlined className={style.joinLockedIcon} color="error" /></Tooltip> : <Tooltip title={t("CREATE_PUBLIC")} placement="top"><LockOpen className={style.joinLockedIcon} color="success" /></Tooltip>}
+        {started && !full ? <Tooltip title={t("LOBBY_STARTED")} placement="top"><HeadphonesOutlined className={style.joinLockedIcon} color="error" /></Tooltip> : <Tooltip title={t("LOBBY_WAITING")} placement="top"><HeadphonesOutlined className={style.joinLockedIcon} color="success" /></Tooltip>}
+        {full ? <Tooltip title={t("LOBBY_FULL")} placement="top"><Block className={style.joinLockedIcon} color="error" /></Tooltip> : null}
       </ButtonGroup>
     </div>
   )

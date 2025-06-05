@@ -1,4 +1,4 @@
-import "./main.css";
+import style from "./main.module.css";
 
 import wave from "./wave.svg";
 
@@ -11,23 +11,57 @@ import MainGameList from "../mainlistgame/main";
 import Language from './languages';
 
 import { Routes, Route, useLocation } from "react-router-dom";
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 function MainPage() {
   const location = useLocation();
 
   return (
-    <div className="main">
+    <div className={style.main}>
       <Language />
 
-      <div className="color first"></div>
-      <div className="color second"></div>
-      <div className="color third"></div>
-      <img
+      <motion.div
+        initial={{ height: "0rem", width: "0rem", scale: "0" }}
+        transition={{ delay: 0, duration: 1.0, ease: [ 0.57, 0.4, 0.55, 1.17 ] }}
+        animate={{
+          height: "50rem",
+          width: "50rem",
+          scale: ["0", "2", "30"],
+        }}
+        className={`${style.color} ${style.first}`}
+      ></motion.div>
+
+      <motion.div
+        initial={{ height: "0rem", width: "0rem", scale: "0" }}
+        transition={{ delay: 0.5, duration: 1.1, ease: [ 0.57, 0.4, 0.55, 1.17 ] }}
+        animate={{
+          height: "50rem",
+          width: "50rem",
+          scale: ["0", "2", "30"],
+        }}
+        className={`${style.color} ${style.second}`}
+      ></motion.div>
+
+      <motion.div
+        initial={{ height: "0rem", width: "0rem", scale: "0" }}
+        transition={{ delay: 0.5, duration: 1.4, ease: [ 0.57, 0.4, 0.55, 1.17 ] }}
+        animate={{
+          height: "50rem",
+          width: "50rem",
+          scale: ["0", "2", "30"],
+        }}
+        className={`${style.color} ${style.third}`}
+      ></motion.div>
+
+      <motion.img
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 1.4, ease: ["easeInOut"] }}
         src={wave}
-        className="wave"
+        className={style.wave}
         alt="wave"
       />
+
       <AnimatePresence mode='wait'>
         <Routes location={location} key={location.pathname}>
           <Route

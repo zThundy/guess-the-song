@@ -175,7 +175,8 @@ function Lobbies() {
                 name={lobby.roomName}
                 players={lobby.users.length}
                 maxPlayers={lobby.maxPlayers}
-                locked={lobby.isPrivate ? true : false || lobby.users.length >= lobby.maxPlayers}
+                locked={lobby.isPrivate ? true : false}
+                full={lobby.users.length >= lobby.maxPlayers}
                 category={lobby.category}
                 genre={lobby.genre}
                 difficulty={lobby.difficulty}
