@@ -4,68 +4,33 @@ import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
-import { MusicNote, Videocam, Movie, SportsEsports, HourglassBottom } from "@mui/icons-material";
-import { Button } from "@mui/material";
+import { Button, Skeleton, Icon } from "@mui/material";
+import { MusicNote } from "@mui/icons-material";
+import * as Icons from "@mui/icons-material"
 
-const _categories = [
-  {
-    name: "Music",
-    icon: <MusicNote />
-  },
-  {
-    name: "Movies",
-    icon: <Videocam />
-  },
-  {
-    name: "TV Shows",
-    icon: <Movie />
-  },
-  {
-    name: "Video Games",
-    icon: <SportsEsports />
-  },
-  {
-    name: "Coming soon...",
-    icon: <HourglassBottom />,
-    disabled: true
+import { useOnMountUnsafe } from "helpers/remountUnsafe";
+import { useEventEmitter } from "helpers/eventEmitter";
+import { convertSnakeToPaskalIcon } from "helpers/utils";
+import api from "helpers/api"
+
+function LoadingSkeleton() {
+  let elements = new Array()
+
+  for (var i = 0; i < 10; i++) {
+    elements.push(
+      <Skeleton
+        key={i}
+        width={"calc(10vw - 20px)"}
+        height={"calc(10vw - 20px)"}
+        style={{ margin: "1rem", borderRadius: ".5rem" }}
+        variant="rectangular"
+        animation="wave"
+      />
+    )
   }
-]
-
-const _generes = [
-  {
-    name: "Rock",
-  },
-  {
-    name: "Pop",
-  },
-  {
-    name: "Jazz",
-  },
-  {
-    name: "Classical",
-  },
-  {
-    name: "Hip Hop",
-  },
-  {
-    name: "Rap",
-    icon: <MusicNote />
-  },
-  {
-    name: "Country",
-    icon: <Movie />
-  },
-  {
-    name: "Metal",
-  },
-  {
-    name: "Japanese",
-  },
-  {
-    name: "Korean",
-    icon: <SportsEsports />
-  },
-]
+  
+  return (<>{elements}</>)
+}
 
 function DifficutlyButtons({ setGlobalChoices, choices, setChoices }) {
   const { t } = useTranslation();
@@ -100,30 +65,45 @@ function DifficutlyButtons({ setGlobalChoices, choices, setChoices }) {
   )
 }
 
-function Generes({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTimeout }) {
-  const [selectedGenere, setSelectedGenere] = useState(0);
-  const [generes, setGeneres] = useState(_generes);
+function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTimeout }) {
+  const { t } = useTranslation();
+  const [selectedGenres, setSelectedGenres] = useState(0);
+  const [genres, setGenres] = useState([]);
   const genereRef = useRef(null);
+  const eventEmitter = useEventEmitter();
+
+  useOnMountUnsafe(() => {
+    api.getGenres()
+      .then((data) => {
+        console.log(data)
+        setGenres(data);
+      })
+      .catch((error) => {
+        console.error(error);
+        eventEmitter.emit("notify", "error", t(error.key))
+      })
+  }, [choices.category])
+
   if (!choices.category) return null;
 
-  const handleScrollGenere = (e) => {
+  const handleScrollGenres = (e) => {
     if (scrollTimeout) return;
     enableTimeout();
-    if (e.deltaY > 0 && generes[selectedGenere + 1] && generes[selectedGenere + 1].disabled) return;
+    if (e.deltaY > 0 && genres[selectedGenres + 1] && genres[selectedGenres + 1].disabled) return;
     if (e.deltaY > 0) {
-      setSelectedGenere(prevIndex => Math.min(prevIndex + 1, genereRef.current.children.length - 1));
+      setSelectedGenres(prevIndex => Math.min(prevIndex + 1, genereRef.current.children.length - 1));
     } else {
-      setSelectedGenere(prevIndex => Math.max(prevIndex - 1, 0));
+      setSelectedGenres(prevIndex => Math.max(prevIndex - 1, 0));
     }
-    genereRef.current.children[selectedGenere].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
+    genereRef.current.children[selectedGenres].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
   }
 
   const handleMouseClick = (e) => {
     const id = Number(e.currentTarget.dataset.id);
-    if (generes[id].disabled) return;
-    setSelectedGenere(id);
-    setGlobalChoices({ type: "genre", value: generes[id] });
-    setChoices({ category: choices.category, genre: generes[id], difficulty: choices.difficulty });
+    if (genres[id].disabled) return;
+    setSelectedGenres(id);
+    setGlobalChoices({ type: "genre", value: genres[id] });
+    setChoices({ category: choices.category, genre: genres[id], difficulty: choices.difficulty });
     genereRef.current.children[id].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
   }
 
@@ -133,24 +113,24 @@ function Generes({ setGlobalChoices, choices, setChoices, enableTimeout, scrollT
       animate={{ scale: [0, 1, 1.1, 1], rotate: [0, 5, -5, 8, -8, 0] }}
       transition={{ duration: 0.4 }}
       className="createSelectContainer"
-      onWheel={handleScrollGenere}
+      onWheel={handleScrollGenres}
     >
-      <div className="createSelectGenere" ref={genereRef}>
+      <div className="createSelectGenres" ref={genereRef}>
         {
-          generes.map((genre, index) => {
+          genres.length > 0 ? genres.map((genre, index) => {
             return (
               <div className="genre" key={index} onMouseDown={handleMouseClick} data-id={index}>
-                {index === selectedGenere && <div className="createSelectArrowDown"></div>}
+                {index === selectedGenres && <div className="createSelectArrowDown"></div>}
 
                 <div className="genereIcon">
-                  {genre.icon ? genre.icon : <MusicNote />}
+                  {genre.icon ? (<Icon>{convertSnakeToPaskalIcon(genre.icon)}</Icon>) : <MusicNote />}
                 </div>
-                <div className="createGenereName">
+                <div className="createGenresName">
                   {genre.name}
                 </div>
               </div>
             )
-          })
+          }) : <LoadingSkeleton />
         }
       </div>
     </motion.div>
@@ -158,12 +138,26 @@ function Generes({ setGlobalChoices, choices, setChoices, enableTimeout, scrollT
 }
 
 function CreateLobbyLeft({ setGlobalChoices }) {
-  const [categories, setCategories] = useState(_categories);
+  const { t } = useTranslation();
+  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [scrollTimeout, setScrollTimeout] = useState(false);
   const [choices, setChoices] = useState({ genre: null, category: null, difficulty: null });
+  const eventEmitter = useEventEmitter();
 
   const categoryRef = useRef(null);
+
+  useOnMountUnsafe(() => {
+    api.getCategories()
+      .then((data) => {
+        console.log(data)
+        setCategories(data);
+      })
+      .catch((error) => {
+        console.error(error)
+        eventEmitter.emit("notify", "error", t(error.key))
+      })
+  }, [])
 
   const enableTimeout = () => {
     setScrollTimeout(true);
@@ -197,24 +191,24 @@ function CreateLobbyLeft({ setGlobalChoices }) {
       <div className="createSelectContainer" onWheel={handleScrollCategory}>
         <div className="createSelectCategory" ref={categoryRef}>
           {
-            categories.map((category, index) => {
+            categories.length > 0 ? categories.map((category, index) => {
               return (
                 <div className="category" key={index} onMouseDown={handleMouseClick} data-id={index} data-disabled={category.disabled}>
                   {index === selectedCategory && <div className="createSelectArrowDown"></div>}
 
                   <div className="categoryIcon">
-                    {category.icon}
+                    <Icon>{convertSnakeToPaskalIcon(category.icon)}</Icon>
                   </div>
                   <div className="createCategoryName">
                     {category.name}
                   </div>
                 </div>
               )
-            })
+            }) : <LoadingSkeleton />
           }
         </div>
       </div>
-      <Generes
+      <Genres
         enableTimeout={enableTimeout}
         scrollTimeout={scrollTimeout}
         setGlobalChoices={setGlobalChoices}

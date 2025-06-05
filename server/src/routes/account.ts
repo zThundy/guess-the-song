@@ -113,5 +113,4 @@ accountRouter.post('/validate', async (req: Request, res: Response) => {
     }
 });
 
-
 export default accountRouter;

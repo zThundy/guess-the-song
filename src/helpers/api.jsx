@@ -191,6 +191,44 @@ function startGame(roomUniqueId) {
   });
 }
 
+function getGenres() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await fetch(`${BASE_URL}/create/genres`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+
+      if (result.ok) return resolve(await result.json());
+      return reject(_handleError(await result.json()));
+    } catch (error) {
+      reject({ key: "GENERIC_ERROR" });
+      console.log(error);
+    }
+  });
+}
+
+function getCategories() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await fetch(`${BASE_URL}/create/categories`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+
+      if (result.ok) return resolve(await result.json());
+      return reject(_handleError(await result.json()));
+    } catch (error) {
+      reject({ key: "GENERIC_ERROR" });
+      console.log(error);
+    }
+  });
+}
+
 function _handleError(error) {
   if (error.key) return error;
   return { key: "GENERIC_ERROR" };
@@ -206,5 +244,7 @@ export default {
   validateInviteCode,
   getRoomUsers,
   leaveRoom,
-  startGame
+  startGame,
+  getGenres,
+  getCategories
 }

@@ -39,3 +39,14 @@
 .category:hover .categoryIcon svg {
   font-size: 500%;
 }
+
+.categoryIcon span {
+  transition: all .1s ease-in-out;
+  font-size: 400%;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* on hover category change size of svg */
+.category:hover .categoryIcon span {
+  font-size: 500%;
+}

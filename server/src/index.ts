@@ -52,10 +52,12 @@ app.get('/', (req: Request, res: Response) => {
 
 import accountRouter from "./routes/account";
 import roomsRouter from "./routes/rooms";
+import createRouter from "./routes/create";
 
 try {
     app.use('/account', accountRouter);
     app.use('/rooms', roomsRouter);
+    app.use("/create", createRouter)
 } catch (e: any) {
     console.error(`Error in routes: ${e.message}`);
 }
