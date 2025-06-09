@@ -65,24 +65,32 @@ function DifficutlyButtons({ setGlobalChoices, choices, setChoices }) {
   )
 }
 
-function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTimeout }) {
+function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTimeout, selectedCategoryId }) {
   const { t } = useTranslation();
   const [selectedGenres, setSelectedGenres] = useState(0);
   const [genres, setGenres] = useState([]);
   const genereRef = useRef(null);
   const eventEmitter = useEventEmitter();
 
-  useOnMountUnsafe(() => {
+  useEffect(() => {
+    if (selectedCategoryId === "" || selectedCategoryId.length === 0) return;
+    setSelectedGenres(0);
     api.getGenres()
       .then((data) => {
-        console.log(data)
-        setGenres(data);
+        let generesToDisplay = []
+        for (let i in data) {
+          if (data[i].allowedCategory.includes(selectedCategoryId)) {
+            generesToDisplay.push(data[i])
+          }
+        }
+        setGenres(generesToDisplay);
+        genereRef.current.children[0].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
       })
       .catch((error) => {
         console.error(error);
         eventEmitter.emit("notify", "error", t(error.key))
       })
-  }, [choices.category])
+  }, [selectedCategoryId])
 
   if (!choices.category) return null;
 
@@ -141,6 +149,7 @@ function CreateLobbyLeft({ setGlobalChoices }) {
   const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(0);
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [scrollTimeout, setScrollTimeout] = useState(false);
   const [choices, setChoices] = useState({ genre: null, category: null, difficulty: null });
   const eventEmitter = useEventEmitter();
@@ -150,7 +159,6 @@ function CreateLobbyLeft({ setGlobalChoices }) {
   useOnMountUnsafe(() => {
     api.getCategories()
       .then((data) => {
-        console.log(data)
         setCategories(data);
       })
       .catch((error) => {
@@ -170,8 +178,11 @@ function CreateLobbyLeft({ setGlobalChoices }) {
     if (e.deltaY > 0 && categories[selectedCategory + 1] && categories[selectedCategory + 1].disabled) return;
     if (e.deltaY > 0) {
       setSelectedCategory(prevIndex => Math.min(prevIndex + 1, categoryRef.current.children.length - 1));
+      setSelectedCategoryId(categories[selectedCategory + 1].id)
     } else {
+      if (selectedCategory === 0) return;
       setSelectedCategory(prevIndex => Math.max(prevIndex - 1, 0));
+      setSelectedCategoryId(categories[selectedCategory - 1].id)
     }
     categoryRef.current.children[selectedCategory].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
   }
@@ -179,7 +190,9 @@ function CreateLobbyLeft({ setGlobalChoices }) {
   const handleMouseClick = (e) => {
     // get id from dataset
     const id = Number(e.currentTarget.dataset.id);
+    const categoryid = String(e.currentTarget.dataset.categoryid)
     if (categories[id].disabled) return;
+    setSelectedCategoryId(categoryid);
     setSelectedCategory(id);
     setGlobalChoices({ type: "category", value: categories[id] });
     setChoices({ category: categories[id], genre: choices.genre, difficulty: choices.difficulty });
@@ -193,7 +206,7 @@ function CreateLobbyLeft({ setGlobalChoices }) {
           {
             categories.length > 0 ? categories.map((category, index) => {
               return (
-                <div className="category" key={index} onMouseDown={handleMouseClick} data-id={index} data-disabled={category.disabled}>
+                <div className="category" key={index} onMouseDown={handleMouseClick} data-id={index} data-disabled={category.disabled} data-categoryid={category.id}>
                   {index === selectedCategory && <div className="createSelectArrowDown"></div>}
 
                   <div className="categoryIcon">
@@ -214,6 +227,7 @@ function CreateLobbyLeft({ setGlobalChoices }) {
         setGlobalChoices={setGlobalChoices}
         setChoices={setChoices}
         choices={choices}
+        selectedCategoryId={selectedCategoryId}
       />
       <DifficutlyButtons
         setGlobalChoices={setGlobalChoices}

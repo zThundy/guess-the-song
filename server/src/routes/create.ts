@@ -14,44 +14,56 @@ createRouter.get("/genres", (req: Request, res: Response) => {
   res.json([
     {
       name: "Rock",
+      allowedCategory: ["music", "movies", "tvshows", "videogames"]
     },
     {
       name: "New",
-      icon: "AddCircle"
+      icon: "AddCircle",
+      allowedCategory: ["music", "movies", "tvshows", "videogames"]
     },
     {
       name: "Sanremo",
-      icon: "LibraryMusic"
+      icon: "LibraryMusic",
+      allowedCategory: ["music"]
     },
     {
       name: "Pop",
+      allowedCategory: ["music", "movies", "tvshows", "videogames"]
     },
     {
       name: "Jazz",
+      allowedCategory: ["music", "movies", "tvshows", "videogames"]
     },
     {
       name: "Classical",
+      allowedCategory: ["music", "movies", "tvshows", "videogames"]
     },
     {
       name: "Hip Hop",
+      allowedCategory: ["music", "movies", "tvshows", "videogames"]
     },
     {
       name: "Rap",
-      icon: "MusicNote"
+      icon: "MusicNote",
+      allowedCategory: ["music", "movies", "tvshows", "videogames"]
     },
     {
       name: "Country",
-      icon: "Movie"
+      icon: "Movie",
+      allowedCategory: ["music", "movies", "tvshows", "videogames"]
     },
     {
       name: "Metal",
+      allowedCategory: ["music", "movies"]
     },
     {
       name: "Japanese",
+      allowedCategory: ["music", "movies", "tvshows", "videogames"]
     },
     {
       name: "Korean",
-      icon: "SportsEsports"
+      icon: "SportsEsports",
+      allowedCategory: ["music", "movies", "tvshows", "videogames"]
     },
   ])
 })
@@ -61,18 +73,22 @@ createRouter.get("/categories", (req: Request, res: Response) => {
 
   res.json([
     {
+      id: "music",
       name: "Music",
       icon: "MusicNote"
     },
     {
+      id: "movies",
       name: "Movies",
       icon: "Videocam"
     },
     {
+      id: "tvshows",
       name: "TV Shows",
       icon: "Movie"
     },
     {
+      id: "videogames",
       name: "Video Games",
       icon: "SportsEsports"
     },
