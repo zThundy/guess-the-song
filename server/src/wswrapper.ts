@@ -1,4 +1,5 @@
 const WebSocketServer = require('websocket').server;
+const { standardOut } = require("./logger.js");
 import { addUser, getUser } from './states';
 import User from './user';
 
@@ -51,7 +52,7 @@ class WSWrapper {
         return this;
     }
 
-    registerHandlers() {
+    private registerHandlers() {
         return new Promise((resolve, reject) => {
             this.ws.on('request', (request: any) => {
                 try {
@@ -136,14 +137,14 @@ class WSWrapper {
         });
     }
 
-    on(event: string, callback: Function) {
+    public on(event: string, callback: Function) {
         if (!this.ws) return console.error("SOCKET-LOG", "WSWrapper not initialized.");
 
         this.listeners[event] = this.listeners[event] || [];
         this.listeners[event].push(callback);
     }
 
-    off(event: string, callback: Function) {
+    public off(event: string, callback: Function) {
         if (!this.ws) return console.error("SOCKET-LOG", "WSWrapper not initialized.");
 
         if (this.listeners[event]) {
@@ -151,7 +152,7 @@ class WSWrapper {
         }
     }
 
-    send(data: any) {
+    public send(data: any) {
         if (!this.ws) return console.error("SOCKET-LOG", "WSWrapper not initialized.");
 
         if (typeof data === "object") {
@@ -162,6 +163,17 @@ class WSWrapper {
         this.ws.connections.forEach((connection: any) => {
             connection.sendUTF(data);
         });
+    }
+
+    public sendTo(data: any, ip: string) {
+        if (!this.ws) return console.error("SOCKET-LOG", "Trying to send data to IP but WSWrapper is not initialized.");
+        if (!ip || ip.length === 0) return console.error("SOCKET-LOG", "Trying to send data to IP but no IP was provided.")
+
+
+        if (typeof data === "object") {
+            data.serverTime = new Date().toISOString();
+            data = JSON.stringify(data);
+        }
     }
 }
 

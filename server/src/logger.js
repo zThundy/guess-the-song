@@ -201,9 +201,15 @@ function verbose(...args) {
         writeLog("VERBOSE", false, ...args)
 }
 
+function standardOut(...args) {
+    if (logLevel === "verbose")
+        process.stdout.write(args);
+}
+
 module.exports = {
     log,
     info,
     warn,
-    error
+    error,
+    standardOut
 };
