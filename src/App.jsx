@@ -35,13 +35,10 @@ const theme = createTheme({
 });
 
 function App() {
-
   useOnMountUnsafe(() => {
     api.userAction()
       .then(user => {
-        if (!user) {
-          throw new Error("User not found");
-        }
+        if (!user) return console.error("User not found");
 
         setCookie("username", user.username, 365);
         setCookie("uniqueId", user.uniqueId, 365);
