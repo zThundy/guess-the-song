@@ -58,7 +58,7 @@ export default class Room {
                     const diffTime = Math.abs(currentTime.getTime() - lastPing.getTime());
                     const diffSeconds = Math.ceil(diffTime / 1000);
                     if (diffSeconds > 30) {
-                        console.warn(`User ${user.username} (${user.uniqueId}) has not pinged in the last 30 seconds, removing from room ${this.roomUniqueId}.`);
+                        console.warn(`[ROOM-MANAGER] User ${user.username} (${user.uniqueId}) has not pinged in the last 30 seconds, removing from room ${this.roomUniqueId}.`);
                         this.removeUser(user);
                     }
                 });
@@ -75,28 +75,29 @@ export default class Room {
                     const user = getUser(data.uniqueId);
                     if (user) {
                         user.update({ column: 'userLastRoomPing', value: new Date().toISOString() });
-                        console.debug(`User ${user.username} (${user.uniqueId}) pinged the room ${this.roomUniqueId}.`);
+                        console.debug(`[ROOM-MANAGER] User ${user.username} (${user.uniqueId}) pinged the room ${this.roomUniqueId}.`);
                     }
                 }
             }
         });
 
-        console.log(`Room "${this.roomUniqueId || "UNK"}" class has been initialized - ROOM NOT YET READY.`);
+        console.log(`[ROOM-MANAGER] Room "${this.roomUniqueId || "UNK"}" class has been initialized - ROOM NOT YET READY.`);
     }
 
     public deleteRoom(): void {
-        console.log(`Deleting room ${this.roomUniqueId}`);
+        console.log(`[ROOM-MANAGER] Deleting room ${this.roomUniqueId}. Sending message "lobby-refresh" to all clients.`);
         WSWrapper.send({ route: "room", type: "lobby-refresh", action: "delete", data: { room: this.get() } });
+        console.log(`[ROOM-MANAGER] Deleting room ${this.roomUniqueId}. Message sent.`);
         db.deleteRoom(this.roomUniqueId);
     }
 
     public update(key: string, value: any): void {
         if (key in this) {
-            console.log(`Updating ${key} to ${value}`);
+            console.log(`[ROOM-MANAGER] Updating ${key} to ${value}`);
             (this as any)[key] = value;
             // WSWrapper.send({ route: "room", type: 'update', column: key, value: value });
         } else {
-            console.error(`Invalid key: ${key}`);
+            console.error(`[ROOM-MANAGER] Invalid key: ${key}`);
         }
     }
 
@@ -104,7 +105,7 @@ export default class Room {
         if (column in this) {
             return (this as any)[column];
         } else {
-            console.error(`Invalid column: ${column}`);
+            console.error(`[ROOM-MANAGER] Invalid column: ${column}`);
             return null;
         }
     }
@@ -113,11 +114,11 @@ export default class Room {
         return new Promise(async (resolve, reject) => {
             let user = getUser(this.roomOwner);
             if (!user) {
-                console.error("User not found, trying database.");
+                console.error("[ROOM-MANAGER] User not found, trying database.");
                 let dbUser = await db.getUser(this.roomOwner);
                 dbUser = dbUser[0];
                 if (dbUser) {
-                    console.log(`User ${dbUser.username} found in database.`);
+                    console.log(`[ROOM-MANAGER] User ${dbUser.username} found in database.`);
                     user = new User(dbUser.uniqueId, dbUser.username, dbUser.userImage);
                     await user.validateUser();
                     addUser(user);
@@ -127,7 +128,7 @@ export default class Room {
                     dbRoom = dbRoom[0];
 
                     if (dbRoom) {
-                        console.log(`User ${dbRoom.roomOwner} found in database.`);
+                        console.log(`[ROOM-MANAGER] User ${dbRoom.roomOwner} found in database.`);
                         user = new User(dbRoom.roomOwner, dbRoom.roomOwner, '');
                         await user.validateUser();
                         addUser(user);
@@ -139,7 +140,7 @@ export default class Room {
                 this.roomOwner = user.uniqueId;
             }
 
-            console.log(`Room owner: ${user.username} (${user.uniqueId}) validated.`);
+            console.log(`[ROOM-MANAGER] Room owner: ${user.username} (${user.uniqueId}) validated.`);
             resolve();
         });
     }
@@ -205,18 +206,18 @@ export default class Room {
                         stateUser.update({ column: 'currentRoom', value: this.roomUniqueId });
                         this.addUser(stateUser);
                     } else {
-                        console.error(`User ${user.username} not found.`);
+                        console.error(`[ROOM-MANAGER] User ${user.username} not found.`);
                     }
                 });
             } else {
                 if (this.roomUniqueId.length === 0) {
                     this.roomUniqueId = await this.makeroomUniqueId();
-                    console.log(`Room ID generated: ${this.roomUniqueId}`);
+                    console.log(`[ROOM-MANAGER] Room ID generated: ${this.roomUniqueId}`);
                 }
 
                 if (!this.roomName || this.roomName.length === 0) {
                     const roomName = "Room-" + Math.random().toString(36).substring(2, 8);
-                    console.warn(`Invalid room name input for room ${this.roomUniqueId}, setting to ${roomName}. (Current: ${this.roomName})`);
+                    console.warn(`[ROOM-MANAGER] Invalid room name input for room ${this.roomUniqueId}, setting to ${roomName}. (Current: ${this.roomName})`);
                     this.roomName = roomName;
                 }
 
@@ -226,33 +227,33 @@ export default class Room {
                 if (this.inviteCode.length < 5) this.inviteCode = "0" + this.inviteCode;
 
                 if (!this.maxPlayers || this.maxPlayers === 0 || this.maxPlayers > 15 || this.maxPlayers < 2 || isNaN(Number(this.maxPlayers))) {
-                    console.warn(`Invalid max players input for room ${this.roomUniqueId}, setting to 8. (Current: ${this.maxPlayers})`);
+                    console.warn(`[ROOM-MANAGER] Invalid max players input for room ${this.roomUniqueId}, setting to 8. (Current: ${this.maxPlayers})`);
                     this.maxPlayers = 8;
                 }
 
                 if (!this.rounds || this.rounds === 0 || this.rounds > 20 || this.rounds < 2 || typeof this.rounds !== 'number') {
-                    console.warn(`Invalid rounds input for room ${this.roomUniqueId}, setting to 5. (Current: ${this.rounds})`);
+                    console.warn(`[ROOM-MANAGER] Invalid rounds input for room ${this.roomUniqueId}, setting to 5. (Current: ${this.rounds})`);
                     this.rounds = 5;
                 }
 
                 this.isPrivate = Boolean(this.isPrivate);
                 if (!hasProperty(this, 'isPrivate') || typeof this.isPrivate !== 'boolean') {
-                    console.warn(`Invalid isPrivate input for room ${this.roomUniqueId}, setting to false. (Current: ${this.isPrivate})`);
+                    console.warn(`[ROOM-MANAGER] Invalid isPrivate input for room ${this.roomUniqueId}, setting to false. (Current: ${this.isPrivate})`);
                     this.isPrivate = false;
                 }
 
                 if (!this.category || this.category.length === 0) {
-                    console.warn(`Invalid category input for room ${this.roomUniqueId}, setting to Music. (Current: ${this.category})`);
+                    console.warn(`[ROOM-MANAGER] Invalid category input for room ${this.roomUniqueId}, setting to Music. (Current: ${this.category})`);
                     this.category = 'Music';
                 }
 
                 if (!this.genre || this.genre.length === 0) {
-                    console.warn(`Invalid genre input for room ${this.roomUniqueId}, setting to Pop. (Current: ${this.genre})`);
+                    console.warn(`[ROOM-MANAGER] Invalid genre input for room ${this.roomUniqueId}, setting to Pop. (Current: ${this.genre})`);
                     this.genre = 'Pop';
                 }
 
                 if (!this.difficulty || this.difficulty === 0 || this.difficulty > 3 || this.difficulty < 1 || typeof this.difficulty !== 'number') {
-                    console.warn(`Invalid difficulty input for room ${this.roomUniqueId}, setting to 2. (Current: ${this.difficulty})`);
+                    console.warn(`[ROOM-MANAGER] Invalid difficulty input for room ${this.roomUniqueId}, setting to 2. (Current: ${this.difficulty})`);
                     this.difficulty = 2;
                 }
 
@@ -260,10 +261,10 @@ export default class Room {
                 WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room: this.get() } });
             }
 
-            console.log(`Room ${this.roomUniqueId} validated.`);
+            console.log(`[ROOM-MANAGER] Room ${this.roomUniqueId} validated.`);
             // WSWrapper.send({ route: "room", type: 'validate', room: this.get() });
         } catch (e: any) {
-            console.error(`Error validating room: ${e.message}`);
+            console.error(`[ROOM-MANAGER] Error validating room: ${e.message}`);
             throw e;
         }
     }
@@ -291,11 +292,11 @@ export default class Room {
             const users = this.users.map(u => u.get());
             this.users.push(user);
             for (const u of users) {
-                console.log(`Sending user join message to ${u.username}`);
+                console.log(`[ROOM-MANAGER] Sending user join message to ${u.username}`);
                 WSWrapper.send({ route: "room", type: 'user-join', data: { user: user.get(), room: this.get() } });
             }
         }
-        console.log(`${user.username} has joined the room ${this.roomUniqueId}.`);
+        console.log(`[ROOM-MANAGER] ${user.username} has joined the room ${this.roomUniqueId}.`);
         let room = this.get();
         if (room.isPrivate) room.inviteCode = "*****";
         WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room } });
@@ -309,7 +310,7 @@ export default class Room {
         if (this.users.some(u => u.uniqueId === user.uniqueId)) {
             WSWrapper.send({ route: "room", type: 'user-leave', data: { user: user.get(), room: this.get() } });
             this.users = this.users.filter(u => u.uniqueId !== user.uniqueId);
-            console.log(`${user.username} has left the room ${this.roomUniqueId}.`);
+            console.log(`[ROOM-MANAGER] ${user.username} has left the room ${this.roomUniqueId}.`);
         };
         let room = this.get();
         if (room.isPrivate) room.inviteCode = "*****";
@@ -335,11 +336,11 @@ export default class Room {
     // game section
     start(): boolean {
         if (this.users.length < 2) {
-            console.error(`Not enough players to start the game.`);
+            console.error(`[ROOM-MANAGER] Not enough players to start the game.`);
             return false;
         }
         this.started = true;
-        console.log(`Starting game in room ${this.roomUniqueId}`);
+        console.log(`[ROOM-MANAGER] Starting game in room ${this.roomUniqueId}`);
         WSWrapper.send({ route: "room", type: 'game-start', data: { room: this.get() } });
         WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room: this.get() } });
         return true;
