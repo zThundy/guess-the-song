@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 
 import { Button, Skeleton, Icon } from "@mui/material";
 import { MusicNote } from "@mui/icons-material";
-import * as Icons from "@mui/icons-material"
 
 import { useOnMountUnsafe } from "helpers/remountUnsafe";
 import { useEventEmitter } from "helpers/eventEmitter";
@@ -28,7 +27,7 @@ function LoadingSkeleton() {
       />
     )
   }
-  
+
   return (<>{elements}</>)
 }
 
@@ -69,27 +68,41 @@ function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTi
   const { t } = useTranslation();
   const [selectedGenres, setSelectedGenres] = useState(0);
   const [genres, setGenres] = useState([]);
+  const [cacheGenres, setCacheGenres] = useState([]);
   const genereRef = useRef(null);
   const eventEmitter = useEventEmitter();
 
   useEffect(() => {
     if (selectedCategoryId === "" || selectedCategoryId.length === 0) return;
     setSelectedGenres(0);
-    api.getGenres()
-      .then((data) => {
-        let generesToDisplay = []
-        for (let i in data) {
-          if (data[i].allowedCategory.includes(selectedCategoryId)) {
-            generesToDisplay.push(data[i])
+    if (cacheGenres.length === 0) {
+      api.getGenres()
+        .then((data) => {
+          setCacheGenres(data);
+          let generesToDisplay = []
+          for (let i in data) {
+            if (data[i].allowedCategory.includes(selectedCategoryId)) {
+              generesToDisplay.push(data[i])
+            }
           }
+          setGenres(generesToDisplay);
+          genereRef.current.children[0].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
+        })
+        .catch((error) => {
+          console.error(error);
+          eventEmitter.emit("notify", "error", t(error.key))
+        })
+    } else {
+      const data = cacheGenres;
+      let generesToDisplay = []
+      for (let i in data) {
+        if (data[i].allowedCategory.includes(selectedCategoryId)) {
+          generesToDisplay.push(data[i])
         }
-        setGenres(generesToDisplay);
-        genereRef.current.children[0].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
-      })
-      .catch((error) => {
-        console.error(error);
-        eventEmitter.emit("notify", "error", t(error.key))
-      })
+      }
+      setGenres(generesToDisplay);
+      genereRef.current.children[0].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
+    }
   }, [selectedCategoryId])
 
   if (!choices.category) return null;
@@ -127,7 +140,15 @@ function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTi
         {
           genres.length > 0 ? genres.map((genre, index) => {
             return (
-              <div className="genre" key={index} onMouseDown={handleMouseClick} data-id={index}>
+              <motion.div
+                className="genre"
+                key={index}
+                onMouseDown={handleMouseClick}
+                data-id={index}
+                animate={{ opacity: 1 }}
+                initial={{ opacity: 0 }}
+                exit={{ opacity: 0 }}
+              >
                 {index === selectedGenres && <div className="createSelectArrowDown"></div>}
 
                 <div className="genereIcon">
@@ -136,7 +157,7 @@ function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTi
                 <div className="createGenresName">
                   {genre.name}
                 </div>
-              </div>
+              </motion.div>
             )
           }) : <LoadingSkeleton />
         }
