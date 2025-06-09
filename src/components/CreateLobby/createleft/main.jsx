@@ -1,4 +1,7 @@
-import "./main.css";
+import style from "./main.module.css";
+import genresStyle from "./genre.module.css";
+import difficultyStyle from "./buttons.module.css";
+import categoryStyle from "./category.module.css";
 
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -55,11 +58,11 @@ function DifficutlyButtons({ setGlobalChoices, choices, setChoices }) {
       initial={{ scale: 0, rotate: 0 }}
       animate={{ scale: [0, 1, 1.3, 1], rotate: [0, 8, -8, 6, -6, 0] }}
       transition={{ duration: 0.3 }}
-      className="createSelectDifficulty"
+      className={difficultyStyle.createSelectDifficulty}
     >
-      <Button disableRipple variant="contained" data-id="1" className={"easy " + (selectedDifficulty === 1 ? "selected" : "")} onMouseDown={handleMouseClick}>{t("DIFFICULTY_1")}</Button>
-      <Button disableRipple variant="contained" data-id="2" className={"normal " + (selectedDifficulty === 2 ? "selected" : "")} onMouseDown={handleMouseClick}>{t("DIFFICULTY_2")}</Button>
-      <Button disableRipple variant="contained" data-id="3" className={"hard " + (selectedDifficulty === 3 ? "selected" : "")} onMouseDown={handleMouseClick}>{t("DIFFICULTY_3")}</Button>
+      <Button disableRipple variant="contained" data-id="1" className={difficultyStyle.easy + " " + (selectedDifficulty === 1 ? difficultyStyle.selected : difficultyStyle.notSelected)} onMouseDown={handleMouseClick}>{t("DIFFICULTY_1")}</Button>
+      <Button disableRipple variant="contained" data-id="2" className={difficultyStyle.normal + " " + (selectedDifficulty === 2 ? difficultyStyle.selected : difficultyStyle.notSelected)} onMouseDown={handleMouseClick}>{t("DIFFICULTY_2")}</Button>
+      <Button disableRipple variant="contained" data-id="3" className={difficultyStyle.hard + " " + (selectedDifficulty === 3 ? difficultyStyle.selected : difficultyStyle.notSelected)} onMouseDown={handleMouseClick}>{t("DIFFICULTY_3")}</Button>
     </motion.div>
   )
 }
@@ -86,7 +89,7 @@ function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTi
             }
           }
           setGenres(generesToDisplay);
-          genereRef.current.children[0].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
+          if (genereRef && genereRef.current) genereRef.current.children[0].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
         })
         .catch((error) => {
           console.error(error);
@@ -101,22 +104,33 @@ function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTi
         }
       }
       setGenres(generesToDisplay);
-      genereRef.current.children[0].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
+      if (genereRef && genereRef.current) genereRef.current.children[0].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
     }
   }, [selectedCategoryId])
 
   if (!choices.category) return null;
 
   const handleScrollGenres = (e) => {
-    if (scrollTimeout) return;
-    enableTimeout();
-    if (e.deltaY > 0 && genres[selectedGenres + 1] && genres[selectedGenres + 1].disabled) return;
-    if (e.deltaY > 0) {
-      setSelectedGenres(prevIndex => Math.min(prevIndex + 1, genereRef.current.children.length - 1));
-    } else {
-      setSelectedGenres(prevIndex => Math.max(prevIndex - 1, 0));
+    if (genereRef && genereRef.current) {
+      if (scrollTimeout) return;
+      enableTimeout();
+      if (e.deltaY > 0 && genres[selectedGenres + 1] && genres[selectedGenres + 1].disabled) return;
+      if (e.deltaY > 0) {
+        setSelectedGenres(prevIndex => {
+          const id = Math.min(prevIndex + 1, genereRef.current.children.length - 1);
+          setGlobalChoices({ type: "genre", value: genres[id] });
+          setChoices({ category: choices.category, genre: genres[id], difficulty: choices.difficulty });
+          return id;
+        });
+      } else {
+        setSelectedGenres(prevIndex => {
+          const id = Math.max(prevIndex - 1, 0);
+          setGlobalChoices({ type: "genre", value: genres[id] });
+          setChoices({ category: choices.category, genre: genres[id], difficulty: choices.difficulty });
+        });
+      }
+      genereRef.current.children[selectedGenres].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
     }
-    genereRef.current.children[selectedGenres].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
   }
 
   const handleMouseClick = (e) => {
@@ -125,7 +139,7 @@ function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTi
     setSelectedGenres(id);
     setGlobalChoices({ type: "genre", value: genres[id] });
     setChoices({ category: choices.category, genre: genres[id], difficulty: choices.difficulty });
-    genereRef.current.children[id].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
+    if (genereRef && genereRef.current) genereRef.current.children[id].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
   }
 
   return (
@@ -133,15 +147,15 @@ function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTi
       initial={{ scale: 0, rotate: 0 }}
       animate={{ scale: [0, 1, 1.1, 1], rotate: [0, 5, -5, 8, -8, 0] }}
       transition={{ duration: 0.4 }}
-      className="createSelectContainer"
+      className={style.createSelectContainer}
       onWheel={handleScrollGenres}
     >
-      <div className="createSelectGenres" ref={genereRef}>
+      <div className={genresStyle.createSelectGenres} ref={genereRef}>
         {
           genres.length > 0 ? genres.map((genre, index) => {
             return (
               <motion.div
-                className="genre"
+                className={genresStyle.genre}
                 key={index}
                 onMouseDown={handleMouseClick}
                 data-id={index}
@@ -149,12 +163,12 @@ function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTi
                 initial={{ opacity: 0 }}
                 exit={{ opacity: 0 }}
               >
-                {index === selectedGenres && <div className="createSelectArrowDown"></div>}
+                {index === selectedGenres && <motion.div animate={{ transform: ["scale(0.1)", "scale(1.5)", "scale(1)"], opacity: [0, 1, 1] }} transition={{ duration: 0.3 }} className={style.createSelectArrowDown}></motion.div>}
 
-                <div className="genereIcon">
+                <div className={genresStyle.genereIcon}>
                   {genre.icon ? (<Icon>{convertSnakeToPaskalIcon(genre.icon)}</Icon>) : <MusicNote />}
                 </div>
-                <div className="createGenresName">
+                <div className={genresStyle.createGenresName}>
                   {genre.name}
                 </div>
               </motion.div>
@@ -198,11 +212,21 @@ function CreateLobbyLeft({ setGlobalChoices }) {
     enableTimeout();
     if (e.deltaY > 0 && categories[selectedCategory + 1] && categories[selectedCategory + 1].disabled) return;
     if (e.deltaY > 0) {
-      setSelectedCategory(prevIndex => Math.min(prevIndex + 1, categoryRef.current.children.length - 1));
+      setSelectedCategory(prevIndex => {
+        const id = Math.min(prevIndex + 1, categoryRef.current.children.length - 1);
+        setGlobalChoices({ type: "category", value: categories[id] });
+        setChoices({ category: categories[id], genre: choices.genre, difficulty: choices.difficulty });
+        return id;
+      });
       setSelectedCategoryId(categories[selectedCategory + 1].id)
     } else {
       if (selectedCategory === 0) return;
-      setSelectedCategory(prevIndex => Math.max(prevIndex - 1, 0));
+      setSelectedCategory(prevIndex => {
+        const id = Math.max(prevIndex - 1, 0);
+        setGlobalChoices({ type: "category", value: categories[id] });
+        setChoices({ category: categories[id], genre: choices.genre, difficulty: choices.difficulty });
+        return id;
+      });
       setSelectedCategoryId(categories[selectedCategory - 1].id)
     }
     categoryRef.current.children[selectedCategory].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
@@ -221,19 +245,19 @@ function CreateLobbyLeft({ setGlobalChoices }) {
   }
 
   return (
-    <div className="createLeftContainer">
-      <div className="createSelectContainer" onWheel={handleScrollCategory}>
-        <div className="createSelectCategory" ref={categoryRef}>
+    <div className={style.createLeftContainer}>
+      <div className={style.createSelectContainer} onWheel={handleScrollCategory}>
+        <div className={categoryStyle.createSelectCategory} ref={categoryRef}>
           {
             categories.length > 0 ? categories.map((category, index) => {
               return (
-                <div className="category" key={index} onMouseDown={handleMouseClick} data-id={index} data-disabled={category.disabled} data-categoryid={category.id}>
-                  {index === selectedCategory && <div className="createSelectArrowDown"></div>}
+                <div className={categoryStyle.category} key={index} onMouseDown={handleMouseClick} data-id={index} data-disabled={category.disabled} data-categoryid={category.id}>
+                  {index === selectedCategory && <motion.div animate={{ transform: ["scale(0.1)", "scale(1.5)", "scale(1)"], opacity: [0, 1, 1] }} transition={{ duration: 0.3 }} className={style.createSelectArrowDown}></motion.div>}
 
-                  <div className="categoryIcon">
+                  <div className={categoryStyle.categoryIcon}>
                     <Icon>{convertSnakeToPaskalIcon(category.icon)}</Icon>
                   </div>
-                  <div className="createCategoryName">
+                  <div className={categoryStyle.createCategoryName}>
                     {category.name}
                   </div>
                 </div>

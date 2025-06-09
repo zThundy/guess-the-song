@@ -1,10 +1,13 @@
-import "./main.css";
+import style from "./main.module.css";
+import inputStyle from "./inputsection.module.css";
+import buttonStyle from "./buttonsection.module.css";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Typography, TextField, Button, styled } from "@mui/material";
 import { LockOpen, LockOutlined } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import { useAnimate } from "framer-motion";
 
 const StyledButtonPrimary = styled(Button)({
   background: 'linear-gradient(45deg, #ffab2b 30%, #ffc86f 90%)',
@@ -30,6 +33,27 @@ const StyledButtonPrimary = styled(Button)({
 function CreateLobbyRight({ setGlobalChoices, create }) {
   const { t } = useTranslation();
   const [choices, setChoices] = useState({});
+  const [publicRef, animatePublic] = useAnimate();
+  const [privateRef, animatePrivate] = useAnimate();
+  const [isPrivate, setIsPrivate] = useState(false);
+
+  useEffect(() => {
+    if (isPrivate) {
+      animatePrivate(privateRef.current, { transform: [
+        "scale(.8) rotate(0deg)",
+        "scale(1.2) rotate(5deg)",
+        "scale(1.2) rotate(-5deg)",
+        "scale(1.1) rotate(0deg)"
+      ] }, { duration: 0.2 })
+    } else {
+      animatePublic(publicRef.current, { transform: [
+        "scale(.8) rotate(0deg)",
+        "scale(1.2) rotate(5deg)",
+        "scale(1.2) rotate(-5deg)",
+        "scale(1.1) rotate(0deg)"
+      ] }, { duration: 0.2 })
+    }
+  }, [isPrivate])
 
   const handleInputChange = (type, e) => {
     switch (type) {
@@ -48,6 +72,7 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
         break;
       case "isPrivate":
         setChoices({ ...choices, isPrivate: e.target.value });
+        setIsPrivate(e.target.value);
         break;
       default:
         break;
@@ -84,15 +109,16 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
   }
 
   return (
-      <div className="createRightContainer">
-        <Typography variant="h4" className="createRightTitle">
+      <div className={style.createRightContainer}>
+        <Typography variant="h4" className={style.createRightTitle}>
           {t("CREATE_ROOM_TITLE")}
         </Typography>
-        <div className="createRightInputContainer">
-          <div className="createRightInput">
+
+        <div className={inputStyle.createRightInputContainer}>
+          <div className={inputStyle.createRightInput}>
             <TextField
               InputLabelProps={{ shrink: true }}
-              className="input"
+              className={inputStyle.input}
               label={t("CREATE_LABEL_ROOM_NAME").toUpperCase()}
               color="secondary"
               error={isErrored()}
@@ -105,10 +131,10 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
               size="small"
             />
           </div>
-          <div className="createRightInput">
+          <div className={inputStyle.createRightInput}>
             <TextField
               InputLabelProps={{ shrink: true }}
-              className="input"
+              className={inputStyle.input}
               label={t("CREATE_LABEL_MAX_PLAYERS").toUpperCase()}
               color="secondary"
               type="number"
@@ -123,10 +149,10 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
               size="small"
             />
           </div>
-          <div className="createRightInput">
+          <div className={inputStyle.createRightInput}>
             <TextField
               InputLabelProps={{ shrink: true }}
-              className="input"
+              className={inputStyle.input}
               label={t("CREATE_LABEL_ROUNDS").toUpperCase()}
               color="secondary"
               type="number"
@@ -142,35 +168,37 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
             />
           </div>
         </div>
-        <div className="createButtonsContainer">
+        <div className={buttonStyle.createButtonsContainer}>
           <Button
-            className={"createButton public " + (choices.isPrivate ? "" : "active")}
+            className={`${buttonStyle.createButton} ${buttonStyle.public} ` + (choices.isPrivate ? "" : buttonStyle.active)}
             variant="contained"
             color="primary"
             size="large"
             onClick={() => handleInputChange("isPrivate", { target: { value: false } })}
             fullWidth
             disableRipple
+            ref={publicRef}
           >
             {t("CREATE_PUBLIC")}
             <LockOpen />
           </Button>
           <Button
-            className={"createButton private " + (choices.isPrivate ? "active" : "")}
+            className={`${buttonStyle.createButton} ${buttonStyle.private} ` + (choices.isPrivate ? buttonStyle.active : "")}
             variant="contained"
             color="primary"
             size="large"
             onClick={() => handleInputChange("isPrivate", { target: { value: true } })}
             fullWidth
             disableRipple
+            ref={privateRef}
           >
             {t("CREATE_PRIVATE")}
             <LockOutlined />
           </Button>
         </div>
-        <div className="createButtonSubmitContainer">
+        <div className={buttonStyle.createButtonSubmitContainer}>
           <StyledButtonPrimary
-            className="createButtonSubmit"
+            className={buttonStyle.createButtonSubmit}
             variant="contained"
             color="primary"
             size="large"

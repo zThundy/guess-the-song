@@ -12,8 +12,10 @@ import api from "helpers/api";
 import { getCookie } from "helpers/cookies";
 import { useOnMountUnsafe } from "helpers/remountUnsafe.jsx";
 import socket from 'helpers/socket';
+import { useNavigate } from "react-router-dom";
 
 function PrelobbyGame({ room }) {
+  const navigate = useNavigate()
   const { t } = useTranslation();
   const constraintsRef = useRef(null);
   const [shouldRender, setShouldRender] = useState(false);
@@ -75,6 +77,7 @@ function PrelobbyGame({ room }) {
 
         socket.addListener("game-start", (r) => {
           console.log("game-start", r);
+          navigate(`/game/${r.data.room.inviteCode}/started`)
         });
       })
       .catch((error) => {

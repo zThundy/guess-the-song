@@ -8,6 +8,7 @@ import MainCreate from "components/CreateLobby/main";
 import MainErrorPage from "components/Error/main";
 import MainAccount from "components/Account/main";
 import MainGameList from "components/GamesList/main";
+import MainGameInProgress from "components/GameInProgress/main";
 import Language from './languages';
 
 import { Routes, Route, useLocation } from "react-router-dom";
@@ -86,9 +87,9 @@ function MainPage() {
             Component={MainGame}
           />
           <Route
-            path="/game/:id"
+            path="/game/:id/started"
             title="Song Guesser - Game"
-            Component={MainGame}
+            Component={MainGameInProgress}
           />
           <Route
             path="/create"
