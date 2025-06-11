@@ -301,7 +301,7 @@ class SQLiteClass {
 
     public async getUsersInRoom(roomUniqueId: string): Promise<any> {
         try {
-            const query = `SELECT * FROM roomUsers WHERE roomUniqueId = ?`;
+            const query = `SELECT DISTINCT * FROM roomUsers WHERE roomUniqueId = ?`;
             const data = await this.syncGet(query, [roomUniqueId]);
             return data.result;
         } catch (err: any) {
