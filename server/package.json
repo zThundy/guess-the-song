@@ -4,7 +4,7 @@
   "main": "src/index.ts",
   "scripts": {
     "build": "npx tsc",
-    "start": "node src/index.ts",
+    "start": "npx tsx src/index.ts",
     "dev": "nodemon src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -28,7 +28,7 @@
     "@types/node": "^22.9.0",
     "node-cron": "^3.0.3",
     "node-gyp": "^11.0.0",
-    "nodemon": "^3.1.7",
+    "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   }
