@@ -13,7 +13,7 @@ import { useEventEmitter } from "helpers/eventEmitter";
 
 function Lobbies() {
   const { t } = useTranslation();
-  const [lobbies, setLobbies] = useState(null);
+  const [lobbies, setLobbies] = useState([]);
   const [resultsReady, setResultsReady] = useState(false);
   const [errored, setError] = useState(false);
   const ref = createRef();
