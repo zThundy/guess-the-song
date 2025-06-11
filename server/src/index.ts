@@ -6,6 +6,7 @@ dotenv.config();
 const { } = require('./logger');
 
 const WSWrapper = require('./wswrapper');
+const { startGarbageCollect } = require("./states");
 
 const path = require('path');
 const fs = require('fs');
@@ -79,4 +80,5 @@ server.listen(port, () => {
     console.info('Websocket server started on ws://localhost:' + port);
 });
 
+startGarbageCollect();
 WSWrapper.init(sServer);

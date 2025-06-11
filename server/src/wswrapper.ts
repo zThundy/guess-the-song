@@ -198,7 +198,7 @@ class WSWrapper {
         }
 
         this.ws.connections.forEach((connection: connection) => {
-            console.log("SOCKET-LOG", `Sending data to ${connection.socket.remoteAddress}`)
+            console.debug("SOCKET-LOG", `Sending data to ${connection.socket.remoteAddress}`)
             connection.sendUTF(data);
         });
     }
@@ -213,7 +213,7 @@ class WSWrapper {
         }
 
         this.ws.connections.forEach((connection: connection) => {
-            console.log("SOCKET-LOG", `Sending data to ${connection.socket.remoteAddress}`)
+            console.debug("SOCKET-LOG", `Sending data to ${connection.socket.remoteAddress}`)
             connection.sendUTF(data);
         });
     }

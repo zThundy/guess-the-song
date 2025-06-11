@@ -24,7 +24,9 @@ export const removeUser = (uniqueId: string) => {
 
 
 
-
+export const getRooms = (): Map<string, Room> => {
+    return rooms;
+}
 
 export const addRoom = (room: Room) => {
     rooms.set(room.roomUniqueId, room);
@@ -65,4 +67,21 @@ export const findRoomFromRoomOwner = (roomOwner: string) => {
         }
     }
     return null;
+}
+
+export const startGarbageCollect = (): void => {
+    setInterval(() => {
+        const _rooms = getRooms();
+        console.debug(`[STATES] Garbage collector pass. ${new Date().toISOString()}`);
+        // room cleanup
+        let roomNum = 0;
+        rooms.forEach((room: Room, key: string) => {
+            roomNum += 1;
+            if (room.getColumn("canCleanup")) {
+                console.warn(`[STATES] Garbage collect of room ${room.getColumn("roomUniqueId")}`);
+                rooms.delete(key);
+            }
+        })
+        console.debug(`[STATES] Garbage collector finished pass. Rooms in state ${roomNum}.`);
+    }, 5000)
 }

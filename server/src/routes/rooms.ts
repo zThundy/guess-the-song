@@ -43,6 +43,12 @@ roomsRouter.get('/all', async (req: Request, res: Response) => {
 
         console.log(`Room ${room.getColumn('roomUniqueId')} found, adding users.`);
         const users = await db.getUsersInRoom(room.getColumn('roomUniqueId'));
+        if (users.length === 0 && room.users.length === 0) {
+            console.error(`Room ${room.getColumn('roomUniqueId')} is empty, deleting room.`);
+            await room.deleteRoom(room.getColumn('roomUniqueId'));
+            removeRoom(room.getColumn('roomUniqueId'));
+        }
+
         for (let dbUser of users) {
             let user = getUser(dbUser['uniqueId']);
             if (!user) {
@@ -157,6 +163,7 @@ roomsRouter.post('/validate', async (req: Request, res: Response) => {
     }
 
     try {
+        let creating = false;
         const user = getUser(body.roomOwner);
         if (!user) {
             console.error(`User not found with uniqueId ${body.roomOwner}`);
@@ -174,8 +181,9 @@ roomsRouter.post('/validate', async (req: Request, res: Response) => {
             addRoom(room);
             room.addUser(user);
             roomData = room.get();
+            creating = true;
         }
-        if (roomData.isPrivate) {
+        if (roomData.isPrivate && !creating) {
             console.warn(`Hiding invite code for room ${roomData.uniqueId}, it was ${roomData.inviteCode}`);
             roomData.inviteCode = "*****";
         }

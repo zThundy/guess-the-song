@@ -11,6 +11,7 @@ type RoomInstance = {
     inviteCode: string;
     roomUniqueId: string;
     started: boolean;
+    getColumn: () => any;
 };
 
 type RoomList = RoomInstance[];

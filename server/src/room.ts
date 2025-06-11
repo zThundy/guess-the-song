@@ -21,6 +21,7 @@ export default class Room {
     public genre: string = '';
     public difficulty: number = 0;
     public started: boolean = false;
+    public canCleanup: boolean = false;
 
     public currentRound: number = 0;
     public users: User[] = [];
@@ -49,14 +50,17 @@ export default class Room {
 
         const roomPingUsersInterval = setInterval(() => {
             if (this.users.length > 0) {
+                this.canCleanup = false;
                 this.users.forEach(user => {
                     WSWrapper.send({ route: "room", type: 'game-ping', data: { user: user.get(), room: this.get() } });
+                    console.debug(`[ROOM-MANAGER] Sending room hearthbeat to ${user.getColumn("username")} (${user.getColumn("uniqueId")}). Last ping was ${user.getColumn("userLastRoomPing")}`)
 
                     // check if the last ping of the user is more than 30 seconds ago, if so remove it from the roomm
                     const lastPing = new Date(user.userLastRoomPing);
                     const currentTime = new Date();
                     const diffTime = Math.abs(currentTime.getTime() - lastPing.getTime());
                     const diffSeconds = Math.ceil(diffTime / 1000);
+                    console.debug(`[ROOM-MANAGER] Room hearthbeat times are: Room: ${this.getColumn("roomUniqueId")} User: ${user.getColumn("userLastRoomPing")}, Room: ${currentTime.toISOString()}, Difftime: ${diffTime}, Diffseconds: ${diffSeconds}`)
                     if (diffSeconds > 30) {
                         console.warn(`[ROOM-MANAGER] User ${user.username} (${user.uniqueId}) has not pinged in the last 30 seconds, removing from room ${this.roomUniqueId}.`);
                         this.removeUser(user);
@@ -64,6 +68,8 @@ export default class Room {
                 });
             } else {
                 clearInterval(roomPingUsersInterval);
+                this.deleteRoom();
+                this.canCleanup = true;
             }
         }, 10 * 1000); // every 10 seconds
 
@@ -287,6 +293,9 @@ export default class Room {
     }
 
     addUser(user: User): void {
+        if (this.users.some(u => u.uniqueId === user.uniqueId)) {
+            return console.warn(`[ROOM-MANAGER] The user ${user.getColumn("username")} (${user.getColumn("uniqueId")}) is already in the room. Ignoring the request.`)
+        }
         if (!this.users.some(u => u.uniqueId === user.uniqueId)) {
             // get users in room and send ws message to all users in room
             const users = this.users.map(u => u.get());
@@ -302,6 +311,7 @@ export default class Room {
         WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room } });
         user.update({ column: "userLastRoomPing", value: new Date().toISOString() });
         user.update({ column: "currentRoom", value: this.roomUniqueId });
+        db.addUserToRoom(this.getColumn("roomUniqueId"), user.getColumn("uniqueId"));
         // keep this commented, maybe we need it... idk.
         // db.updateUser(user.get());
     }
@@ -316,7 +326,8 @@ export default class Room {
         if (room.isPrivate) room.inviteCode = "*****";
         WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room } });
         user.update({ column: "currentRoom", value: '' });
-        user.update({ column: "userLastRoomPing", value: new Date().toISOString() });
+        // user.update({ column: "userLastRoomPing", value: new Date().toISOString() });
+        db.removeUserFromRoom(this.getColumn("roomUniqueId"), user.getColumn("uniqueId"));
         // keep this commented, maybe we need it... idk.
         // db.updateUser(user.get());
     }
