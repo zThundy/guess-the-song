@@ -17,8 +17,8 @@ import { useEventEmitter } from 'helpers/eventEmitter'
 export default function MainAccount() {
   const { t } = useTranslation();
   const [canNavigateBack, setCanNavigateBack] = useState(true)
-  const [username, setUsername] = useState(getCookie('username'))
-  const [userImage, setUserImage] = useState(getCookie('userImage'))
+  const [username, setUsername] = useState(getCookie('username') || "")
+  const [userImage, setUserImage] = useState(getCookie('userImage') || "")
 
   const [hasUsernameChanged, setHasUsernameChanged] = useState(false)
   const [hasUserImageChanged, setHasUserImageChanged] = useState(false)
@@ -27,12 +27,14 @@ export default function MainAccount() {
   const eventEmitter = useEventEmitter()
 
   useEffect(() => {
+    if (username === "") return;
     if (username !== getCookie('username')) {
       setCanNavigateBack(false)
       setHasUsernameChanged(t("ERROR_SAVE_CHANGES"))
     } else {
       setHasUsernameChanged(false)
     }
+    if (userImage === "") return;
     if (userImage !== getCookie('userImage')) {
       setCanNavigateBack(false)
       if (userImage.length > 0) {

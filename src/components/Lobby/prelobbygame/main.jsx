@@ -77,32 +77,32 @@ function PrelobbyGame({ room }) {
 
         socket.addListener("game-start", (r) => {
           console.log("game-start", r);
-          navigate(`/game/${r.data.room.inviteCode}/started`)
+          navigate(`/game/${r.data.room.inviteCode}/play`)
+        });
+
+        socket.addListener("game-ping", (r) => {
+          console.log("game-ping", r);
+
+          socket.send({
+            type: "game-pong",
+            data: {
+              roomUniqueId: room.roomUniqueId,
+              uniqueId: getCookie("uniqueId") || "",
+              id: room.inviteCode,
+            }
+          })
         });
       })
       .catch((error) => {
         console.error(error);
       });
 
-      socket.addListener("game-ping", (r) => {
-        console.log("game-ping", r);
-
-        socket.send({
-          type: "game-pong",
-          data: {
-            roomUniqueId: room.roomUniqueId,
-            uniqueId: getCookie("uniqueId") || "",
-            id: room.inviteCode,
-          }
-        })
-      });
-
-      return () => {
-        socket.removeListener("user-join");
-        socket.removeListener("user-leave");
-        socket.removeListener("game-start");
-        socket.removeListener("game-ping");
-      }
+    return () => {
+      socket.removeListener("user-join");
+      socket.removeListener("user-leave");
+      socket.removeListener("game-start");
+      socket.removeListener("game-ping");
+    }
   }, [])
 
   useEffect(() => {

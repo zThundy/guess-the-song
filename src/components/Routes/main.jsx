@@ -87,7 +87,7 @@ function MainPage() {
             Component={MainGame}
           />
           <Route
-            path="/game/:id/started"
+            path="/game/:id/play"
             title="Song Guesser - Game"
             Component={MainGameInProgress}
           />

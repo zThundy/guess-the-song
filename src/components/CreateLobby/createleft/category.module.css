@@ -23,6 +23,7 @@
   border-radius: .5rem;
   cursor: pointer;
   margin: 1rem;
+  transition: background .2s ease-in-out;
 }
 
 .createSelectCategory .categoryIcon {
@@ -49,4 +50,43 @@
 /* on hover category change size of svg */
 .category:hover .categoryIcon span {
   font-size: 500%;
+}
+
+@media screen and (max-width: 1000px) {
+  .createSelectCategory {
+    justify-content: center;
+    align-self: center;
+  }
+
+  .createSelectCategory .category {
+    width: calc(10vw - 2px);
+    height: calc(10vw - 2px);
+    margin: 1rem .5rem;
+  }
+
+  .categoryIcon svg {
+    font-size: 300%;
+  }
+
+  /* on hover genre change size of svg */
+  .category:hover .categoryIcon svg {
+    font-size: 400%;
+  }
+
+  .categoryIcon span {
+    font-size: 300%;
+  }
+
+  /* on hover category change size of svg */
+  .category:hover .categoryIcon span {
+    font-size: 400%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .createSelectCategory .category {
+    width: calc(25vw - 2px);
+    height: calc(25vw - 2px);
+    margin: 2rem .5rem;
+  }
 }

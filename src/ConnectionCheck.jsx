@@ -45,7 +45,7 @@ function ConnectionCheck() {
         const clientTime = new Date();
         const timeDiff = Math.abs(serverTime - clientTime);
         const diffInSeconds = Math.floor(timeDiff / 1000);
-        console.log("Time difference: ", diffInSeconds, " seconds");
+        console.debug("Time difference: ", diffInSeconds, " seconds");
 
         if (pingTimeout) {
           clearTimeout(pingTimeout);
@@ -54,7 +54,7 @@ function ConnectionCheck() {
 
         setStillConnected((prev) => {
           if (!prev) {
-            console.log("User is still connected");
+            console.debug("User is still connected");
             pingTimeout = makeTimeout();
             return true;
           }

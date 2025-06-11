@@ -9,7 +9,6 @@ import { initReactI18next } from "react-i18next";
 import CssBaseline from '@mui/material/CssBaseline';
 
 import { getAllowedLanguages } from 'helpers/language';
-import socket from 'helpers/socket';
 
 const apiKey = "Gkfk5_77WBzwXWEjxu-J3Q";
 const loadPath = `https://api.i18nexus.com/project_resources/translations/{{lng}}/{{ns}}.json?api_key=${apiKey}`;
@@ -33,9 +32,9 @@ i18next
 const onRender = (id, phase, actualDuration, baseDuration, startTime, commitTime) => {
   if (actualDuration > 1) {
     if (phase === 'mount') {
-      console.log(`Component ${id} mounted in ${actualDuration}ms`);
+      console.debug(`Component ${id} mounted in ${actualDuration}ms`);
     } else if (phase === 'update') {
-      console.log(`Component ${id} updated in ${actualDuration}ms`);
+      console.debug(`Component ${id} updated in ${actualDuration}ms`);
     }
   }
 }

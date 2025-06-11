@@ -110,7 +110,7 @@ function CreateLobbyRight({ setGlobalChoices, create }) {
 
   return (
       <div className={style.createRightContainer}>
-        <Typography variant="h4" className={style.createRightTitle}>
+        <Typography className={style.createRightTitle}>
           {t("CREATE_ROOM_TITLE")}
         </Typography>
 

@@ -120,6 +120,7 @@ function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTi
           const id = Math.min(prevIndex + 1, genereRef.current.children.length - 1);
           setGlobalChoices({ type: "genre", value: genres[id] });
           setChoices({ category: choices.category, genre: genres[id], difficulty: choices.difficulty });
+          genereRef.current.children[selectedGenres].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
           return id;
         });
       } else {
@@ -127,9 +128,10 @@ function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTi
           const id = Math.max(prevIndex - 1, 0);
           setGlobalChoices({ type: "genre", value: genres[id] });
           setChoices({ category: choices.category, genre: genres[id], difficulty: choices.difficulty });
+          genereRef.current.children[selectedGenres].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
+          return id;
         });
       }
-      genereRef.current.children[selectedGenres].scrollIntoView({ block: 'center', inline: "center", behavior: 'smooth' });
     }
   }
 
@@ -154,24 +156,14 @@ function Genres({ setGlobalChoices, choices, setChoices, enableTimeout, scrollTi
         {
           genres.length > 0 ? genres.map((genre, index) => {
             return (
-              <motion.div
-                className={genresStyle.genre}
-                key={index}
-                onMouseDown={handleMouseClick}
-                data-id={index}
-                animate={{ opacity: 1 }}
-                initial={{ opacity: 0 }}
-                exit={{ opacity: 0 }}
-              >
-                {index === selectedGenres && <motion.div animate={{ transform: ["scale(0.1)", "scale(1.5)", "scale(1)"], opacity: [0, 1, 1] }} transition={{ duration: 0.3 }} className={style.createSelectArrowDown}></motion.div>}
-
+              <div className={genresStyle.genre + " " + (index === selectedGenres ? style.selected : null)} key={index} onMouseDown={handleMouseClick} data-id={index}>
                 <div className={genresStyle.genereIcon}>
                   {genre.icon ? (<Icon>{convertSnakeToPaskalIcon(genre.icon)}</Icon>) : <MusicNote />}
                 </div>
                 <div className={genresStyle.createGenresName}>
                   {genre.name}
                 </div>
-              </motion.div>
+              </div>
             )
           }) : <LoadingSkeleton />
         }
@@ -251,9 +243,7 @@ function CreateLobbyLeft({ setGlobalChoices }) {
           {
             categories.length > 0 ? categories.map((category, index) => {
               return (
-                <div className={categoryStyle.category} key={index} onMouseDown={handleMouseClick} data-id={index} data-disabled={category.disabled} data-categoryid={category.id}>
-                  {index === selectedCategory && <motion.div animate={{ transform: ["scale(0.1)", "scale(1.5)", "scale(1)"], opacity: [0, 1, 1] }} transition={{ duration: 0.3 }} className={style.createSelectArrowDown}></motion.div>}
-
+                <div className={categoryStyle.category + " " + (index === selectedCategory ? style.selected : null)} key={index} onMouseDown={handleMouseClick} data-id={index} data-disabled={category.disabled} data-categoryid={category.id}>
                   <div className={categoryStyle.categoryIcon}>
                     <Icon>{convertSnakeToPaskalIcon(category.icon)}</Icon>
                   </div>

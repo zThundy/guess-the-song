@@ -9,18 +9,26 @@ function getBase() {
 }
 
 function userAction() {
-  return fetch(`${BASE_URL}/account/validate`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      username: getCookie("username") || "",
-      uniqueId: getCookie("uniqueId") || "",
-    })
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await fetch(`${BASE_URL}/account/validate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: getCookie("username") || "",
+          uniqueId: getCookie("uniqueId") || "",
+        })
+      })
+
+      if (result.ok) return resolve(await result.json());
+      return reject(_handleError(await result.json()));
+    } catch (error) {
+      reject({ key: "GENERIC_ERROR" });
+      console.log(error.message);
+    }
   })
-    .then(response => response.json())
-    .catch(error => console.log(error));
 }
 
 function updateUsername() {
@@ -41,7 +49,7 @@ function updateUsername() {
       return reject(_handleError(await result.json()));
     } catch (error) {
       reject({ key: "GENERIC_ERROR" });
-      console.log(error);
+      console.log(error.message);
     }
   });
 }

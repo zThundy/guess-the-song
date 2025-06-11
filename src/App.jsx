@@ -10,6 +10,7 @@ import "./index.css";
 import { setCookie } from "helpers/cookies";
 import api from "helpers/api";
 import { useOnMountUnsafe } from "helpers/remountUnsafe";
+import { useEventEmitter } from "helpers/eventEmitter";
 
 const theme = createTheme({
   status: {
@@ -35,6 +36,8 @@ const theme = createTheme({
 });
 
 function App() {
+  const eventEmitter = useEventEmitter()
+
   useOnMountUnsafe(() => {
     api.userAction()
       .then(user => {
@@ -50,6 +53,7 @@ function App() {
         setCookie("currentRoom", user.currentRoom, 365);
       })
       .catch(error => {
+        eventEmitter.emit("notify", "error", t(error.key || "GENERIC_ERROR"))
         console.log(error);
       });
 

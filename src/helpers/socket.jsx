@@ -1,6 +1,4 @@
 
-
-
 class WSWrapper {
     constructor() {
         this.connection = null;
@@ -32,12 +30,12 @@ class WSWrapper {
 
     connect() {
         try {
-            this._log('connecting...');
+            this._log('Connecting...');
             this.connection = new WebSocket('wss://localhost:8443', ["sg-protocol"]);
             // this.connection = new WebSocket('wss://localhost:8443');
 
-            this.connection.onopen = () => {
-                this._log('connected');
+            this.connection.onopen = (ws, event) => {
+                this._log(`Connected.`);
                 this.opened();
             };
 
@@ -60,7 +58,6 @@ class WSWrapper {
             setTimeout(() => this.connect(), 5000);
         }
     }
-
 
     opened() {
         this.connection.onerror = error => {
