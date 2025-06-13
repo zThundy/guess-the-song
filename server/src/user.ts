@@ -36,11 +36,11 @@ export default class User {
             }
         }, 5 * 1000); // 5 seconds
 
-        console.log('User added as class.');
+        console.log('[USER-MANAGER] User added as class.');
     }
 
     save() {
-        console.log(`Saving user ${this.username}, ${this.uniqueId}`);
+        console.log(`[USER-MANAGER] Saving user ${this.username}, ${this.uniqueId}`);
         db.updateUser(this.get());
         db.updateUserData(this.get());
         db.updateLastLogin(this.get());
@@ -52,14 +52,14 @@ export default class User {
     update(data: UpdateUser) {
         try {
             if (data.column in this) {
-                console.debug(`Updating ${data.column} to ${data.value} for user ${this.username}, ${this.uniqueId}`);
+                console.debug(`[USER-MANAGER] Updating ${data.column} to ${data.value} for user ${this.username}, ${this.uniqueId}`);
                 (this as any)[data.column] = data.value;
             } else {
-                console.error(`Invalid column: ${data.column}`);
+                console.error(`[USER-MANAGER] Invalid column: ${data.column}`);
             }
             return this;
-        } catch (e) {
-            console.error('Error updating user:', e);
+        } catch (e: any) {
+            console.error(`[USER-MANAGER] Error updating field in user manager. ${e.message}`)
         }
     }
 
@@ -71,12 +71,13 @@ export default class User {
         if (column in this) {
             return (this as any)[column];
         } else {
-            console.error(`Invalid column: ${column}`);
+            console.error(`[USER-MANAGER] Invalid column: ${column}`);
         }
     }
 
     delete(data: any) {
-        console.log('User deleted.');
+        console.log('[USER-MANAGER] User deleted.');
+        // TODO: IDK why this is still uncompleted after all this time. maybe i don't want to delete users from here...
     }
 
     /**
@@ -85,7 +86,7 @@ export default class User {
      * @param data UserInstance
      */
     async validateUser() {
-        console.log(`Validating user ${this.username}, ${this.uniqueId}`);
+        console.log(`[USER-MANAGER] Validating user ${this.username}, ${this.uniqueId}`);
 
         if (await db.doesUserExist(this.uniqueId)) {
             let dbUser = await db.getUser(this.uniqueId);
@@ -125,7 +126,7 @@ export default class User {
                 this.update({ column: 'userLastRoomPing', value: dbUser.userLastRoomPing });
             }
 
-            console.log('User validated.');
+            console.log('[USER-MANAGER] User validated.');
         } else {
             if (this.username.length === 0) {
                 this.update({ column: 'username', value: 'User-' + Math.random().toString(36).substring(2, 8) });
@@ -148,7 +149,7 @@ export default class User {
             this.last_login = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
             db.createUser(this.get());
-            console.log('User created in databse.');
+            console.log('[USER-MANAGER] User created in databse.');
         }
     }
 }

@@ -98,12 +98,16 @@ export default class Room {
     }
 
     public update(data: UpdateRoom): void {
-        if (data.column in this) {
-            console.log(`[ROOM-MANAGER] Updating ${data.column} to ${data.value}`);
-            (this as any)[data.column] = data.value;
-            // WSWrapper.send({ route: "room", type: 'update', column: key, value: value });
-        } else {
-            console.error(`[ROOM-MANAGER] Invalid key: ${data.column}`);
+        try {
+            if (data.column in this) {
+                console.log(`[ROOM-MANAGER] Updating ${data.column} to ${data.value}`);
+                (this as any)[data.column] = data.value;
+                // WSWrapper.send({ route: "room", type: 'update', column: key, value: value });
+            } else {
+                console.error(`[ROOM-MANAGER] Invalid key: ${data.column}`);
+            }
+        } catch (e: any) {
+            console.error(`[ROOM-MANAGER] Error updating field in room manager. ${e.message}`)
         }
     }
 
