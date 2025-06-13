@@ -54,6 +54,7 @@ function Users({ customRef, users }) {
           return (
             <motion.div
               id={"prelobbyUser-" + i}
+              key={"prelobbyUser-" + i}
               className={`
                   ${classes.user}
                   ${classes.grab}
