@@ -131,12 +131,12 @@ roomsRouter.post("/validateInviteCode", async (req: Request, res: Response) => {
         }
         if (room.started) {
             console.error(`Room ${room.getColumn('roomUniqueId')} is already started`);
-            res.status(400).json({ key: "JOIN_ERROR_ROOM_STARTED", message: 'Room is already started' });
+            res.status(403).json({ key: "JOIN_ERROR_ROOM_STARTED", message: 'Room is already started' });
             return;
         }
         if (room.isFull() && !room.isInRoom(user)) {
             console.error(`Room ${room.getColumn('roomUniqueId')} is full`);
-            res.status(400).json({ key: "JOIN_ERROR_ROOM_FULL", message: "Room is full" });
+            res.status(403).json({ key: "JOIN_ERROR_ROOM_FULL", message: "Room is full" });
             return;
         }
         room.addUser(user);

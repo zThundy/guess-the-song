@@ -350,9 +350,10 @@ export default class Room {
 
     // game section
     start(): boolean {
-        if (this.users.length < 2) {
+        // TODO: Dev only. Remove "&& false"
+        if (this.users.length < 2 && false) {
             console.error(`[ROOM-MANAGER] Not enough players to start the game.`);
-            return true;
+            return false;
         }
         this.update({ column: "started", value: true })
         console.log(`[ROOM-MANAGER] Starting game in room ${this.roomUniqueId}`);
