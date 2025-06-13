@@ -50,7 +50,7 @@ export const findRoomFromInviteCode = (inviteCode: string) => {
     if (inviteCode === "*****") return null;
     for (let room of rooms.values()) {
         // convert every time the invite code to a string
-        if (typeof room.inviteCode !== "string") room.update("inviteCode", String(room.inviteCode));
+        if (typeof room.inviteCode !== "string") room.update({ column: "inviteCode", value: String(room.inviteCode) });
         if (room.inviteCode === inviteCode) {
             return room;
         }

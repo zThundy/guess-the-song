@@ -14,9 +14,15 @@ type RoomInstance = {
     getColumn: () => any;
 };
 
+type UpdateRoom = {
+    value: any;
+    column: string;
+}
+
 type RoomList = RoomInstance[];
 
 export {
     RoomInstance,
-    RoomList
+    RoomList,
+    UpdateRoom
 };

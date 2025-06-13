@@ -1,6 +1,6 @@
 
 import { UserInstance } from '../types/user_types';
-import { RoomInstance } from '../types/room_types';
+import { RoomInstance, UpdateRoom } from '../types/room_types';
 
 import User from './user';
 import { hasProperty } from './utils';
@@ -97,13 +97,13 @@ export default class Room {
         db.deleteRoom(this.roomUniqueId);
     }
 
-    public update(key: string, value: any): void {
-        if (key in this) {
-            console.log(`[ROOM-MANAGER] Updating ${key} to ${value}`);
-            (this as any)[key] = value;
+    public update(data: UpdateRoom): void {
+        if (data.column in this) {
+            console.log(`[ROOM-MANAGER] Updating ${data.column} to ${data.value}`);
+            (this as any)[data.column] = data.value;
             // WSWrapper.send({ route: "room", type: 'update', column: key, value: value });
         } else {
-            console.error(`[ROOM-MANAGER] Invalid key: ${key}`);
+            console.error(`[ROOM-MANAGER] Invalid key: ${data.column}`);
         }
     }
 
@@ -169,40 +169,40 @@ export default class Room {
 
             if (dbRoom) {
                 if (dbRoom.roomName !== this.roomName) {
-                    this.update('roomName', dbRoom.roomName);
+                    this.update({ column: 'roomName', value: dbRoom.roomName });
                 }
 
                 if (dbRoom.roomOwner !== this.roomOwner) {
-                    this.update('roomOwner', dbRoom.roomOwner);
+                    this.update({ column: 'roomOwner', value: dbRoom.roomOwner });
                 }
 
                 if (dbRoom.inviteCode !== this.inviteCode) {
                     if (typeof dbRoom.inviteCode !== 'string') dbRoom.inviteCode = String(dbRoom.inviteCode);
-                    this.update('inviteCode', dbRoom.inviteCode);
+                    this.update({ column: 'inviteCode', value: dbRoom.inviteCode });
                 }
 
                 if (dbRoom.maxPlayers !== this.maxPlayers) {
-                    this.update('maxPlayers', dbRoom.maxPlayers);
+                    this.update({ column: 'maxPlayers', value: dbRoom.maxPlayers });
                 }
 
                 if (dbRoom.rounds !== this.rounds) {
-                    this.update('rounds', dbRoom.rounds);
+                    this.update({ column: 'rounds', value: dbRoom.rounds });
                 }
 
                 if (dbRoom.isPrivate !== this.isPrivate) {
-                    this.update('isPrivate', dbRoom.isPrivate);
+                    this.update({ column: 'isPrivate', value: dbRoom.isPrivate });
                 }
 
                 if (dbRoom.category !== this.category) {
-                    this.update('category', dbRoom.category);
+                    this.update({ column: 'category', value: dbRoom.category });
                 }
 
                 if (dbRoom.genre !== this.genre) {
-                    this.update('genre', dbRoom.genre);
+                    this.update({ column: 'genre', value: dbRoom.genre });
                 }
 
                 if (dbRoom.difficulty !== this.difficulty) {
-                    this.update('difficulty', dbRoom.difficulty);
+                    this.update({ column: 'difficulty', value: dbRoom.difficulty });
                 }
 
                 let dbRoomUsers = await db.getUsersInRoom(this.roomUniqueId);
@@ -348,9 +348,9 @@ export default class Room {
     start(): boolean {
         if (this.users.length < 2) {
             console.error(`[ROOM-MANAGER] Not enough players to start the game.`);
-            return false;
+            return true;
         }
-        this.started = true;
+        this.update({ column: "started", value: true })
         console.log(`[ROOM-MANAGER] Starting game in room ${this.roomUniqueId}`);
         WSWrapper.send({ route: "room", type: 'game-start', data: { room: this.get() } });
         WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room: this.get() } });

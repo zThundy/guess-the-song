@@ -11,7 +11,7 @@ type UserInstance = {
 };
 
 type UpdateUser = {
-    value: string;
+    value: any;
     column: string;
 }
 
