@@ -5,6 +5,10 @@ class WSWrapper {
         this.listeners = new Map();
         this.debug = true; // Set to true to enable debug logging
         this._log('WebSocketWrapper initialized');
+
+        setInterval(() => {
+            console.debug("[WEBSOCKET] Registered listeners are: ", this.listeners);
+        }, 5 * 1000)
     }
 
     _log(message, ...args) {
@@ -113,19 +117,10 @@ class WSWrapper {
         }
     }
 
-    removeListener(listener, callback) {
+    removeListener(listener) {
         if (this.listeners.has(listener)) {
-            this._log('[-] removing listener: ', listener);
-            const callbacks = this.listeners.get(listener);
-            const index = callbacks.indexOf(callback);
-            if (index > -1) {
-                callbacks.splice(index, 1);
-                if (callbacks.length === 0) {
-                    this.listeners.delete(listener);
-                }
-            } else {
-                this._error('Callback not found for listener: ', listener);
-            }
+            this._log('[-] Removing listener: ', listener);
+            this.listeners.delete(listener);
         } else {
             this._error('Listener not found: ', listener);
         }
