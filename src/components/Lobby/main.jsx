@@ -13,7 +13,7 @@ import api from "helpers/api";
 import { isNumber } from "helpers/utils";
 import { useEventEmitter } from "helpers/eventEmitter";
 
-function MainGame() {
+function Lobby() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [currentRoom, setCurrentRoom] = useState({});
@@ -73,4 +73,4 @@ function MainGame() {
   )
 }
 
-export default MainGame;
+export default Lobby;

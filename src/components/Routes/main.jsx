@@ -3,7 +3,7 @@ import style from "./main.module.css";
 import wave from "./wave.svg";
 
 import MainForm from "components/LandingPage/main";
-import MainGame from "components/Lobby/main";
+import Lobby from "components/Lobby/main";
 import MainCreate from "components/CreateLobby/main";
 import MainErrorPage from "components/Error/main";
 import MainAccount from "components/Account/main";
@@ -84,7 +84,7 @@ function MainPage() {
           <Route
             path="/game/:id"
             title="Song Guesser - Lobby"
-            Component={MainGame}
+            Component={Lobby}
           />
           <Route
             path="/game/:id/play"
