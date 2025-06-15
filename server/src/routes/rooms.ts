@@ -129,9 +129,9 @@ roomsRouter.post("/validateInviteCode", async (req: Request, res: Response) => {
             res.status(404).json({ key: "GENERIC_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
             return;
         }
-        if (room.started) {
+        if (!room.userCanJoin(user)) {
             console.error(`Room ${room.getColumn('roomUniqueId')} is already started`);
-            res.status(403).json({ key: "JOIN_ERROR_ROOM_STARTED", message: 'Room is already started' });
+            res.status(403).json({ key: "GENERIC_ERROR_CANT_JOIN_ROOM", message: 'Room is already started' });
             return;
         }
         if (room.isFull() && !room.isInRoom(user)) {

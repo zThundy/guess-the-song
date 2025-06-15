@@ -19,7 +19,7 @@ function StartButton({ room }) {
   const handleButtonClick = () => {
     api.startGame(room.roomUniqueId)
       .then((data) => {
-        navigate("/game/" + room.inviteCode, { state: { started: true } });
+        navigate("/game/" + room.inviteCode + "/play", { state: { data } });
       })
       .catch((error) => {
         console.error(error);

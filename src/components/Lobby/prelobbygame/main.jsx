@@ -77,7 +77,7 @@ function PrelobbyGame({ room }) {
 
         socket.addListener("game-start", (r) => {
           console.log("game-start", r);
-          navigate(`/game/${r.data.room.inviteCode}/play`)
+          navigate(`/game/${r.data.room.inviteCode}/play`, { state: { data: r.data } });
         });
 
         socket.addListener("game-ping", (r) => {
@@ -97,6 +97,7 @@ function PrelobbyGame({ room }) {
         console.error(error);
       });
 
+    // Maybe this no workie with custom hook. Investigate.
     return () => {
       socket.removeListener("user-join");
       socket.removeListener("user-leave");

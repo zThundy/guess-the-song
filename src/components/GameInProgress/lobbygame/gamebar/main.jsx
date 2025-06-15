@@ -2,10 +2,10 @@ import classes from "./main.module.css";
 
 import Users from "./users/main.jsx";
 
-function GameBar() {
+function GameBar({ lobbyData }) {
   return (
     <div className={classes.container}>
-      <Users />
+      <Users lobbyData={lobbyData} />
     </div>
   )
 }

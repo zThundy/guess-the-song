@@ -100,10 +100,10 @@ class WSWrapper {
 
     addListener(listener, callback) {
         if (this.listeners.has(listener)) {
-            this._log('[?] listener already exists: ', listener);
-            this.listeners.get(listener).push(callback);
+            this._log('[?] Listener already exists. Ignoring new add: ', listener);
+            // TODO: Choose if replace, ignore or add new one
         } else {
-            this._log('[+] creating new listener: ', listener);
+            this._log('[+] Creating new listener: ', listener);
             this.listeners.set(listener, [callback]);
         }
     }

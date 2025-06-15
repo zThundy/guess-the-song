@@ -40,6 +40,14 @@
   z-index: 2;
 }
 
+.user img {
+  position: relative;
+  width: 100%;
+  display: block;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
 .user .guessed {
   box-sizing: border-box;
   border: 5px solid rgb(112, 255, 112);

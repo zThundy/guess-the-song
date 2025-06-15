@@ -297,10 +297,9 @@ export default class Room {
     }
 
     addUser(user: User): void {
-        if (this.users.some(u => u.uniqueId === user.uniqueId)) {
-            return console.warn(`[ROOM-MANAGER] The user ${user.getColumn("username")} (${user.getColumn("uniqueId")}) is already in the room. Ignoring the request.`)
-        }
-        if (!this.users.some(u => u.uniqueId === user.uniqueId)) {
+        if (this.isInRoom(user)) {
+            console.warn(`[ROOM-MANAGER] The user ${user.getColumn("username")} (${user.getColumn("uniqueId")}) is already in the room. Ignoring the request.`)
+        } else {
             // get users in room and send ws message to all users in room
             const users = this.users.map(u => u.get());
             this.users.push(user);
@@ -308,20 +307,20 @@ export default class Room {
                 console.log(`[ROOM-MANAGER] Sending user join message to ${u.username}`);
                 WSWrapper.send({ route: "room", type: 'user-join', data: { user: user.get(), room: this.get() } });
             }
+            console.log(`[ROOM-MANAGER] ${user.username} has joined the room ${this.roomUniqueId}.`);
+            let room = this.get();
+            if (room.isPrivate) room.inviteCode = "*****";
+            WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room } });
+            user.update({ column: "userLastRoomPing", value: new Date().toISOString() });
+            user.update({ column: "currentRoom", value: this.roomUniqueId });
+            db.addUserToRoom(this.getColumn("roomUniqueId"), user.getColumn("uniqueId"));
+            // keep this commented, maybe we need it... idk.
+            // db.updateUser(user.get());
         }
-        console.log(`[ROOM-MANAGER] ${user.username} has joined the room ${this.roomUniqueId}.`);
-        let room = this.get();
-        if (room.isPrivate) room.inviteCode = "*****";
-        WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room } });
-        user.update({ column: "userLastRoomPing", value: new Date().toISOString() });
-        user.update({ column: "currentRoom", value: this.roomUniqueId });
-        db.addUserToRoom(this.getColumn("roomUniqueId"), user.getColumn("uniqueId"));
-        // keep this commented, maybe we need it... idk.
-        // db.updateUser(user.get());
     }
 
     removeUser(user: User): void {
-        if (this.users.some(u => u.uniqueId === user.uniqueId)) {
+        if (this.isInRoom(user)) {
             WSWrapper.send({ route: "room", type: 'user-leave', data: { user: user.get(), room: this.get() } });
             this.users = this.users.filter(u => u.uniqueId !== user.uniqueId);
             console.log(`[ROOM-MANAGER] ${user.username} has left the room ${this.roomUniqueId}.`);
@@ -341,6 +340,7 @@ export default class Room {
     }
 
     isFull(): boolean {
+        // TODO: check if >= is correct. Should be but, meh (?)
         return this.users.length >= this.maxPlayers;
     }
 
@@ -348,9 +348,20 @@ export default class Room {
         return this.users.length === 0;
     }
 
+    userCanJoin(user: User) {
+        if (this.isInRoom(user)) {
+            return true;
+        }
+        if (this.started) {
+            return false;
+        }
+        return true;
+    }
+
     // game section
     start(): boolean {
         // TODO: Dev only. Remove "&& false"
+        // if (this.users.length < 2) {
         if (this.users.length < 2 && false) {
             console.error(`[ROOM-MANAGER] Not enough players to start the game.`);
             return false;
