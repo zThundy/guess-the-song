@@ -24,8 +24,8 @@ console.warn = warn;
 console.error = error;
 console.debug = verbose;
 
-console.log("------------------------- LOG STARTED -------------------------");
-console.log(`Log level: ${logLevel}. Log rotation at: ${rotateAt}`);
+console.info("------------------------- LOG STARTED -------------------------");
+console.info(`Log level: ${logLevel}. Log rotation at: ${rotateAt}`);
 
 // make id function where A are letters and 0 are numbers
 // 0A00AA0000AAA
