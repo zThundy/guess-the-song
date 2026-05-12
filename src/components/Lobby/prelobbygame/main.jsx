@@ -77,7 +77,7 @@ function PrelobbyGame({ room }) {
 
         socket.addListener("game-start", (r) => {
           console.log("game-start", r);
-          navigate(`/game/${r.data.room.inviteCode}/play`, { state: { data: r.data } });
+          navigate(`/game/${r.data.room.inviteCode}/play`, { state: { data: r.data.room } });
         });
 
         socket.addListener("game-ping", (r) => {
@@ -134,7 +134,7 @@ function PrelobbyGame({ room }) {
           </motion.div>
         </div>
 
-        <StartButton room={room} />
+        <StartButton room={room} setUsers={setUsers} />
       </div>
     </motion.div>
   )

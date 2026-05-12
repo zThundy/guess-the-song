@@ -18,8 +18,10 @@ function LobbyGame( ) {
 
   useOnMountUnsafe(() => {
     setLobbyData((prev) => {
+      const roomId = location.state.id || null;
+      console.log("lobby id", roomId);
       const _lobbyData = location.state.data || null;
-      console.log("lobby data", _lobbyData)
+
       if (prev.length === 0) {
         return _lobbyData;
       }
@@ -33,6 +35,7 @@ function LobbyGame( ) {
           navigate("/game");
           eventEmitter.emit("notify", "error", t(error.key || "GENERIC_ERROR"));
         });
+
       // TODO: update lobby data if update happens
       return prev;
     })

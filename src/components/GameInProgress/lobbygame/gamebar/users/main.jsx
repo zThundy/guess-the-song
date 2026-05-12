@@ -21,7 +21,7 @@ function User({ lobbyData }) {
 
   return (
     <>
-      {lobbyData.users.map((user, id) => (
+      {(lobbyData.users || []).map((user, id) => (
         <div className={style.user} key={id}>
           <Badge
             anchorOrigin={{

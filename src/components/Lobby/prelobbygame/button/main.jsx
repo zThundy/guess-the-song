@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import api from "helpers/api";
 import { useEventEmitter } from "helpers/eventEmitter";
 
-function StartButton({ room }) {
+function StartButton({ room, setUsers }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   // const [hover, setHover] = useState(false);
@@ -20,6 +20,9 @@ function StartButton({ room }) {
     api.startGame(room.roomUniqueId)
       .then((data) => {
         navigate("/game/" + room.inviteCode + "/play", { state: { data } });
+        setUsers((prev) => {
+          return data.users;
+        });
       })
       .catch((error) => {
         console.error(error);
