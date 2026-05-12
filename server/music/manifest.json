@@ -1,0 +1,47 @@
+[
+  {
+    "id": "1",
+    "name": "Let's Groove",
+    "artist": "Earth, Wind & Fire",
+    "album": "Let's Groove",
+    "category": "music",
+    "year": 1981,
+    "genres": ["Funk", "Disco", "Classic Soul", "Classic"]
+  },
+  {
+    "id": "2",
+    "name": "Can't Stop the Feeling!",
+    "artist": "Justin Timberlake",
+    "album": "Trolls (Original Motion Picture Soundtrack)",
+    "category": "music",
+    "year": 2016,
+    "genres": ["Soul music", "Ambient", "Pop", "Classic Soul", "West Coast Hip-Hop", "Dance Pop", "Disco-pop", "House", "Techno", "Teen Pop"]
+  },
+  {
+    "id": "3",
+    "name": "Rithm of the Night",
+    "artist": "Corona",
+    "album": "The Rhythm of the Night",
+    "category": "music",
+    "year": 1993,
+    "genres": ["Dance", "Electronic"]
+  },
+  {
+    "id": "4",
+    "name": "Troublemaker",
+    "artist": "Olly Murs feat. Flo Rida",
+    "album": "Troublemaker",
+    "category": "music",
+    "year": 2012,
+    "genres": ["Electropop", "Pop", "Vocal/Easy Listening", "Dance Pop", "Teen Pop"]
+  },
+  {
+    "id": "5",
+    "name": "Can't Feel My Face",
+    "artist": "The Weeknd",
+    "album": "Beauty Behind the Madness",
+    "category": "music",
+    "year": 2015,
+    "genres": ["R&B", "Soul"]
+  }
+]
