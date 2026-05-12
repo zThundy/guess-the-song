@@ -30,7 +30,6 @@ export default class Room {
 
     // destructor to initialize the room with data
 
-
     public async initRoom(data: RoomInstance): Promise<void> {
         if (!hasProperty(data, 'roomUniqueId')) throw new Error('Invalid room id while initializing room.');
 
