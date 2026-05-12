@@ -3,18 +3,26 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 
 import i18next from "i18next";
-import HttpBackend from "i18next-http-backend";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 import CssBaseline from '@mui/material/CssBaseline';
 
 import { getAllowedLanguages } from 'helpers/language';
 
-const apiKey = "Gkfk5_77WBzwXWEjxu-J3Q";
-const loadPath = `https://api.i18nexus.com/project_resources/translations/{{lng}}/{{ns}}.json?api_key=${apiKey}`;
+const translationModules = import.meta.glob('./language/**/*.json', { eager: true });
+
+const resources = Object.fromEntries(
+  Object.entries(translationModules).map(([filePath, module]) => {
+    const fileName = filePath.split('/').pop();
+    const lng = fileName ? fileName.replace(/\.json$/, '') : filePath;
+
+    return [lng, {
+      default: module.default,
+    }];
+  })
+);
 
 i18next
-  .use(HttpBackend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
@@ -23,10 +31,8 @@ i18next
     ns: ["default"],
     defaultNS: "default",
 
+    resources,
     supportedLngs: getAllowedLanguages(),
-    backend: {
-      loadPath: loadPath,
-    },
   });
 
 const onRender = (id, phase, actualDuration, baseDuration, startTime, commitTime) => {
