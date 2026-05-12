@@ -8,8 +8,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import Lobbies from "./lobbies/main";
 
 import { Button, styled, Paper, Typography, Zoom, IconButton, InputBase, ClickAwayListener } from '@mui/material';
-import { Add, Close, Login, East } from '@mui/icons-material';
+import { Add, Close, Login, East, Refresh } from '@mui/icons-material';
 import { useTranslation } from "react-i18next";
+import { useOnMountUnsafe } from "helpers/remountUnsafe";
+import socket from "helpers/socket";
 import { t } from "i18next";
 
 import api from "helpers/api";
@@ -55,8 +57,8 @@ const StyledButtonPrimary = styled(Button)({
   },
   "& .MuiSvgIcon-root": {
     transition: "all .2s ease",
-    width: ".5rem",
-    height: ".5rem",
+    width: "4rem",
+    height: "4rem",
   }
 });
 
@@ -155,6 +157,111 @@ function JoinGameModal({ on, toggle }) {
 function JoinGame({ status }) {
   const [joinGameToggle, setJoinGameToggle] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const eventEmitter = useEventEmitter();
+  const [lobbies, setLobbies] = useState([]);
+  const [resultsReady, setResultsReady] = useState(false);
+  const [errored, setError] = useState(false);
+
+  useOnMountUnsafe(() => {
+    getLobbiesAPI();
+
+    // receive single lobby update of the list
+    socket.addListener("lobby-refresh", (r) => {
+      console.log("lobby-refresh", r);
+      if (r.data) {
+        if (r.data.room && r.data.room.roomUniqueId) {
+          switch (r.action) {
+            case "delete":
+              console.log("deleted lobby", r.data.room.roomUniqueId);
+              setLobbies((prev) => {
+                let lobbies = [...prev];
+                // check if lobby exists
+                if (lobbies.find((lobby) => lobby.roomUniqueId === r.data.room.roomUniqueId)) {
+                  // remove lobby
+                  lobbies = lobbies.filter((lobby) => lobby.roomUniqueId !== r.data.room.roomUniqueId);
+                  console.log("removed lobby", r.data.room.roomUniqueId);
+                }
+                return lobbies;
+              });
+              break;
+            case "update":
+              console.log("upserted lobby", r.data.room);
+              setLobbies((prev) => {
+                let lobbies = [...prev];
+                if (lobbies.find((lobby) => lobby.roomUniqueId === r.data.room.roomUniqueId)) {
+                  // update lobby
+                  lobbies = lobbies.map((lobby) => {
+                    if (lobby.roomUniqueId === r.data.room.roomUniqueId) {
+                      console.log("updated lobby", r.data.room);
+                      lobby.category = r.data.room.category;
+                      lobby.difficulty = r.data.room.difficulty;
+                      lobby.genre = r.data.room.genre;
+                      lobby.inviteCode = r.data.room.inviteCode;
+                      lobby.isPrivate = r.data.room.isPrivate;
+                      lobby.maxPlayers = r.data.room.maxPlayers;
+                      lobby.roomName = r.data.room.roomName;
+                      lobby.users = r.data.room.users;
+                      lobby.roomOwner = r.data.room.roomOwner;
+                      lobby.rounds = r.data.room.rounds;
+                      lobby.started = r.data.room.started;
+                    }
+                    return lobby;
+                  });
+                  console.log("updated lobby", lobbies);
+                  return lobbies;
+                }
+                console.log("added lobby", r.data.room);
+                // add lobby
+                lobbies.push({
+                  category: r.data.room.category,
+                  difficulty: r.data.room.difficulty,
+                  genre: r.data.room.genre,
+                  inviteCode: r.data.room.inviteCode,
+                  isPrivate: r.data.room.isPrivate,
+                  maxPlayers: r.data.room.maxPlayers,
+                  roomName: r.data.room.roomName,
+                  users: r.data.room.users,
+                  roomUniqueId: r.data.room.roomUniqueId,
+                  roomOwner: r.data.room.roomOwner,
+                  rounds: r.data.room.rounds,
+                  started: r.data.room.started,
+                });
+                return lobbies;
+              })
+              break;
+            default:
+              console.log("unknown lobby-refresh action", r.action);
+          }
+        }
+      }
+    });
+
+    eventEmitter.on("refreshLobbies", () => {
+      getLobbiesAPI();
+    })
+
+    return () => {
+      socket.removeListener("lobby-refresh");
+      eventEmitter.off("refreshLobbies");
+    }
+  }, []);
+
+  const getLobbiesAPI = () => {
+    api.getLobbies(0)
+      .then((lobbies) => {
+        if (lobbies && lobbies.length > 0) setLobbies(lobbies);
+        else setLobbies([]);
+        setResultsReady(true);
+        setError(false);
+      })
+      .catch((error) => {
+        setResultsReady(false);
+        setError(true);
+        setLobbies([]);
+        eventEmitter.emit("notify", "error", t("ERROR_FETCHING_LOBBIES"));
+      });
+  }
 
   const handleJoinGame = () => {
     setTimeout(() => {
@@ -168,6 +275,19 @@ function JoinGame({ status }) {
     }, 200);
   }
 
+  const handleRefresh = () => {
+    console.log("refresh games")
+    // rotate svg on click
+    const refreshButton = document.querySelector('.refresh-button');
+    if (refreshButton) {
+      refreshButton.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        refreshButton.style.transform = 'rotate(0deg)';
+      }, 200);
+    }
+    getLobbiesAPI();
+  }
+
   return (
     <>
       <JoinGameModal status={status} on={joinGameToggle} toggle={setJoinGameToggle} />
@@ -175,9 +295,18 @@ function JoinGame({ status }) {
         <div className={style.joinOrCreateButtons}>
           <StyledButtonPrimary variant="contained" endIcon={<Add />} onClick={handleCreateGame}>{t("JOIN_GAME_SCREEN_BUTTON_1")}</StyledButtonPrimary>
           <StyledButtonPrimary variant="contained" endIcon={<Login />} onClick={handleJoinGame}>{t("JOIN_GAME_SCREEN_BUTTON_2")}</StyledButtonPrimary>
+          <StyledButtonPrimary variant="contained" sx={{ width: "15rem" }} onClick={handleRefresh}><Refresh className="refresh-button" fontSize="large" /></StyledButtonPrimary>
         </div>
         <div className={style.joinOrCreateListOfLobbies}>
-          <Lobbies />
+          <Lobbies
+            getLobbiesAPI={getLobbiesAPI}
+            setResultsReady={setResultsReady}
+            setLobbies={setLobbies}
+            setError={setError}
+            resultsReady={resultsReady}
+            lobbies={lobbies}
+            errored={errored}
+          />
         </div>
       </div>
     </>
