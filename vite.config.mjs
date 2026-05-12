@@ -33,6 +33,7 @@ export default defineConfig({
         alias: {
             helpers: path.resolve(__dirname, './src/helpers'),
             components: path.resolve(__dirname, './src/components'),
+            language: path.resolve(__dirname, './src/language'),
             public: path.resolve(__dirname, './public'),
         },
     },
