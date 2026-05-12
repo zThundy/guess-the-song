@@ -11,6 +11,7 @@
         ],
         "allowJs": false,
         "skipLibCheck": false,
+        "ignoreDeprecations": "6.0",
         // "esModuleInterop": false,
         "allowSyntheticDefaultImports": true,
         "strict": true,
