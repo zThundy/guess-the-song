@@ -37,11 +37,11 @@ i18next
 
 const onRender = (id, phase, actualDuration, baseDuration, startTime, commitTime) => {
   if (actualDuration > 1) {
-    if (phase === 'mount') {
-      console.debug(`Component ${id} mounted in ${actualDuration}ms`);
-    } else if (phase === 'update') {
-      console.debug(`Component ${id} updated in ${actualDuration}ms`);
-    }
+    // if (phase === 'mount') {
+    //   console.debug(`Component ${id} mounted in ${actualDuration}ms`);
+    // } else if (phase === 'update') {
+    //   console.debug(`Component ${id} updated in ${actualDuration}ms`);
+    // }
   }
 }
 
