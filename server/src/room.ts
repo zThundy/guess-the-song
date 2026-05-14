@@ -28,6 +28,8 @@ export default class Room {
     public users: User[] = [];
     // per-room points map keyed by user uniqueId
     public roomPoints: { [uniqueId: string]: number } = {};
+    // tracks which users are ready for the next round
+    public roundReadyUsers: Set<string> = new Set();
     public currentSongId: string = '';
     public currentSongName: string = '';
     public songStartedAt: number = 0;
@@ -92,6 +94,28 @@ export default class Room {
                         console.debug(`[ROOM-MANAGER] User ${user.username} (${user.uniqueId}) pinged the room ${this.roomUniqueId}.`);
                     }
                 }
+            }
+        });
+
+        // Listen for ready-for-next-round from clients
+        WSWrapper.on("ready-for-next-round", (r: any) => {
+            console.log(`[ROOM-MANAGER] Received ready-for-next-round from client for room ${this.roomUniqueId}.`);
+            try {
+                const data = r?.data || {};
+                if (!data.roomUniqueId || data.roomUniqueId !== this.roomUniqueId) return;
+                if (!data.uniqueId) return;
+                
+                this.roundReadyUsers.add(String(data.uniqueId));
+                console.log(`[ROOM-MANAGER] User ${data.uniqueId} ready for next round in room ${this.roomUniqueId} (${this.roundReadyUsers.size}/${this.users.length})`);
+                
+                // Check if all users are ready
+                if (this.roundReadyUsers.size >= this.users.length) {
+                    // Reset ready set for next round
+                    this.roundReadyUsers.clear();
+                    this.advanceRound();
+                }
+            } catch (e: any) {
+                console.error(`[ROOM-MANAGER] Error in ready-for-next-round handler: ${e?.message || e}`);
             }
         });
 
@@ -366,6 +390,60 @@ export default class Room {
         };
     }
 
+    private advanceRound() {
+        // Called when all clients are ready for the next round
+        try {
+            // Increment round counter
+            this.currentRound = Number(this.currentRound || 0) + 1;
+            console.log(`[ROOM-MANAGER] All players ready. Advancing to round ${this.currentRound} for room ${this.roomUniqueId}.`);
+
+            if (this.currentRound < Number(this.rounds || 0)) {
+                // start next round
+                console.log(`[ROOM-MANAGER] Starting round ${this.currentRound} for room ${this.roomUniqueId}`);
+                const session = MusicStreamer.start(this);
+
+                // notify participants a new round is starting
+                const recipientIds = this.users.map(u => String(u.uniqueId));
+                try {
+                    WSWrapper.sendToUsers({ route: "room", type: 'round-start', data: { roomUniqueId: this.roomUniqueId, room: this.get() } }, recipientIds);
+                } catch (e) {
+                    WSWrapper.send({ route: "room", type: 'round-start', data: { roomUniqueId: this.roomUniqueId, room: this.get() } });
+                }
+            } else {
+                // reached final round -> end game
+                console.log(`[ROOM-MANAGER] Reached final round (${this.currentRound}/${this.rounds}) for room ${this.roomUniqueId}. Ending game.`);
+                this.endGame();
+            }
+        } catch (e: any) {
+            console.error(`[ROOM-MANAGER] Error advancing round: ${e?.message || e}`);
+        }
+    }
+
+    private endGame() {
+        try {
+            // finalize and persist scores
+            this.finalizeScores();
+            // mark game stopped
+            this.update({ column: 'started', value: false });
+
+            const recipientIds = this.users.map(u => String(u.uniqueId));
+            try {
+                WSWrapper.sendToUsers({ route: "room", type: 'game-end', data: { room: this.get() } }, recipientIds);
+            } catch (e) {
+                WSWrapper.send({ route: "room", type: 'game-end', data: { room: this.get() } });
+            }
+
+            // broadcast final lobby state to participants
+            try {
+                WSWrapper.sendToUsers({ route: "room", type: "lobby-refresh", action: "update", data: { room: this.get() } }, recipientIds);
+            } catch (e) {
+                WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room: this.get() } });
+            }
+        } catch (e: any) {
+            console.error(`[ROOM-MANAGER] Error ending game: ${e?.message || e}`);
+        }
+    }
+
     /**
      * Persist all users' current in-room points to the database.
      * Call this at the end of the match to save totals to the user records.
@@ -488,12 +566,15 @@ export default class Room {
             console.error(`[ROOM-MANAGER] Not enough players to start the game.`);
             return false;
         }
-        this.update({ column: "started", value: true })
-        console.log(`[ROOM-MANAGER] Starting game in room ${this.roomUniqueId}`);
-        const session = MusicStreamer.start(this);
-        if (session?.song) {
-            this.setCurrentSong(session.song, Date.now());
+        if (this.started) {
+            console.warn(`[ROOM-MANAGER] Start requested for room ${this.roomUniqueId}, but game is already started. Ignoring duplicate start.`);
+            return false;
         }
+        this.update({ column: "started", value: true })
+        this.currentRound = 0;
+        this.roundReadyUsers.clear();
+        console.log(`[ROOM-MANAGER] Starting game in room ${this.roomUniqueId}`);
+        MusicStreamer.start(this);
         WSWrapper.send({ route: "room", type: 'game-start', data: { room: this.get() } });
         WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room: this.get() } });
         return true;

@@ -18,6 +18,7 @@ type RoomLike = {
 	started: boolean;
 	users: Array<{ uniqueId: string }>;
 	get: () => any;
+	setCurrentSong?: (song: { id: string; name: string }, startedAt: number) => void;
 };
 
 type StreamSession = {
@@ -119,13 +120,22 @@ class MusicStreamer {
 	}
 
 	private pickChoices(targetSong: MusicManifestEntry): MusicManifestEntry[] {
-		const choices: MusicManifestEntry[] = [targetSong];
+		const choices: MusicManifestEntry[] = [];
+		const maxChoices = Math.min(4, this.manifest.length);
 
-		while (choices.length < 4 && choices.length < this.manifest.length) {
+		while (choices.length < maxChoices) {
 			const candidate = this.pickRandomSong(choices.map((choice) => choice.id));
 			if (!choices.some((choice) => choice.id === candidate.id)) {
 				choices.push(candidate);
 			}
+		}
+
+		// Safety net: always force targetSong into the final choices.
+		if (!choices.some((choice) => choice.id === targetSong.id)) {
+			if (choices.length > 0) {
+				choices.pop();
+			}
+			choices.push(targetSong);
 		}
 
 		for (let index = choices.length - 1; index > 0; index -= 1) {
@@ -177,16 +187,6 @@ class MusicStreamer {
 		return this.fallbackBitrateKbps;
 	}
 
-	private getPreviewBytes(audioLength: number): number {
-		if (audioLength <= 1) {
-			return 0;
-		}
-
-		const bytesPerSecond = Math.max(1, Math.floor((this.fallbackBitrateKbps * 1000) / 8));
-		const bytesFromSeconds = Math.max(1, Math.floor(this.previewSeconds * bytesPerSecond));
-		return Math.min(bytesFromSeconds, audioLength - 1);
-	}
-
 	private pickRandomPreviewSegment(audioBuffer: Buffer): { previewBuffer: Buffer; randomStartByte: number } {
 		const bitrateKbps = this.detectMp3BitrateKbps(audioBuffer);
 		const previewBytes = Math.min(
@@ -229,8 +229,11 @@ class MusicStreamer {
 		}
 
 		const targetSong = this.pickRandomSong();
+    console.log("MUSIC-LOG", `Selected song ${targetSong.name} (${targetSong.id}) for room ${room.roomUniqueId}.`);
 		const choices = this.pickChoices(targetSong);
+    console.log("MUSIC-LOG", `Choices for room ${room.roomUniqueId}: ${choices.map((c) => c.name).join(", ")}`);
 		const audioPath = this.findSongAudioFile(targetSong.id);
+    console.log("MUSIC-LOG", `Audio path for song ${targetSong.name} (${targetSong.id}): ${audioPath}`);
 		const audioBuffer = fs.readFileSync(audioPath);
 		const { previewBuffer, randomStartByte } = this.pickRandomPreviewSegment(audioBuffer);
 		if (previewBuffer.length === 0) {
@@ -336,6 +339,9 @@ class MusicStreamer {
 
 		session.started = true;
 		const startAt = Date.now() + this.startDelayMs;
+		if (typeof session.room.setCurrentSong === "function") {
+			session.room.setCurrentSong({ id: session.song.id, name: session.song.name }, startAt);
+		}
 
 		WSWrapper.send({
 			route: "room",

@@ -88,6 +88,8 @@ function Game({ lobbyData = {} }) {
   const [pointsVisible, setPointsVisible] = useState(false);
   const [pointsExiting, setPointsExiting] = useState(false);
   const [pointsAnimatedValue, setPointsAnimatedValue] = useState(0);
+  const [roundEnded, setRoundEnded] = useState(false);
+  const [roundReadySent, setRoundReadySent] = useState(false);
   const pointsTimerRef = useRef(null);
   const pointsHideTimerRef = useRef(null);
   const pointsCountIntervalRef = useRef(null);
@@ -151,6 +153,8 @@ function Game({ lobbyData = {} }) {
       };
 
       setMusicStatus("buffering");
+      setRoundEnded(false);
+      setRoundReadySent(false);
       setChoices((r.data.choiceNames || []).map((name, index) => ({
         id: r.data.choiceIds?.[index] || String(index + 1),
         name,
@@ -220,11 +224,32 @@ function Game({ lobbyData = {} }) {
       }, 1000);
     };
 
+    const handleRoundStart = (r) => {
+      if (r.data.roomUniqueId !== lobbyData?.roomUniqueId) return;
+      console.log("GAME-LOG", "New round started, resetting round states");
+      // Reset round-related states for the new round
+      setRoundEnded(false);
+      setRoundReadySent(false);
+      setGuessed("0");
+
+      // Re-arm and send music-ready for this new round
+      readySentRef.current = true;
+      socket.send({
+        type: "music-ready",
+        data: {
+          roomUniqueId: lobbyData.roomUniqueId,
+          uniqueId: getCookie("uniqueId") || "",
+          inviteCode: lobbyData.inviteCode || "",
+        },
+      });
+    };
+
     socket.addListener("music-start", handleMusicStart);
     socket.addListener("music-chunk", handleMusicChunk);
     socket.addListener("music-end", handleMusicEnd);
     socket.addListener("countdown-tick", handleCountdownTick);
     socket.addListener("countdown-go", handleCountdownGo);
+    socket.addListener("round-start", handleRoundStart);
 
     return () => {
       socket.removeListener("music-start");
@@ -232,6 +257,7 @@ function Game({ lobbyData = {} }) {
       socket.removeListener("music-end");
       socket.removeListener("countdown-tick");
       socket.removeListener("countdown-go");
+      socket.removeListener("round-start");
 
       if (playbackTimerRef.current) {
         clearTimeout(playbackTimerRef.current);
@@ -247,6 +273,22 @@ function Game({ lobbyData = {} }) {
       }
     };
   }, [lobbyData?.roomUniqueId]);
+
+  // Send ready-for-next-round when round ends and overlay disappears
+  useEffect(() => {
+    // If round has ended, points overlay has disappeared, and we haven't sent the ready message yet
+    if (roundEnded && !pointsVisible && !roundReadySent && lobbyData?.roomUniqueId) {
+      console.log("GAME-LOG", "Sending ready-for-next-round to server for room:", lobbyData.roomUniqueId);
+      setRoundReadySent(true);
+      socket.send({
+        type: "ready-for-next-round",
+        data: {
+          roomUniqueId: lobbyData.roomUniqueId,
+          uniqueId: getCookie("uniqueId") || "",
+        },
+      });
+    }
+  }, [roundEnded, pointsVisible, roundReadySent, lobbyData?.roomUniqueId]);
 
   const handleGuess = (e) => {
     if (guessed !== "0") return;
@@ -348,6 +390,18 @@ function Game({ lobbyData = {} }) {
     const onEnded = () => {
       setCurrentSec(Number.isFinite(audio.duration) ? audio.duration : 0);
       setRemainingSec(0);
+      // Round is considered ended only when playback really finishes on the client.
+      setRoundEnded(true);
+
+      // Fully clear client audio buffers/state after each song.
+      chunkBufferRef.current = [];
+      streamMetaRef.current = { roomUniqueId: "", streamId: "", startAt: 0 };
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = "";
+      }
+      setAudioUrl("");
+      setMusicStatus("waiting");
     };
 
     audio.addEventListener("loadedmetadata", onLoadedMetadata);
