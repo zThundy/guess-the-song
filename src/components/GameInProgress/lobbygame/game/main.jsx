@@ -442,7 +442,11 @@ function Game({ lobbyData = {} }) {
       audio.removeEventListener("loadedmetadata", onLoadedMetadata);
       audio.removeEventListener("timeupdate", onTimeUpdate);
       audio.removeEventListener("ended", onEnded);
+    };
+  }, [audioUrl, volume]);
 
+  useEffect(() => {
+    return () => {
       if (pointsTimerRef.current) {
         clearTimeout(pointsTimerRef.current);
       }
@@ -456,13 +460,6 @@ function Game({ lobbyData = {} }) {
       }
 
       setPointsExiting(false);
-
-      clearSongCoverUrl();
-    };
-  }, [audioUrl, volume]);
-
-  useEffect(() => {
-    return () => {
       clearSongCoverUrl();
     };
   }, []);
