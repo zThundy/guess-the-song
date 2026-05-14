@@ -9,6 +9,7 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 import { useOnMountUnsafe } from "helpers/remountUnsafe";
 import api from "helpers/api";
+import socket from "helpers/socket";
 
 function LobbyGame( ) {
   const [lobbyData, setLobbyData] = useState([]);
@@ -16,6 +17,17 @@ function LobbyGame( ) {
   const navigate = useNavigate();
 
   useOnMountUnsafe(() => {
+    const handleKickFromRoom = (r) => {
+      const roomUniqueId = r?.data?.roomUniqueId;
+      if (!roomUniqueId) return;
+      if (lobbyData?.roomUniqueId && roomUniqueId !== lobbyData.roomUniqueId) return;
+
+      console.log("GAME-LOG", "Received kick-from-room, navigating to /game", r?.data);
+      navigate("/game");
+    };
+
+    socket.addListener("kick-from-room", handleKickFromRoom);
+
     setLobbyData((prev) => {
       const roomId = location.state.id || null;
       console.log("lobby id", roomId);
@@ -42,7 +54,9 @@ function LobbyGame( ) {
     // socket.removeListener("user-leave");
     // socket.removeListener("game-ping");
 
-    return () => {};
+    return () => {
+      socket.removeListener("kick-from-room");
+    };
   }, [])
 
   return (

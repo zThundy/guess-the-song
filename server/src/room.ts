@@ -6,7 +6,7 @@ import User from './user';
 import { hasProperty } from './utils';
 import db from './sql';
 
-const { getUser, addUser } = require('./states');
+const { getUser, addUser, removeRoom } = require('./states');
 const WSWrapper = require('./wswrapper');
 const MusicStreamer = require('./musicstreamer');
 
@@ -36,6 +36,7 @@ export default class Room {
     public answerBasePoints: number = 100;
     public answerMinPoints: number = 10;
     public answerDecayPerSecond: number = 12;
+    private roomPingUsersInterval: ReturnType<typeof setInterval> | null = null;
 
     constructor() { }
 
@@ -58,7 +59,7 @@ export default class Room {
         // check types
         if (typeof this.roomUniqueId !== 'string') this.roomUniqueId = String(this.roomUniqueId);
 
-        const roomPingUsersInterval = setInterval(() => {
+        this.roomPingUsersInterval = setInterval(() => {
             if (this.users.length > 0) {
                 this.canCleanup = false;
                 this.users.forEach(user => {
@@ -77,7 +78,10 @@ export default class Room {
                     }
                 });
             } else {
-                clearInterval(roomPingUsersInterval);
+                if (this.roomPingUsersInterval) {
+                    clearInterval(this.roomPingUsersInterval);
+                    this.roomPingUsersInterval = null;
+                }
                 this.deleteRoom();
                 this.canCleanup = true;
             }
@@ -423,22 +427,65 @@ export default class Room {
         try {
             // finalize and persist scores
             this.finalizeScores();
-            // mark game stopped
-            this.update({ column: 'started', value: false });
 
-            const recipientIds = this.users.map(u => String(u.uniqueId));
+            const usersSnapshot = [...this.users];
+            const recipientIds = usersSnapshot.map(u => String(u.uniqueId));
+
+            // notify participants that game is over before room cleanup
             try {
                 WSWrapper.sendToUsers({ route: "room", type: 'game-end', data: { room: this.get() } }, recipientIds);
             } catch (e) {
                 WSWrapper.send({ route: "room", type: 'game-end', data: { room: this.get() } });
             }
 
-            // broadcast final lobby state to participants
+            // force all room players to leave the room view client-side
             try {
-                WSWrapper.sendToUsers({ route: "room", type: "lobby-refresh", action: "update", data: { room: this.get() } }, recipientIds);
+                WSWrapper.sendToUsers({
+                    route: "room",
+                    type: 'kick-from-room',
+                    data: {
+                        roomUniqueId: this.roomUniqueId,
+                        reason: 'game-finished'
+                    }
+                }, recipientIds);
             } catch (e) {
-                WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room: this.get() } });
+                WSWrapper.send({
+                    route: "room",
+                    type: 'kick-from-room',
+                    data: {
+                        roomUniqueId: this.roomUniqueId,
+                        reason: 'game-finished'
+                    }
+                });
             }
+
+            // kick all players back to lobby and remove room membership
+            usersSnapshot.forEach((u) => {
+                try {
+                    u.update({ column: "currentRoom", value: '' });
+                    db.removeUserFromRoom(this.getColumn("roomUniqueId"), u.getColumn("uniqueId"));
+                } catch (e: any) {
+                    console.error(`[ROOM-MANAGER] Error removing user ${u?.username} from room ${this.roomUniqueId}: ${e?.message || e}`);
+                }
+            });
+
+            // mark game stopped and clear room runtime state
+            this.update({ column: 'started', value: false });
+            this.users = [];
+            this.roomPoints = {};
+            this.roundReadyUsers.clear();
+            this.clearCurrentSong();
+
+            // stop heartbeat timer for this room
+            if (this.roomPingUsersInterval) {
+                clearInterval(this.roomPingUsersInterval);
+                this.roomPingUsersInterval = null;
+            }
+
+            // delete room from db/lobby and in-memory state immediately
+            this.deleteRoom();
+            removeRoom(this.roomUniqueId);
+            this.canCleanup = true;
         } catch (e: any) {
             console.error(`[ROOM-MANAGER] Error ending game: ${e?.message || e}`);
         }
