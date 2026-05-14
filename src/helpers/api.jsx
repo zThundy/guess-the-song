@@ -145,6 +145,15 @@ function startGame(roomUniqueId) {
   });
 }
 
+function submitRoomAnswer(roomUniqueId, answer, playbackMs) {
+  return apiPost(`/rooms/answer/${roomUniqueId}`, {
+    roomUniqueId,
+    uniqueId: getCookie('uniqueId') || '',
+    answer,
+    playbackMs
+  });
+}
+
 function getGenres() {
   return apiGet('/create/genres');
 }
@@ -216,6 +225,7 @@ export default {
   getRoomUsers,
   leaveRoom,
   startGame,
+  submitRoomAnswer,
   getGenres,
   getCategories
 }

@@ -317,6 +317,64 @@ roomsRouter.post("/start/:roomUniqueId", async (req: Request, res: Response) => 
     }
 });
 
+roomsRouter.post("/answer/:roomUniqueId", async (req: Request, res: Response) => {
+    if (req.headers['content-type'] !== 'application/json') {
+        console.error('Invalid content-type in /answer/:roomUniqueId');
+        res.status(400).json({ key: "GENERIC_ERROR", message: 'Invalid content-type' });
+        return;
+    }
+
+    const { roomUniqueId } = req.params;
+    if (!roomUniqueId) {
+        console.error('Invalid roomUniqueId in /answer/:roomUniqueId');
+        res.status(400).json({ key: "GENERIC_ERROR_INVALID_ROOM_ID", message: 'Invalid roomUniqueId' });
+        return;
+    }
+
+    const body = req.body as any;
+    if (!hasProperty(body, 'uniqueId') || !hasProperty(body, 'answer')) {
+        console.error('Invalid body in /answer/:roomUniqueId - missing uniqueId or answer');
+        res.status(400).json({ key: "GENERIC_ERROR_INVALID_BODY", message: 'Invalid body' });
+        return;
+    }
+
+    try {
+        const room = getRoom(roomUniqueId);
+        if (!room) {
+            console.error(`Room not found with roomUniqueId ${roomUniqueId}`);
+            res.status(404).json({ key: "GENERIC_ERROR_ROOM_NOT_FOUND", message: 'Room not found' });
+            return;
+        }
+
+        const user = getUser(body.uniqueId);
+        if (!user) {
+            console.error(`User not found with uniqueId ${body.uniqueId}`);
+            res.status(404).json({ key: "GENERIC_ERROR_USER_NOT_FOUND", message: 'User not found' });
+            return;
+        }
+
+        if (!room.started) {
+            console.error(`Room ${roomUniqueId} has not started yet`);
+            res.status(400).json({ key: "GENERIC_ERROR_ROOM_NOT_STARTED", message: 'Room has not started yet' });
+            return;
+        }
+
+        const fallbackPlaybackMs = room.songStartedAt > 0 ? Math.max(0, Date.now() - room.songStartedAt) : 0;
+        const playbackMs = Number(hasProperty(body, 'playbackMs') ? body.playbackMs : fallbackPlaybackMs);
+        const result = room.submitAnswer(user, body.answer, Number.isFinite(playbackMs) ? playbackMs : fallbackPlaybackMs);
+
+        res.json({
+            room: room.get(),
+            user: user.get(),
+            result,
+        });
+    } catch (e: any) {
+        console.error(`Error in /answer/:roomUniqueId: ${e.message}`);
+        res.status(400).json({ key: "GENERIC_ERROR", message: e.message });
+        return;
+    }
+});
+
 // roomsRouter.get('/:roomUniqueId', async (req: Request, res: Response) => {
 //     const { roomUniqueId } = req.params;
 //     if (!roomUniqueId) {

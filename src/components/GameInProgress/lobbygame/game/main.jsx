@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Box, Button, LinearProgress, Slider, styled, Typography } from "@mui/material";
 
+import api from "helpers/api";
 import { getCookie } from "helpers/cookies";
 import socket from "helpers/socket";
 
@@ -245,6 +246,17 @@ function Game({ lobbyData = {} }) {
     if (guessed !== "0") return;
     const guess = e.currentTarget.dataset.guess;
     setGuessed(guess);
+
+    const playbackMs = audioRef.current ? Math.max(0, Math.floor((audioRef.current.currentTime || 0) * 1000)) : 0;
+    const selectedAnswer = choices.find((choice) => String(choice.id) === String(guess))?.name || guess;
+
+    api.submitRoomAnswer(lobbyData.roomUniqueId, selectedAnswer, playbackMs)
+      .then((result) => {
+        console.log("ANSWER-LOG", result);
+      })
+      .catch((error) => {
+        console.error("ANSWER-LOG", error);
+      });
   }
 
   useEffect(() => {

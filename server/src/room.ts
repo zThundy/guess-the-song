@@ -26,6 +26,12 @@ export default class Room {
 
     public currentRound: number = 0;
     public users: User[] = [];
+    public currentSongId: string = '';
+    public currentSongName: string = '';
+    public songStartedAt: number = 0;
+    public answerBasePoints: number = 100;
+    public answerMinPoints: number = 10;
+    public answerDecayPerSecond: number = 12;
 
     constructor() { }
 
@@ -292,7 +298,56 @@ export default class Room {
             difficulty: this.difficulty,
             inviteCode: this.inviteCode,
             started: this.started,
+            currentSongId: this.currentSongId,
+            currentSongName: this.currentSongName,
+            songStartedAt: this.songStartedAt,
+            answerBasePoints: this.answerBasePoints,
+            answerMinPoints: this.answerMinPoints,
+            answerDecayPerSecond: this.answerDecayPerSecond,
             users: this.users.map(u => u.get())
+        };
+    }
+
+    public setCurrentSong(song: { id: string; name: string }, startedAt: number): void {
+        this.currentSongId = String(song.id || '');
+        this.currentSongName = String(song.name || '');
+        this.songStartedAt = Number(startedAt || 0);
+        console.log(`[ROOM-MANAGER] Current song for room ${this.roomUniqueId} set to ${this.currentSongName} (${this.currentSongId}) at ${this.songStartedAt}.`);
+    }
+
+    public clearCurrentSong(): void {
+        this.currentSongId = '';
+        this.currentSongName = '';
+        this.songStartedAt = 0;
+    }
+
+    public calculateAnswerPoints(playbackMs: number): number {
+        const safePlaybackMs = Math.max(0, Number(playbackMs || 0));
+        const elapsedSeconds = safePlaybackMs / 1000;
+        const rawPoints = this.answerBasePoints - Math.floor(elapsedSeconds * this.answerDecayPerSecond);
+        const points = Math.max(this.answerMinPoints, rawPoints);
+        console.log(`[ROOM-MANAGER] Calculated points=${points} for room ${this.roomUniqueId} at playbackMs=${safePlaybackMs}.`);
+        return points;
+    }
+
+    public submitAnswer(user: User, answer: string, playbackMs: number): { correct: boolean; pointsAwarded: number; correctAnswer: string } {
+        const normalizedAnswer = String(answer || '').trim().toLowerCase();
+        const normalizedCorrect = String(this.currentSongName || '').trim().toLowerCase();
+        const correct = normalizedAnswer.length > 0 && normalizedCorrect.length > 0 && normalizedAnswer === normalizedCorrect;
+        const pointsAwarded = correct ? this.calculateAnswerPoints(playbackMs) : 0;
+
+        if (correct) {
+            user.update({ column: 'points', value: Number(user.points || 0) + pointsAwarded });
+            user.save();
+            console.log(`[ROOM-MANAGER] Correct answer from ${user.username} in room ${this.roomUniqueId}, awarded ${pointsAwarded} points.`);
+        } else {
+            console.log(`[ROOM-MANAGER] Wrong answer from ${user.username} in room ${this.roomUniqueId}. Submitted='${answer}', expected='${this.currentSongName}'.`);
+        }
+
+        return {
+            correct,
+            pointsAwarded,
+            correctAnswer: this.currentSongName,
         };
     }
 
@@ -368,7 +423,10 @@ export default class Room {
         }
         this.update({ column: "started", value: true })
         console.log(`[ROOM-MANAGER] Starting game in room ${this.roomUniqueId}`);
-        MusicStreamer.start(this);
+        const session = MusicStreamer.start(this);
+        if (session?.song) {
+            this.setCurrentSong(session.song, Date.now());
+        }
         WSWrapper.send({ route: "room", type: 'game-start', data: { room: this.get() } });
         WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room: this.get() } });
         return true;
