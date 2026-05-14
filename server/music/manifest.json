@@ -43,5 +43,50 @@
     "category": "music",
     "year": 2015,
     "genres": ["R&B", "Soul"]
+  },
+  {
+    "id": "6",
+    "name": "Somebody That I Used to Know",
+    "artist": "Gotye feat. Kimbra",
+    "album": "Making Mirrors",
+    "category": "music",
+    "year": 2011,
+    "genres": ["Indie Pop", "Alternative Rock", "Art Pop", "Pop"]
+  },
+  {
+    "id": "7",
+    "name": "We are Young",
+    "artist": "Fun. feat. Janelle Monáe",
+    "album": "Some Nights",
+    "category": "music",
+    "year": 2011,
+    "genres": ["Indie Pop", "Alternative Rock", "Pop"]
+  },
+  {
+    "id": "8",
+    "name": "Call me Maybe",
+    "artist": "Carly Rae Jepsen",
+    "album": "Kiss",
+    "category": "music",
+    "year": 2011,
+    "genres": ["Dance Pop", "Teen Pop", "Electropop", "Pop"]
+  },
+  {
+    "id": "9",
+    "name": "Diamonds",
+    "artist": "Rihanna",
+    "album": "Unapologetic",
+    "category": "music",
+    "year": 2012,
+    "genres": ["Pop", "R&B", "Soul"]
+  },
+  {
+    "id": "10",
+    "name": "Uptown Funk",
+    "artist": "Mark Ronson feat. Bruno Mars",
+    "album": "Uptown Special",
+    "category": "music",
+    "year": 2014,
+    "genres": ["Funk", "Soul", "Pop", "Dance Pop", "Electropop", "Disco", "Funk Pop"]
   }
 ]
