@@ -7,6 +7,7 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 require('./logger');
 
 const WSWrapper = require('./wswrapper');
+const MusicStreamer = require('./musicstreamer');
 const { startGarbageCollect } = require("./states");
 
 const fs = require('fs');
@@ -84,3 +85,4 @@ server.listen(port, () => {
 
 startGarbageCollect();
 WSWrapper.init(sServer);
+MusicStreamer.initListeners();

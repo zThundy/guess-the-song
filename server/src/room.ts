@@ -8,6 +8,7 @@ import db from './sql';
 
 const { getUser, addUser } = require('./states');
 const WSWrapper = require('./wswrapper');
+const MusicStreamer = require('./musicstreamer');
 
 export default class Room {
     public roomUniqueId: string = '';
@@ -367,6 +368,7 @@ export default class Room {
         }
         this.update({ column: "started", value: true })
         console.log(`[ROOM-MANAGER] Starting game in room ${this.roomUniqueId}`);
+        MusicStreamer.start(this);
         WSWrapper.send({ route: "room", type: 'game-start', data: { room: this.get() } });
         WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room: this.get() } });
         return true;

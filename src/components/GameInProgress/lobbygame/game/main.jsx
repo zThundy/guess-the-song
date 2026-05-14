@@ -1,17 +1,18 @@
 import classes from "./main.module.css";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { Button, Grid, LinearProgress, styled } from "@mui/material";
+import { Box, Button, LinearProgress, Slider, styled, Typography } from "@mui/material";
 
-import { useOnMountUnsafe } from "helpers/remountUnsafe";
+import { getCookie } from "helpers/cookies";
+import socket from "helpers/socket";
 
 const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
   borderRadius: 4,
   width: "90%",
   margin: "0 auto 2rem auto",
-  backgroundColor: "white",
+  backgroundColor: theme.palette.primary.main,
   [theme.breakpoints.up("sm")]: {
     width: "70%",
   },
@@ -23,7 +24,7 @@ const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
   },
 }));
 
-const StyledButtonPrimary = styled(Button)({
+const StyledButtonPrimary = styled(Button)(({ theme }) => ({
   fontWeight: 'bold',
   fontSize: '1rem',
   boxShadow: '0 9px 0 0 rgba(190,100,0, .8)',
@@ -32,83 +33,313 @@ const StyledButtonPrimary = styled(Button)({
   borderRadius: '1rem',
   bottom: '9px',
   ":hover": {
-    background: "rgb(255, 123, 0)",
+    background: theme.palette.secondary[900],
     transition: "all .2s ease",
     boxShadow: '0 0 0 0 rgba(190, 100, 0, 1)',
     bottom: '0px',
   },
-});
+}));
 
-function Game() {
-  // TODO: logic from server (?) to determine time for answer
-  const [maxSeconds] = useState(10);
-
+function Game({ lobbyData = {} }) {
   const [guessed, setGuessed] = useState("0");
-  const [msLeft, setMsLeft] = useState(maxSeconds * 1000);
-  const [started, setStarted] = useState(false);
   const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
+  const [choices, setChoices] = useState([
+    { id: "1", name: "Justin beaber" },
+    { id: "2", name: "Maroon 5" },
+    { id: "3", name: "Ed Sheeran" },
+    { id: "4", name: "Alan Walker" },
+  ]);
+  const [audioUrl, setAudioUrl] = useState("");
+  const [musicStatus, setMusicStatus] = useState("waiting");
+  const [volume, setVolume] = useState(20);
+  const [durationSec, setDurationSec] = useState(0);
+  const [currentSec, setCurrentSec] = useState(0);
+  const [remainingSec, setRemainingSec] = useState(0);
+  const audioRef = useRef(null);
+  const chunkBufferRef = useRef([]);
+  const streamMetaRef = useRef({ roomUniqueId: "", streamId: "", startAt: 0 });
+  const playbackTimerRef = useRef(null);
+  const readySentRef = useRef(false);
+  const objectUrlRef = useRef("");
+  const fadeOutWindowSec = 2.5;
+  const [countdownVisible, setCountdownVisible] = useState(false);
+  const [countdownValue, setCountdownValue] = useState(null);
+
+  const base64ToUint8Array = (base64) => {
+    const binaryString = window.atob(base64);
+    const buffer = new Uint8Array(binaryString.length);
+    for (let index = 0; index < binaryString.length; index += 1) {
+      buffer[index] = binaryString.charCodeAt(index);
+    }
+    return buffer;
+  };
+
+  const schedulePlayback = (startAt) => {
+    if (!audioRef.current || !objectUrlRef.current) return;
+
+    if (playbackTimerRef.current) {
+      clearTimeout(playbackTimerRef.current);
+    }
+
+    const delay = Math.max(0, startAt - Date.now());
+    playbackTimerRef.current = setTimeout(() => {
+      if (!audioRef.current) return;
+      audioRef.current.currentTime = 0;
+      audioRef.current.volume = Math.min(1, Math.max(0, volume / 100));
+      audioRef.current.play().catch((error) => {
+        console.error("Music playback blocked:", error);
+        setMusicStatus("playback-blocked");
+      });
+    }, delay);
+  };
+
+  useEffect(() => {
+    if (!lobbyData?.roomUniqueId || readySentRef.current) {
+      return undefined;
+    }
+
+    console.log("GAME-LOG", "Sending music-ready to server for room:", lobbyData.roomUniqueId);
+    readySentRef.current = true;
+    socket.send({
+      type: "music-ready",
+      data: {
+        roomUniqueId: lobbyData.roomUniqueId,
+        uniqueId: getCookie("uniqueId") || "",
+        inviteCode: lobbyData.inviteCode || "",
+      },
+    });
+
+    return undefined;
+  }, [lobbyData?.roomUniqueId, lobbyData?.inviteCode]);
+
+  useEffect(() => {
+    const handleMusicStart = (r) => {
+      if (r.data.roomUniqueId !== lobbyData?.roomUniqueId) return;
+
+      chunkBufferRef.current = [];
+      streamMetaRef.current = {
+        roomUniqueId: r.data.roomUniqueId,
+        streamId: r.data.streamId,
+        startAt: r.data.startAt,
+      };
+
+      setMusicStatus("buffering");
+      setChoices((r.data.choiceNames || []).map((name, index) => ({
+        id: r.data.choiceIds?.[index] || String(index + 1),
+        name,
+      })));
+
+      if (objectUrlRef.current) {
+        schedulePlayback(r.data.startAt);
+      }
+    };
+
+    const handleMusicChunk = (r) => {
+      if (r.data.roomUniqueId !== lobbyData?.roomUniqueId) return;
+      if (streamMetaRef.current.streamId && r.data.streamId !== streamMetaRef.current.streamId) return;
+
+      chunkBufferRef.current[r.data.chunkIndex] = r.data.chunk;
+    };
+
+    const handleMusicEnd = (r) => {
+      if (r.data.roomUniqueId !== lobbyData?.roomUniqueId) return;
+      if (streamMetaRef.current.streamId && r.data.streamId !== streamMetaRef.current.streamId) return;
+
+      const audioBytes = chunkBufferRef.current
+        .filter(Boolean)
+        .map(base64ToUint8Array);
+      const totalLength = audioBytes.reduce((sum, chunk) => sum + chunk.length, 0);
+      const combined = new Uint8Array(totalLength);
+      let offset = 0;
+      audioBytes.forEach((chunk) => {
+        combined.set(chunk, offset);
+        offset += chunk.length;
+      });
+
+      const blob = new Blob([combined], { type: "audio/mpeg" });
+      const nextAudioUrl = URL.createObjectURL(blob);
+
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+
+      objectUrlRef.current = nextAudioUrl;
+      setAudioUrl(nextAudioUrl);
+      setMusicStatus("ready");
+
+      if (streamMetaRef.current.startAt) {
+        schedulePlayback(streamMetaRef.current.startAt);
+      }
+    };
+
+    const handleCountdownTick = (r) => {
+      if (r.data.roomUniqueId !== lobbyData?.roomUniqueId) return;
+      const v = Number(r.data.value || 0);
+      if (!v) return;
+      setCountdownValue(v);
+      setCountdownVisible(true);
+      if (v === 1) {
+        socket.send({ type: 'countdown-ready', data: { roomUniqueId: lobbyData.roomUniqueId, uniqueId: getCookie('uniqueId') || '' } });
+      }
+    };
+
+    const handleCountdownGo = (r) => {
+      if (r.data.roomUniqueId !== lobbyData?.roomUniqueId) return;
+      setCountdownVisible(false);
+      setCountdownValue(null);
+    };
+
+    socket.addListener("music-start", handleMusicStart);
+    socket.addListener("music-chunk", handleMusicChunk);
+    socket.addListener("music-end", handleMusicEnd);
+    socket.addListener("countdown-tick", handleCountdownTick);
+    socket.addListener("countdown-go", handleCountdownGo);
+
+    return () => {
+      socket.removeListener("music-start");
+      socket.removeListener("music-chunk");
+      socket.removeListener("music-end");
+      socket.removeListener("countdown-tick");
+      socket.removeListener("countdown-go");
+
+      if (playbackTimerRef.current) {
+        clearTimeout(playbackTimerRef.current);
+      }
+
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = "";
+      }
+    };
+  }, [lobbyData?.roomUniqueId]);
 
   const handleGuess = (e) => {
     if (guessed !== "0") return;
     const guess = e.currentTarget.dataset.guess;
     setGuessed(guess);
-    setStarted(true);
   }
 
-  useOnMountUnsafe(() => {
-    if (!started) return;
-    const step = 10;
-    const interval = setInterval(() => {
-      setMsLeft((prev) => {
-        if (prev <= 0) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - step;
-      });
-    }, step);
-    return () => clearInterval(interval);
-  }, [started]);
+  useEffect(() => {
+    if (!audioRef.current) return undefined;
 
-  const progress = (msLeft / (maxSeconds * 1000)) * 100;
+    const audio = audioRef.current;
+    const applyVolumeWithFade = () => {
+      const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+      const now = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+      const remaining = Math.max(0, duration - now);
+      const baseVolume = Math.min(1, Math.max(0, volume / 100));
+
+      if (remaining <= fadeOutWindowSec && duration > 0) {
+        const fadeFactor = Math.max(0, remaining / fadeOutWindowSec);
+        audio.volume = baseVolume * fadeFactor;
+      } else {
+        audio.volume = baseVolume;
+      }
+    };
+
+    const onLoadedMetadata = () => {
+      const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+      setDurationSec(duration);
+      setCurrentSec(audio.currentTime || 0);
+      setRemainingSec(Math.max(0, duration - (audio.currentTime || 0)));
+      applyVolumeWithFade();
+    };
+
+    const onTimeUpdate = () => {
+      const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+      const now = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+      setDurationSec(duration);
+      setCurrentSec(now);
+      setRemainingSec(Math.max(0, duration - now));
+      applyVolumeWithFade();
+    };
+
+    const onEnded = () => {
+      setCurrentSec(Number.isFinite(audio.duration) ? audio.duration : 0);
+      setRemainingSec(0);
+    };
+
+    audio.addEventListener("loadedmetadata", onLoadedMetadata);
+    audio.addEventListener("timeupdate", onTimeUpdate);
+    audio.addEventListener("ended", onEnded);
+
+    applyVolumeWithFade();
+
+    return () => {
+      audio.removeEventListener("loadedmetadata", onLoadedMetadata);
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+      audio.removeEventListener("ended", onEnded);
+    };
+  }, [audioUrl, volume]);
+
+  const progress = durationSec > 0 ? (Math.max(0, remainingSec) / durationSec) * 100 : 100;
 
   return (
     <div className={classes.container}>
+      {countdownVisible ? (
+        <div className={classes.countdownOverlay}>
+          <div key={countdownValue} className={classes.countdownNumber}>{countdownValue}</div>
+        </div>
+      ) : null}
       <div className={classes.content}>
         <StyledLinearProgress variant="determinate" color="secondary" value={Number(progress)} />
+
+        <audio ref={audioRef} src={audioUrl} preload="auto" />
+
+        <div style={{ textAlign: "center", color: "white", marginBottom: "1rem" }}>
+          {musicStatus === "waiting" ? "Waiting for all players to get ready..." : "Music loaded"}
+        </div>
+
+        <Box sx={{ width: "70%", mx: "auto", mb: 2, color: "white" }}>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            Volume: {volume}%
+          </Typography>
+          <Slider
+            value={volume}
+            min={0}
+            max={100}
+            onChange={(_, value) => setVolume(Number(value))}
+            aria-label="Volume"
+          />
+        </Box>
+
+        <Typography variant="body2" sx={{ color: "white", mb: 2 }}>
+          Remaining: {Math.max(0, remainingSec).toFixed(1)}s
+        </Typography>
 
         <div className={classes.vinyl_container}>
           <img src={"/assets/vinyls/vinyl" + generatedNumber + ".png"} alt="vinyl" className={classes.vinyl} />
         </div>
 
-        <Grid container className={classes.choices}>
-          <Grid item xs={12}>
+        <div className={classes.choices}>
             <StyledButtonPrimary
               variant="contained"
-              className={classes.button + " " + (guessed === "1" ? classes.guessed : "")}
-              data-guess="1"
-              onClick={handleGuess}>Justin beaber</StyledButtonPrimary>
-          </Grid>
-          <Grid item xs={12}>
+              className={classes.button + " " + (guessed === choices[0]?.id ? classes.guessed : "")}
+              data-guess={choices[0]?.id || "1"}
+              onClick={handleGuess}>{choices[0]?.name || "Loading..."}</StyledButtonPrimary>
+
             <StyledButtonPrimary
               variant="contained"
-              className={classes.button + " " + (guessed === "2" ? classes.guessed : "")}
-              data-guess="2"
-              onClick={handleGuess}>Maroon 5</StyledButtonPrimary>
+              className={classes.button + " " + (guessed === choices[1]?.id ? classes.guessed : "")}
+              data-guess={choices[1]?.id || "2"}
+              onClick={handleGuess}>{choices[1]?.name || "Loading..."}</StyledButtonPrimary>
+
             <StyledButtonPrimary
               variant="contained"
-              className={classes.button + " " + (guessed === "3" ? classes.guessed : "")}
-              data-guess="3"
-              onClick={handleGuess}>Ed Sheeran</StyledButtonPrimary>
-          </Grid>
-          <Grid item xs={12}>
+              className={classes.button + " " + (guessed === choices[2]?.id ? classes.guessed : "")}
+              data-guess={choices[2]?.id || "3"}
+              onClick={handleGuess}>{choices[2]?.name || "Loading..."}</StyledButtonPrimary>
+
             <StyledButtonPrimary
               variant="contained"
-              className={classes.button + " " + (guessed === "4" ? classes.guessed : "")}
-              data-guess="4"
-              onClick={handleGuess}>Alan Walker</StyledButtonPrimary>
-          </Grid>
-        </Grid>
+              className={classes.button + " " + (guessed === choices[3]?.id ? classes.guessed : "")}
+              data-guess={choices[3]?.id || "4"}
+              onClick={handleGuess}>{choices[3]?.name || "Loading..."}</StyledButtonPrimary>
+        </div>
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ class WSWrapper {
     constructor() {
         this.connection = null;
         this.listeners = new Map();
+        this.pendingMessages = [];
         this.debug = true; // Set to true to enable debug logging
         this._log('WebSocketWrapper initialized');
 
@@ -41,6 +42,7 @@ class WSWrapper {
             this.connection.onopen = (ws, event) => {
                 this._log(`Connected.`);
                 this.opened();
+                this.flushPendingMessages();
             };
 
             this.connection.onclose = event => {
@@ -98,6 +100,23 @@ class WSWrapper {
         };
     }
 
+    flushPendingMessages() {
+        if (!this.connection || this.connection.readyState !== WebSocket.OPEN) {
+            return;
+        }
+
+        while (this.pendingMessages.length > 0) {
+            const message = this.pendingMessages.shift();
+            try {
+                this.connection.send(message);
+            } catch (error) {
+                this._error('Error sending pending message: ', error);
+                this.pendingMessages.unshift(message);
+                break;
+            }
+        }
+    }
+
     addListener(listener, callback) {
         if (this.listeners.has(listener)) {
             this._log('[?] Listener already exists. Ignoring new add: ', listener);
@@ -128,11 +147,15 @@ class WSWrapper {
 
     send(data) {
         try {
+            const message = JSON.stringify(data);
+
             if (this.connection.readyState !== WebSocket.OPEN) {
-                this._error('WebSocket is not open. Current state: ', this.connection.readyState);
+                this._log('WebSocket not open yet, queueing message.', data?.type || data);
+                this.pendingMessages.push(message);
                 return;
             }
-            this.connection.send(JSON.stringify(data));
+
+            this.connection.send(message);
         } catch (error) {
             this._error('Error sending data: ', error);
         }
