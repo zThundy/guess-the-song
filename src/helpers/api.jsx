@@ -154,6 +154,24 @@ function submitRoomAnswer(roomUniqueId, answer, playbackMs) {
   });
 }
 
+async function getSongPictureUrl(songId) {
+  const normalizedId = String(songId || '').trim();
+  if (!normalizedId) {
+    throw new Error('Song id is required');
+  }
+
+  const res = await fetch(`${BASE_URL}/music/${encodeURIComponent(normalizedId)}/picture`, {
+    method: 'GET'
+  });
+
+  if (!res.ok) {
+    throw { status: res.status, statusText: res.statusText };
+  }
+
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);
+}
+
 function getGenres() {
   return apiGet('/create/genres');
 }
@@ -226,6 +244,7 @@ export default {
   leaveRoom,
   startGame,
   submitRoomAnswer,
+  getSongPictureUrl,
   getGenres,
   getCategories
 }

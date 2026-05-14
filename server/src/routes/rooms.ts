@@ -367,6 +367,7 @@ roomsRouter.post("/answer/:roomUniqueId", async (req: Request, res: Response) =>
             room: room.get(),
             user: user.get(),
             result,
+            correctSongId: result.correctSongId,
         });
     } catch (e: any) {
         console.error(`Error in /answer/:roomUniqueId: ${e.message}`);

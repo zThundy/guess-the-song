@@ -90,9 +90,11 @@ function Game({ lobbyData = {} }) {
   const [pointsAnimatedValue, setPointsAnimatedValue] = useState(0);
   const [roundEnded, setRoundEnded] = useState(false);
   const [roundReadySent, setRoundReadySent] = useState(false);
+  const [songCoverUrl, setSongCoverUrl] = useState("");
   const pointsTimerRef = useRef(null);
   const pointsHideTimerRef = useRef(null);
   const pointsCountIntervalRef = useRef(null);
+  const songCoverUrlRef = useRef("");
 
   const base64ToUint8Array = (base64) => {
     const binaryString = window.atob(base64);
@@ -120,6 +122,14 @@ function Game({ lobbyData = {} }) {
         setMusicStatus("playback-blocked");
       });
     }, delay);
+  };
+
+  const clearSongCoverUrl = () => {
+    if (songCoverUrlRef.current) {
+      URL.revokeObjectURL(songCoverUrlRef.current);
+      songCoverUrlRef.current = "";
+    }
+    setSongCoverUrl("");
   };
 
   useEffect(() => {
@@ -155,6 +165,7 @@ function Game({ lobbyData = {} }) {
       setMusicStatus("buffering");
       setRoundEnded(false);
       setRoundReadySent(false);
+      clearSongCoverUrl();
       setChoices((r.data.choiceNames || []).map((name, index) => ({
         id: r.data.choiceIds?.[index] || String(index + 1),
         name,
@@ -231,6 +242,7 @@ function Game({ lobbyData = {} }) {
       setRoundEnded(false);
       setRoundReadySent(false);
       setGuessed("0");
+      clearSongCoverUrl();
 
       // Re-arm and send music-ready for this new round
       readySentRef.current = true;
@@ -280,13 +292,15 @@ function Game({ lobbyData = {} }) {
     if (roundEnded && !pointsVisible && !roundReadySent && lobbyData?.roomUniqueId) {
       console.log("GAME-LOG", "Sending ready-for-next-round to server for room:", lobbyData.roomUniqueId);
       setRoundReadySent(true);
-      socket.send({
-        type: "ready-for-next-round",
-        data: {
-          roomUniqueId: lobbyData.roomUniqueId,
-          uniqueId: getCookie("uniqueId") || "",
-        },
-      });
+      setTimeout(() => {
+        socket.send({
+          type: "ready-for-next-round",
+          data: {
+            roomUniqueId: lobbyData.roomUniqueId,
+            uniqueId: getCookie("uniqueId") || "",
+          },
+        });
+      }, 500);
     }
   }, [roundEnded, pointsVisible, roundReadySent, lobbyData?.roomUniqueId]);
 
@@ -301,6 +315,19 @@ function Game({ lobbyData = {} }) {
     api.submitRoomAnswer(lobbyData.roomUniqueId, selectedAnswer, playbackMs)
       .then((result) => {
         console.log("ANSWER-LOG", result);
+        const correctSongId = String(result?.correctSongId || result?.result?.correctSongId || "");
+        if (correctSongId) {
+          api.getSongPictureUrl(correctSongId)
+            .then((url) => {
+              clearSongCoverUrl();
+              songCoverUrlRef.current = url;
+              setSongCoverUrl(url);
+            })
+            .catch((error) => {
+              console.error("SONG-COVER-LOG", error);
+            });
+        }
+
         const pointsAwarded = Number(result?.result?.pointsAwarded || 0);
         if (result?.result?.correct && pointsAwarded > 0) {
           if (pointsTimerRef.current) {
@@ -402,6 +429,7 @@ function Game({ lobbyData = {} }) {
       }
       setAudioUrl("");
       setMusicStatus("waiting");
+      clearSongCoverUrl();
     };
 
     audio.addEventListener("loadedmetadata", onLoadedMetadata);
@@ -428,8 +456,16 @@ function Game({ lobbyData = {} }) {
       }
 
       setPointsExiting(false);
+
+      clearSongCoverUrl();
     };
   }, [audioUrl, volume]);
+
+  useEffect(() => {
+    return () => {
+      clearSongCoverUrl();
+    };
+  }, []);
 
   const progress = durationSec > 0 ? (Math.max(0, remainingSec) / durationSec) * 100 : 100;
 
@@ -473,6 +509,9 @@ function Game({ lobbyData = {} }) {
         </Typography> */}
 
         <div className={classes.vinyl_container}>
+          {songCoverUrl ? (
+            <img src={songCoverUrl} alt="song cover" className={classes.songCover} />
+          ) : null}
           <img src={"/assets/vinyls/vinyl" + generatedNumber + ".png"} alt="vinyl" className={classes.vinyl} />
         </div>
 

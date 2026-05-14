@@ -361,7 +361,7 @@ export default class Room {
         return points;
     }
 
-    public submitAnswer(user: User, answer: string, playbackMs: number): { correct: boolean; pointsAwarded: number; correctAnswer: string } {
+    public submitAnswer(user: User, answer: string, playbackMs: number): { correct: boolean; pointsAwarded: number; correctAnswer: string; correctSongId: string } {
         const normalizedAnswer = String(answer || '').trim().toLowerCase();
         const normalizedCorrect = String(this.currentSongName || '').trim().toLowerCase();
         const correct = normalizedAnswer.length > 0 && normalizedCorrect.length > 0 && normalizedAnswer === normalizedCorrect;
@@ -391,6 +391,7 @@ export default class Room {
             correct,
             pointsAwarded,
             correctAnswer: this.currentSongName,
+            correctSongId: this.currentSongId,
         };
     }
 

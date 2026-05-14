@@ -79,6 +79,18 @@
   100% { transform: scale(0.4); opacity: 0; }
 }
 
+@keyframes coverPop {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-0.75rem) rotate(-10deg) scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%) rotate(-6deg) scale(1);
+  }
+}
+
 .countdownNumber {
   color: white;
   font-size: 12rem;
@@ -103,6 +115,21 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.songCover {
+  position: absolute;
+  left: calc(50% - 11rem);
+  top: 50%;
+  width: 8.5rem;
+  height: 8.5rem;
+  object-fit: cover;
+  transform: translateY(-50%) rotate(-6deg);
+  border-radius: .75rem;
+  border: .22rem solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.28);
+  z-index: 2;
+  animation: coverPop .28s ease-out both;
 }
 
 .vinyl {
@@ -164,6 +191,12 @@
     width: 14rem;
     height: 14rem;
   }
+
+  .songCover {
+    left: calc(50% - 10rem);
+    width: 7.5rem;
+    height: 7.5rem;
+  }
 }
 
 @media screen and (max-width: 800px) {
@@ -174,6 +207,14 @@
   .vinyl {
     width: 12rem;
     height: 12rem;
+  }
+
+  .songCover {
+    left: 50%;
+    top: calc(50% - 9rem);
+    width: 6.5rem;
+    height: 6.5rem;
+    transform: translateX(-50%) rotate(-4deg);
   }
 
   .choices .button {
