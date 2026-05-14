@@ -1,14 +1,14 @@
 
 import express, { Express, Request, Response } from "express";
-import dotenv from "dotenv";
+const dotenv = require('dotenv');
+import path from "path";
 
-dotenv.config();
-const { } = require('./logger');
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
+require('./logger');
 
 const WSWrapper = require('./wswrapper');
 const { startGarbageCollect } = require("./states");
 
-const path = require('path');
 const fs = require('fs');
 const https = require('https');
 const http = require('http');
