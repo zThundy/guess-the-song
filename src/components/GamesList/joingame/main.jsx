@@ -163,79 +163,77 @@ function JoinGame({ status }) {
   const [resultsReady, setResultsReady] = useState(false);
   const [errored, setError] = useState(false);
 
+  const handleLobbyRefresh = (r) => {
+    console.log("lobby-refresh", r);
+    if (r.data) {
+      if (r.data.room && r.data.room.roomUniqueId) {
+        switch (r.action) {
+          case "delete":
+            console.log("deleted lobby", r.data.room.roomUniqueId);
+            setLobbies((prev) => {
+              let nextLobbies = [...prev];
+              if (nextLobbies.find((lobby) => lobby.roomUniqueId === r.data.room.roomUniqueId)) {
+                nextLobbies = nextLobbies.filter((lobby) => lobby.roomUniqueId !== r.data.room.roomUniqueId);
+                console.log("removed lobby", r.data.room.roomUniqueId);
+              }
+              return nextLobbies;
+            });
+            break;
+          case "update":
+            console.log("upserted lobby", r.data.room);
+            setLobbies((prev) => {
+              let nextLobbies = [...prev];
+              if (nextLobbies.find((lobby) => lobby.roomUniqueId === r.data.room.roomUniqueId)) {
+                nextLobbies = nextLobbies.map((lobby) => {
+                  if (lobby.roomUniqueId === r.data.room.roomUniqueId) {
+                    console.log("updated lobby", r.data.room);
+                    lobby.category = r.data.room.category;
+                    lobby.difficulty = r.data.room.difficulty;
+                    lobby.genre = r.data.room.genre;
+                    lobby.inviteCode = r.data.room.inviteCode;
+                    lobby.isPrivate = r.data.room.isPrivate;
+                    lobby.maxPlayers = r.data.room.maxPlayers;
+                    lobby.roomName = r.data.room.roomName;
+                    lobby.users = r.data.room.users;
+                    lobby.roomOwner = r.data.room.roomOwner;
+                    lobby.rounds = r.data.room.rounds;
+                    lobby.started = r.data.room.started;
+                  }
+                  return lobby;
+                });
+                console.log("updated lobby", nextLobbies);
+                return nextLobbies;
+              }
+              console.log("added lobby", r.data.room);
+              nextLobbies.push({
+                category: r.data.room.category,
+                difficulty: r.data.room.difficulty,
+                genre: r.data.room.genre,
+                inviteCode: r.data.room.inviteCode,
+                isPrivate: r.data.room.isPrivate,
+                maxPlayers: r.data.room.maxPlayers,
+                roomName: r.data.room.roomName,
+                users: r.data.room.users,
+                roomUniqueId: r.data.room.roomUniqueId,
+                roomOwner: r.data.room.roomOwner,
+                rounds: r.data.room.rounds,
+                started: r.data.room.started,
+              });
+              return nextLobbies;
+            });
+            break;
+          default:
+            console.log("unknown lobby-refresh action", r.action);
+        }
+      }
+    }
+  };
+
   useOnMountUnsafe(() => {
     getLobbiesAPI();
 
     // receive single lobby update of the list
-    socket.addListener("lobby-refresh", (r) => {
-      console.log("lobby-refresh", r);
-      if (r.data) {
-        if (r.data.room && r.data.room.roomUniqueId) {
-          switch (r.action) {
-            case "delete":
-              console.log("deleted lobby", r.data.room.roomUniqueId);
-              setLobbies((prev) => {
-                let lobbies = [...prev];
-                // check if lobby exists
-                if (lobbies.find((lobby) => lobby.roomUniqueId === r.data.room.roomUniqueId)) {
-                  // remove lobby
-                  lobbies = lobbies.filter((lobby) => lobby.roomUniqueId !== r.data.room.roomUniqueId);
-                  console.log("removed lobby", r.data.room.roomUniqueId);
-                }
-                return lobbies;
-              });
-              break;
-            case "update":
-              console.log("upserted lobby", r.data.room);
-              setLobbies((prev) => {
-                let lobbies = [...prev];
-                if (lobbies.find((lobby) => lobby.roomUniqueId === r.data.room.roomUniqueId)) {
-                  // update lobby
-                  lobbies = lobbies.map((lobby) => {
-                    if (lobby.roomUniqueId === r.data.room.roomUniqueId) {
-                      console.log("updated lobby", r.data.room);
-                      lobby.category = r.data.room.category;
-                      lobby.difficulty = r.data.room.difficulty;
-                      lobby.genre = r.data.room.genre;
-                      lobby.inviteCode = r.data.room.inviteCode;
-                      lobby.isPrivate = r.data.room.isPrivate;
-                      lobby.maxPlayers = r.data.room.maxPlayers;
-                      lobby.roomName = r.data.room.roomName;
-                      lobby.users = r.data.room.users;
-                      lobby.roomOwner = r.data.room.roomOwner;
-                      lobby.rounds = r.data.room.rounds;
-                      lobby.started = r.data.room.started;
-                    }
-                    return lobby;
-                  });
-                  console.log("updated lobby", lobbies);
-                  return lobbies;
-                }
-                console.log("added lobby", r.data.room);
-                // add lobby
-                lobbies.push({
-                  category: r.data.room.category,
-                  difficulty: r.data.room.difficulty,
-                  genre: r.data.room.genre,
-                  inviteCode: r.data.room.inviteCode,
-                  isPrivate: r.data.room.isPrivate,
-                  maxPlayers: r.data.room.maxPlayers,
-                  roomName: r.data.room.roomName,
-                  users: r.data.room.users,
-                  roomUniqueId: r.data.room.roomUniqueId,
-                  roomOwner: r.data.room.roomOwner,
-                  rounds: r.data.room.rounds,
-                  started: r.data.room.started,
-                });
-                return lobbies;
-              })
-              break;
-            default:
-              console.log("unknown lobby-refresh action", r.action);
-          }
-        }
-      }
-    });
+    socket.addListener("lobby-refresh", handleLobbyRefresh);
 
     eventEmitter.on("refreshLobbies", () => {
       getLobbiesAPI();
@@ -285,6 +283,10 @@ function JoinGame({ status }) {
         refreshButton.style.transform = 'rotate(0deg)';
       }, 200);
     }
+
+    socket.removeListener("lobby-refresh");
+    socket.addListener("lobby-refresh", handleLobbyRefresh);
+
     getLobbiesAPI();
   }
 
