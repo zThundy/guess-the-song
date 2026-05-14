@@ -50,7 +50,7 @@ class MusicStreamer {
 	constructor() {
 		this.manifestPath = path.join(__dirname, "..", "music", "manifest.json");
     this.songFolder = path.join(__dirname, "..", "music");
-		this.previewSeconds = 8;
+		this.previewSeconds = 15;
 		this.fallbackBitrateKbps = 320;
 		this.minRandomStartBytes = 96 * 1024;
 		this.chunkSize = 8 * 1024;

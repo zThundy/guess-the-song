@@ -2,46 +2,21 @@ import style from "./main.module.css";
 
 import { Avatar, Badge } from "@mui/material";
 import { Person } from '@mui/icons-material';
-import { useEffect, useMemo } from "react";
-import { setCookie, getCookie } from 'helpers/cookies'
+import { useMemo } from "react";
+import { getCookie } from 'helpers/cookies'
 
 function User({ lobbyData }) {
-  // const [users] = useMemo(() => {
-  //   const users = [];
-  //   for (let i = 0; i < 20; i++) {
-  //     users.push({
-  //       name: `User #${i + 1}`,
-  //       points: Math.floor(Math.random() * 100),
-  //       guessed: Math.random() > 0.5,
-  //       self: i === 1,
-  //     });
-  //   }
-  //   users.sort((a, b) => b.points - a.points);
-  //   return [users];
-  // }, []);
-
-  useEffect(() => {
+  const users = useMemo(() => {
     const userId = getCookie('uniqueId');
-    if (!userId) return;
-
-    if (!lobbyData.users || lobbyData.users.length === 0) return;
-
-    const user = lobbyData.users.find(u => u.id === userId);
-    if (!user) return;
-
-    // set self property for the user
-    lobbyData.users = lobbyData.users.map(u => {
-      if (u.id === userId) {
-        return { ...u, self: true };
-      }
-      return u;
-    });
+    return (lobbyData.users || []).map((user) => ({
+      ...user,
+      self: String(user.uniqueId) === String(userId),
+    }));
   }, [lobbyData]);
 
   return (
     <>
-      {(lobbyData.users || []).map((user, id) => (
-      // {(users || []).map((user, id) => (
+      {users.map((user, id) => (
         <div className={style.user} key={id}>
           <Badge
             anchorOrigin={{

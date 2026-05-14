@@ -85,6 +85,12 @@ function Game({ lobbyData = {} }) {
   const fadeOutWindowSec = 2.5;
   const [countdownVisible, setCountdownVisible] = useState(false);
   const [countdownValue, setCountdownValue] = useState(null);
+  const [pointsVisible, setPointsVisible] = useState(false);
+  const [pointsExiting, setPointsExiting] = useState(false);
+  const [pointsAnimatedValue, setPointsAnimatedValue] = useState(0);
+  const pointsTimerRef = useRef(null);
+  const pointsHideTimerRef = useRef(null);
+  const pointsCountIntervalRef = useRef(null);
 
   const base64ToUint8Array = (base64) => {
     const binaryString = window.atob(base64);
@@ -253,6 +259,51 @@ function Game({ lobbyData = {} }) {
     api.submitRoomAnswer(lobbyData.roomUniqueId, selectedAnswer, playbackMs)
       .then((result) => {
         console.log("ANSWER-LOG", result);
+        const pointsAwarded = Number(result?.result?.pointsAwarded || 0);
+        if (result?.result?.correct && pointsAwarded > 0) {
+          if (pointsTimerRef.current) {
+            clearTimeout(pointsTimerRef.current);
+          }
+          if (pointsHideTimerRef.current) {
+            clearTimeout(pointsHideTimerRef.current);
+          }
+          if (pointsCountIntervalRef.current) {
+            clearInterval(pointsCountIntervalRef.current);
+          }
+
+          setPointsAnimatedValue(0);
+          setPointsVisible(true);
+          setPointsExiting(false);
+
+          const totalVisibleMs = 5000;
+          const exitDurationMs = 350;
+          const countDurationMs = Math.max(0, totalVisibleMs - exitDurationMs - 700);
+          const frameMs = 50;
+          const frames = Math.max(1, Math.floor(countDurationMs / frameMs));
+          let frame = 0;
+
+          pointsCountIntervalRef.current = setInterval(() => {
+            frame += 1;
+            const value = Math.min(pointsAwarded, Math.round((pointsAwarded * frame) / frames));
+            setPointsAnimatedValue(value);
+
+            if (frame >= frames) {
+              clearInterval(pointsCountIntervalRef.current);
+              pointsCountIntervalRef.current = null;
+              setPointsAnimatedValue(pointsAwarded);
+            }
+          }, frameMs);
+
+          pointsTimerRef.current = setTimeout(() => {
+            setPointsExiting(true);
+          }, totalVisibleMs - exitDurationMs);
+
+          pointsHideTimerRef.current = setTimeout(() => {
+            setPointsVisible(false);
+            setPointsExiting(false);
+            setPointsAnimatedValue(0);
+          }, totalVisibleMs);
+        }
       })
       .catch((error) => {
         console.error("ANSWER-LOG", error);
@@ -309,6 +360,20 @@ function Game({ lobbyData = {} }) {
       audio.removeEventListener("loadedmetadata", onLoadedMetadata);
       audio.removeEventListener("timeupdate", onTimeUpdate);
       audio.removeEventListener("ended", onEnded);
+
+      if (pointsTimerRef.current) {
+        clearTimeout(pointsTimerRef.current);
+      }
+
+      if (pointsCountIntervalRef.current) {
+        clearInterval(pointsCountIntervalRef.current);
+      }
+
+      if (pointsHideTimerRef.current) {
+        clearTimeout(pointsHideTimerRef.current);
+      }
+
+      setPointsExiting(false);
     };
   }, [audioUrl, volume]);
 
@@ -316,6 +381,11 @@ function Game({ lobbyData = {} }) {
 
   return (
     <div className={classes.container}>
+      {pointsVisible ? (
+        <div className={classes.pointsOverlay + " " + (pointsExiting ? classes.pointsOverlayExit : "")}>
+          <div className={classes.pointsText + " " + (pointsExiting ? classes.pointsTextExit : "")}>+{pointsAnimatedValue} points</div>
+        </div>
+      ) : null}
       {countdownVisible ? (
         <div className={classes.countdownOverlay}>
           <div key={countdownValue} className={classes.countdownNumber}>{countdownValue}</div>

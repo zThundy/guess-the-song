@@ -108,6 +108,9 @@ class WSWrapper {
     private createConnectionHandlers(connection: any) {
         try {
             console.log("SOCKET-LOG", `Creating connection handlers.`);
+            // attach a slot for the authenticated uniqueId for this connection
+            (connection as any).userUniqueId = '';
+
             connection.on('message', async (message: any) => {
                 switch (message.type) {
                     case 'utf8':
@@ -132,6 +135,8 @@ class WSWrapper {
                                                 // console.log("SOCKET-LOG", 'Updating user last_login to: ' + date);
                                                 user.update({ column: 'last_login', value: date });
                                             }
+                                            // remember which uniqueId is associated with this websocket connection
+                                            try { (connection as any).userUniqueId = String(data.data.user || ''); } catch (e) {}
                                         } else {
                                             // connection.sendUTF(JSON.stringify({ type: 'pong' }));
                                             console.log("SOCKET-LOG", 'Received ping message without user data. Ignoring.');
@@ -200,6 +205,31 @@ class WSWrapper {
         this.ws.connections.forEach((connection: connection) => {
             console.debug("SOCKET-LOG", `Sending data to ${connection.socket.remoteAddress}`)
             connection.sendUTF(data);
+        });
+    }
+
+    /**
+     * Send data only to connections whose associated uniqueId is in the provided list.
+     */
+    public sendToUsers(data: any, uniqueIds: string[]) {
+        if (!this.ws) return console.error("SOCKET-LOG", "WSWrapper not initialized.");
+        if (!Array.isArray(uniqueIds) || uniqueIds.length === 0) return;
+
+        if (typeof data === "object") {
+            data.serverTime = new Date().toISOString();
+            data = JSON.stringify(data);
+        }
+
+        this.ws.connections.forEach((connection: any) => {
+            try {
+                const uid = String((connection as any).userUniqueId || '');
+                if (uniqueIds.includes(uid)) {
+                    console.debug("SOCKET-LOG", `Sending data to ${connection.socket.remoteAddress} (uid=${uid})`)
+                    connection.sendUTF(data);
+                }
+            } catch (e) {
+                // ignore
+            }
         });
     }
 

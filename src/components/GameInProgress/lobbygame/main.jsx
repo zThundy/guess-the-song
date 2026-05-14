@@ -8,7 +8,6 @@ import { motion } from 'framer-motion';
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 import { useOnMountUnsafe } from "helpers/remountUnsafe";
-import socket from "helpers/socket";
 import api from "helpers/api";
 
 function LobbyGame( ) {
@@ -42,6 +41,8 @@ function LobbyGame( ) {
     // socket.removeListener("user-join");
     // socket.removeListener("user-leave");
     // socket.removeListener("game-ping");
+
+    return () => {};
   }, [])
 
   return (

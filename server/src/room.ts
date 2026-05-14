@@ -26,6 +26,8 @@ export default class Room {
 
     public currentRound: number = 0;
     public users: User[] = [];
+    // per-room points map keyed by user uniqueId
+    public roomPoints: { [uniqueId: string]: number } = {};
     public currentSongId: string = '';
     public currentSongName: string = '';
     public songStartedAt: number = 0;
@@ -304,6 +306,7 @@ export default class Room {
             answerBasePoints: this.answerBasePoints,
             answerMinPoints: this.answerMinPoints,
             answerDecayPerSecond: this.answerDecayPerSecond,
+            usersPoints: this.users.map(u => ({ uniqueId: u.uniqueId, points: this.roomPoints[String(u.uniqueId)] || 0 })),
             users: this.users.map(u => u.get())
         };
     }
@@ -337,18 +340,55 @@ export default class Room {
         const pointsAwarded = correct ? this.calculateAnswerPoints(playbackMs) : 0;
 
         if (correct) {
-            user.update({ column: 'points', value: Number(user.points || 0) + pointsAwarded });
-            user.save();
-            console.log(`[ROOM-MANAGER] Correct answer from ${user.username} in room ${this.roomUniqueId}, awarded ${pointsAwarded} points.`);
+            // Update room-scoped points map for this user
+            const uid = String(user.uniqueId || user.getColumn("uniqueId") || '');
+            const prev = Number(this.roomPoints[uid] || 0);
+            const newPoints = prev + pointsAwarded;
+            this.roomPoints[uid] = newPoints;
+            console.log(`[ROOM-MANAGER] Correct answer from ${user.username} in room ${this.roomUniqueId}, awarded ${pointsAwarded} points (room total: ${newPoints}).`);
         } else {
             console.log(`[ROOM-MANAGER] Wrong answer from ${user.username} in room ${this.roomUniqueId}. Submitted='${answer}', expected='${this.currentSongName}'.`);
         }
+
+        WSWrapper.send({
+            route: "room",
+            type: "points-update",
+            data: {
+                roomUniqueId: this.roomUniqueId,
+                usersPoints: this.users.map(u => ({ uniqueId: u.uniqueId, points: this.roomPoints[String(u.uniqueId)] || 0 }))
+            },
+        });
 
         return {
             correct,
             pointsAwarded,
             correctAnswer: this.currentSongName,
         };
+    }
+
+    /**
+     * Persist all users' current in-room points to the database.
+     * Call this at the end of the match to save totals to the user records.
+     */
+    public finalizeScores(): void {
+        try {
+            this.users.forEach((u) => {
+                try {
+                    const uid = String(u.uniqueId || u.getColumn("uniqueId") || '');
+                    const roomPts = Number(this.roomPoints[uid] || 0);
+                    if (roomPts > 0) {
+                        const current = Number(u.points || 0);
+                        u.update({ column: 'points', value: current + roomPts });
+                    }
+                    u.save();
+                } catch (e: any) {
+                    console.error(`[ROOM-MANAGER] Error saving user ${u.username}: ${e?.message || e}`);
+                }
+            });
+            console.log(`[ROOM-MANAGER] Finalized and saved scores for room ${this.roomUniqueId}.`);
+        } catch (e: any) {
+            console.error(`[ROOM-MANAGER] Error finalizing scores: ${e?.message || e}`);
+        }
     }
 
     addUser(user: User): void {
@@ -358,14 +398,30 @@ export default class Room {
             // get users in room and send ws message to all users in room
             const users = this.users.map(u => u.get());
             this.users.push(user);
-            for (const u of users) {
-                console.log(`[ROOM-MANAGER] Sending user join message to ${u.username}`);
+            // initialize room-scoped points for this user if not present
+            const uid = String(user.uniqueId || user.getColumn("uniqueId") || '');
+            if (!this.roomPoints.hasOwnProperty(uid)) {
+                this.roomPoints[uid] = 0;
+            }
+            // Notify existing room members about the join, but send only to room participants
+            try {
+                const recipientIds = users.map((u: any) => String(u.uniqueId || u.uniqueId));
+                WSWrapper.sendToUsers({ route: "room", type: 'user-join', data: { user: user.get(), room: this.get() } }, recipientIds);
+            } catch (e) {
+                // fallback to broadcast
+                users.forEach((u: any) => console.log(`[ROOM-MANAGER] Sending user join message to ${u.username}`));
                 WSWrapper.send({ route: "room", type: 'user-join', data: { user: user.get(), room: this.get() } });
             }
             console.log(`[ROOM-MANAGER] ${user.username} has joined the room ${this.roomUniqueId}.`);
             let room = this.get();
             if (room.isPrivate) room.inviteCode = "*****";
-            WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room } });
+            // Notify only room participants for lobby update
+            try {
+                const recipientIds = this.users.map(u => String(u.uniqueId));
+                WSWrapper.sendToUsers({ route: "room", type: "lobby-refresh", action: "update", data: { room } }, recipientIds);
+            } catch (e) {
+                WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room } });
+            }
             user.update({ column: "userLastRoomPing", value: new Date().toISOString() });
             user.update({ column: "currentRoom", value: this.roomUniqueId });
             db.addUserToRoom(this.getColumn("roomUniqueId"), user.getColumn("uniqueId"));
@@ -376,10 +432,21 @@ export default class Room {
 
     removeUser(user: User): void {
         if (this.isInRoom(user)) {
-            WSWrapper.send({ route: "room", type: 'user-leave', data: { user: user.get(), room: this.get() } });
+            // notify remaining participants about the leave
+            try {
+                const recipientIds = this.users.map(u => String(u.uniqueId));
+                WSWrapper.sendToUsers({ route: "room", type: 'user-leave', data: { user: user.get(), room: this.get() } }, recipientIds);
+            } catch (e) {
+                WSWrapper.send({ route: "room", type: 'user-leave', data: { user: user.get(), room: this.get() } });
+            }
             this.users = this.users.filter(u => u.uniqueId !== user.uniqueId);
             console.log(`[ROOM-MANAGER] ${user.username} has left the room ${this.roomUniqueId}.`);
         };
+        // remove room-scoped points for this user
+        try {
+            const uid = String(user.uniqueId || user.getColumn("uniqueId") || '');
+            if (this.roomPoints.hasOwnProperty(uid)) delete this.roomPoints[uid];
+        } catch (e) {}
         let room = this.get();
         if (room.isPrivate) room.inviteCode = "*****";
         WSWrapper.send({ route: "room", type: "lobby-refresh", action: "update", data: { room } });
