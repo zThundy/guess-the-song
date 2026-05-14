@@ -54,7 +54,7 @@ class MusicStreamer {
 		this.fallbackBitrateKbps = 320;
 		this.minRandomStartBytes = 96 * 1024;
 		this.chunkSize = 8 * 1024;
-		this.startDelayMs = 3000;
+		this.startDelayMs = 500;
 		this.chunkDelayMs = 25;
 		this.listenersReady = false;
 		this.manifest = [];

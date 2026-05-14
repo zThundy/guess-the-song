@@ -2,7 +2,8 @@ import style from "./main.module.css";
 
 import { Avatar, Badge } from "@mui/material";
 import { Person } from '@mui/icons-material';
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { setCookie, getCookie } from 'helpers/cookies'
 
 function User({ lobbyData }) {
   // const [users] = useMemo(() => {
@@ -19,9 +20,28 @@ function User({ lobbyData }) {
   //   return [users];
   // }, []);
 
+  useEffect(() => {
+    const userId = getCookie('uniqueId');
+    if (!userId) return;
+
+    if (!lobbyData.users || lobbyData.users.length === 0) return;
+
+    const user = lobbyData.users.find(u => u.id === userId);
+    if (!user) return;
+
+    // set self property for the user
+    lobbyData.users = lobbyData.users.map(u => {
+      if (u.id === userId) {
+        return { ...u, self: true };
+      }
+      return u;
+    });
+  }, [lobbyData]);
+
   return (
     <>
       {(lobbyData.users || []).map((user, id) => (
+      // {(users || []).map((user, id) => (
         <div className={style.user} key={id}>
           <Badge
             anchorOrigin={{

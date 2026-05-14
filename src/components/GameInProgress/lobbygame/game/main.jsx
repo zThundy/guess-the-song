@@ -7,6 +7,26 @@ import { Box, Button, LinearProgress, Slider, styled, Typography } from "@mui/ma
 import { getCookie } from "helpers/cookies";
 import socket from "helpers/socket";
 
+const StyledVolumeContainer = styled(Box)(({ theme }) => ({
+  width: "50%",
+  mx: "auto",
+  mb: 2,
+  color: "white",
+  backgroundColor: theme.palette.primary.main,
+  borderRadius: ".5rem",
+  padding: theme.spacing(2),
+  border: `2px solid white`,
+  "& .MuiTypography-root": {
+    color: theme.palette.common.white,
+    fontWeight: "bold",
+    fontSize: "1.25rem",
+    textAlign: "center",
+  },
+  "& .MuiSlider-root": {
+    color: theme.palette.secondary.main,
+  },
+}));
+
 const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
   borderRadius: 4,
@@ -173,6 +193,7 @@ function Game({ lobbyData = {} }) {
     };
 
     const handleCountdownTick = (r) => {
+      console.log("Received countdown-tick event:", r);
       if (r.data.roomUniqueId !== lobbyData?.roomUniqueId) return;
       const v = Number(r.data.value || 0);
       if (!v) return;
@@ -184,9 +205,12 @@ function Game({ lobbyData = {} }) {
     };
 
     const handleCountdownGo = (r) => {
+      console.log("Received countdown-go event:", r);
       if (r.data.roomUniqueId !== lobbyData?.roomUniqueId) return;
-      setCountdownVisible(false);
-      setCountdownValue(null);
+      setTimeout(() => {
+        setCountdownVisible(false);
+        setCountdownValue(null);
+      }, 1000);
     };
 
     socket.addListener("music-start", handleMusicStart);
@@ -290,26 +314,27 @@ function Game({ lobbyData = {} }) {
 
         <audio ref={audioRef} src={audioUrl} preload="auto" />
 
-        <div style={{ textAlign: "center", color: "white", marginBottom: "1rem" }}>
+        {/* <div style={{ textAlign: "center", color: "white", marginBottom: "1rem" }}>
           {musicStatus === "waiting" ? "Waiting for all players to get ready..." : "Music loaded"}
-        </div>
+        </div> */}
 
-        <Box sx={{ width: "70%", mx: "auto", mb: 2, color: "white" }}>
+        <StyledVolumeContainer>
           <Typography variant="body2" sx={{ mb: 1 }}>
             Volume: {volume}%
           </Typography>
           <Slider
+            disableSwap
             value={volume}
             min={0}
             max={100}
             onChange={(_, value) => setVolume(Number(value))}
             aria-label="Volume"
           />
-        </Box>
+        </StyledVolumeContainer>
 
-        <Typography variant="body2" sx={{ color: "white", mb: 2 }}>
+        {/* <Typography variant="body2" sx={{ color: "white", mb: 2 }}>
           Remaining: {Math.max(0, remainingSec).toFixed(1)}s
-        </Typography>
+        </Typography> */}
 
         <div className={classes.vinyl_container}>
           <img src={"/assets/vinyls/vinyl" + generatedNumber + ".png"} alt="vinyl" className={classes.vinyl} />
