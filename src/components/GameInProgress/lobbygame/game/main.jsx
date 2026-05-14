@@ -95,6 +95,7 @@ function Game({ lobbyData = {} }) {
   const pointsHideTimerRef = useRef(null);
   const pointsCountIntervalRef = useRef(null);
   const songCoverUrlRef = useRef("");
+  const dingAudioRef = useRef(null);
 
   const base64ToUint8Array = (base64) => {
     const binaryString = window.atob(base64);
@@ -131,6 +132,67 @@ function Game({ lobbyData = {} }) {
     }
     setSongCoverUrl("");
   };
+
+  const playCountdownDing = () => {
+    try {
+      if (!dingAudioRef.current) {
+        dingAudioRef.current = new Audio("/assets/sounds/ding.mp3");
+      }
+      console.log("COUNTDOWN-DING-LOG", {
+        event: "attempt-play",
+        src: dingAudioRef.current.currentSrc || dingAudioRef.current.src || "",
+        readyState: dingAudioRef.current.readyState,
+        networkState: dingAudioRef.current.networkState,
+      });
+      dingAudioRef.current.currentTime = 0;
+      dingAudioRef.current.play().catch((error) => {
+        console.error("COUNTDOWN-DING-LOG", {
+          event: "play-rejected",
+          name: error?.name,
+          message: error?.message,
+          src: dingAudioRef.current?.currentSrc || dingAudioRef.current?.src || "",
+        });
+      });
+    } catch (error) {
+      console.error("COUNTDOWN-DING-LOG", {
+        event: "play-throw",
+        name: error?.name,
+        message: error?.message,
+        src: dingAudioRef.current?.currentSrc || dingAudioRef.current?.src || "",
+      });
+    }
+  };
+
+  useEffect(() => {
+    const ding = new Audio("/assets/sounds/ding.mp3");
+    dingAudioRef.current = ding;
+
+    const onDingCanPlay = () => {
+      console.log("COUNTDOWN-DING-LOG", {
+        event: "canplay",
+        src: ding.currentSrc || ding.src || "",
+      });
+    };
+    const onDingError = () => {
+      const mediaError = ding.error;
+      console.error("COUNTDOWN-DING-LOG", {
+        event: "media-error",
+        code: mediaError?.code,
+        message: mediaError?.message || "",
+        src: ding.currentSrc || ding.src || "",
+      });
+    };
+
+    ding.addEventListener("canplay", onDingCanPlay);
+    ding.addEventListener("error", onDingError);
+
+    return () => {
+      ding.removeEventListener("canplay", onDingCanPlay);
+      ding.removeEventListener("error", onDingError);
+      ding.pause();
+      dingAudioRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     if (!lobbyData?.roomUniqueId || readySentRef.current) {
@@ -221,6 +283,7 @@ function Game({ lobbyData = {} }) {
       if (!v) return;
       setCountdownValue(v);
       setCountdownVisible(true);
+      playCountdownDing();
       if (v === 1) {
         socket.send({ type: 'countdown-ready', data: { roomUniqueId: lobbyData.roomUniqueId, uniqueId: getCookie('uniqueId') || '' } });
       }
@@ -461,6 +524,10 @@ function Game({ lobbyData = {} }) {
 
       setPointsExiting(false);
       clearSongCoverUrl();
+
+      if (dingAudioRef.current) {
+        dingAudioRef.current.pause();
+      }
     };
   }, []);
 
