@@ -65,10 +65,10 @@ function Game({ lobbyData = {} }) {
   const [guessed, setGuessed] = useState("0");
   const [generatedNumber] = useState((Math.floor(Math.random() * 15) + 1));
   const [choices, setChoices] = useState([
-    { id: "1", name: "Justin beaber" },
-    { id: "2", name: "Maroon 5" },
-    { id: "3", name: "Ed Sheeran" },
-    { id: "4", name: "Alan Walker" },
+    { id: "1", name: "Loading..." },
+    { id: "2", name: "Loading..." },
+    { id: "3", name: "Loading..." },
+    { id: "4", name: "Loading..." },
   ]);
   const [audioUrl, setAudioUrl] = useState("");
   const [musicStatus, setMusicStatus] = useState("waiting");
@@ -91,6 +91,7 @@ function Game({ lobbyData = {} }) {
   const [roundEnded, setRoundEnded] = useState(false);
   const [roundReadySent, setRoundReadySent] = useState(false);
   const [songCoverUrl, setSongCoverUrl] = useState("");
+  const [correctChoiceId, setCorrectChoiceId] = useState("");
   const pointsTimerRef = useRef(null);
   const pointsHideTimerRef = useRef(null);
   const pointsCountIntervalRef = useRef(null);
@@ -228,6 +229,7 @@ function Game({ lobbyData = {} }) {
       setRoundEnded(false);
       setRoundReadySent(false);
       clearSongCoverUrl();
+      setCorrectChoiceId("");
       setChoices((r.data.choiceNames || []).map((name, index) => ({
         id: r.data.choiceIds?.[index] || String(index + 1),
         name,
@@ -306,6 +308,7 @@ function Game({ lobbyData = {} }) {
       setRoundReadySent(false);
       setGuessed("0");
       clearSongCoverUrl();
+      setCorrectChoiceId("");
 
       // Re-arm and send music-ready for this new round
       readySentRef.current = true;
@@ -379,6 +382,25 @@ function Game({ lobbyData = {} }) {
       .then((result) => {
         console.log("ANSWER-LOG", result);
         const correctSongId = String(result?.correctSongId || result?.result?.correctSongId || "");
+        const correctAnswerName = String(result?.result?.correctAnswer || "").trim().toLowerCase();
+        const isCorrect = Boolean(result?.result?.correct);
+
+        if (!isCorrect && correctSongId) {
+          const matchedChoice = choices.find((choice) => {
+            const byId = String(choice?.id || "") === correctSongId;
+            const byName = String(choice?.name || "").trim().toLowerCase() === correctAnswerName;
+            return byId || byName;
+          });
+          setCorrectChoiceId(String(matchedChoice?.id || correctSongId));
+        } else if (!isCorrect && correctAnswerName) {
+          const matchedChoice = choices.find(
+            (choice) => String(choice?.name || "").trim().toLowerCase() === correctAnswerName
+          );
+          setCorrectChoiceId(String(matchedChoice?.id || ""));
+        } else {
+          setCorrectChoiceId("");
+        }
+
         if (correctSongId) {
           api.getSongPictureUrl(correctSongId)
             .then((url) => {
@@ -583,24 +605,36 @@ function Game({ lobbyData = {} }) {
             <StyledButtonPrimary
               variant="contained"
               className={classes.button + " " + (guessed === choices[0]?.id ? classes.guessed : "")}
+              sx={correctChoiceId && guessed !== "0" && String(choices[0]?.id) === String(correctChoiceId)
+                ? { backgroundColor: (theme) => `${theme.palette.success.light} !important`, color: (theme) => `${theme.palette.success.contrastText} !important`, boxShadow: '0 9px 0 0 rgba(102, 187, 106, 0.85) !important', '&:hover': { backgroundColor: (theme) => `${theme.palette.success.main} !important`, boxShadow: '0 0 0 0 rgba(102, 187, 106, 1) !important' } }
+                : undefined}
               data-guess={choices[0]?.id || "1"}
               onClick={handleGuess}>{choices[0]?.name || "Loading..."}</StyledButtonPrimary>
 
             <StyledButtonPrimary
               variant="contained"
               className={classes.button + " " + (guessed === choices[1]?.id ? classes.guessed : "")}
+              sx={correctChoiceId && guessed !== "0" && String(choices[1]?.id) === String(correctChoiceId)
+                ? { backgroundColor: (theme) => `${theme.palette.success.light} !important`, color: (theme) => `${theme.palette.success.contrastText} !important`, boxShadow: '0 9px 0 0 rgba(102, 187, 106, 0.85) !important', '&:hover': { backgroundColor: (theme) => `${theme.palette.success.main} !important`, boxShadow: '0 0 0 0 rgba(102, 187, 106, 1) !important' } }
+                : undefined}
               data-guess={choices[1]?.id || "2"}
               onClick={handleGuess}>{choices[1]?.name || "Loading..."}</StyledButtonPrimary>
 
             <StyledButtonPrimary
               variant="contained"
               className={classes.button + " " + (guessed === choices[2]?.id ? classes.guessed : "")}
+              sx={correctChoiceId && guessed !== "0" && String(choices[2]?.id) === String(correctChoiceId)
+                ? { backgroundColor: (theme) => `${theme.palette.success.light} !important`, color: (theme) => `${theme.palette.success.contrastText} !important`, boxShadow: '0 9px 0 0 rgba(102, 187, 106, 0.85) !important', '&:hover': { backgroundColor: (theme) => `${theme.palette.success.main} !important`, boxShadow: '0 0 0 0 rgba(102, 187, 106, 1) !important' } }
+                : undefined}
               data-guess={choices[2]?.id || "3"}
               onClick={handleGuess}>{choices[2]?.name || "Loading..."}</StyledButtonPrimary>
 
             <StyledButtonPrimary
               variant="contained"
               className={classes.button + " " + (guessed === choices[3]?.id ? classes.guessed : "")}
+              sx={correctChoiceId && guessed !== "0" && String(choices[3]?.id) === String(correctChoiceId)
+                ? { backgroundColor: (theme) => `${theme.palette.success.light} !important`, color: (theme) => `${theme.palette.success.contrastText} !important`, boxShadow: '0 9px 0 0 rgba(102, 187, 106, 0.85) !important', '&:hover': { backgroundColor: (theme) => `${theme.palette.success.main} !important`, boxShadow: '0 0 0 0 rgba(102, 187, 106, 1) !important' } }
+                : undefined}
               data-guess={choices[3]?.id || "4"}
               onClick={handleGuess}>{choices[3]?.name || "Loading..."}</StyledButtonPrimary>
         </div>
