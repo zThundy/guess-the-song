@@ -26,6 +26,8 @@ function GameBar({ lobbyData }) {
           usersPointsMap[String(up.uniqueId)] = up.points;
         });
 
+        usersPoints.sort((a, b) => b.points - a.points);
+
         return {
           ...prev,
           users: (prev.users || []).map(u => ({
