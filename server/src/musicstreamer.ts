@@ -17,6 +17,8 @@ type RoomLike = {
 	roomUniqueId: string;
 	started: boolean;
 	users: Array<{ uniqueId: string }>;
+	category?: string;
+	genre?: string;
 	get: () => any;
 	setCurrentSong?: (song: { id: string; name: string }, startedAt: number) => void;
 };
@@ -109,23 +111,48 @@ class MusicStreamer {
 		}
 	}
 
-	private pickRandomSong(excludedIds: string[] = []): MusicManifestEntry {
+	private pickRandomSong(excludedIds: string[] = [], room?: RoomLike): MusicManifestEntry {
 		if (this.manifest.length === 0) {
 			throw new Error("Music manifest is empty.");
 		}
 
-		const availableSongs = this.manifest.filter((song) => !excludedIds.includes(song.id));
-		const pool = availableSongs.length > 0 ? availableSongs : this.manifest;
+		// Apply room filters if provided (category and genre)
+		const filteredByRoom = this.manifest.filter((song) => {
+			if (excludedIds.includes(song.id)) return false;
+			if (!room) return true;
+			// match category if room has one
+			if (room.category && typeof song.category === 'string') {
+				if (String(song.category).trim().toLowerCase() !== String(room.category).trim().toLowerCase()) return false;
+			}
+			// match genre if room has one
+			if (room.genre) {
+				const songGenres = Array.isArray(song.genres) ? song.genres.map(g => String(g).trim().toLowerCase()) : [];
+				if (songGenres.length > 0) {
+					if (!songGenres.includes(String(room.genre).trim().toLowerCase())) return false;
+				} else if ((song as any).genre && typeof (song as any).genre === 'string') {
+					if (String((song as any).genre).trim().toLowerCase() !== String(room.genre).trim().toLowerCase()) return false;
+				}
+			}
+			return true;
+		});
+
+		const pool = filteredByRoom.length > 0 ? filteredByRoom : this.manifest.filter((s) => !excludedIds.includes(s.id));
+		if (pool.length === 0) {
+			// as a last resort, use full manifest
+			const randomIndex = Math.floor(Math.random() * this.manifest.length);
+			return this.manifest[randomIndex];
+		}
+
 		const randomIndex = Math.floor(Math.random() * pool.length);
 		return pool[randomIndex];
 	}
 
-	private pickChoices(targetSong: MusicManifestEntry): MusicManifestEntry[] {
+	private pickChoices(targetSong: MusicManifestEntry, room?: RoomLike): MusicManifestEntry[] {
 		const choices: MusicManifestEntry[] = [];
 		const maxChoices = Math.min(4, this.manifest.length);
 
 		while (choices.length < maxChoices) {
-			const candidate = this.pickRandomSong(choices.map((choice) => choice.id));
+			const candidate = this.pickRandomSong(choices.map((choice) => choice.id), room);
 			if (!choices.some((choice) => choice.id === candidate.id)) {
 				choices.push(candidate);
 			}
@@ -229,9 +256,9 @@ class MusicStreamer {
 			return this.sessions.get(room.roomUniqueId);
 		}
 
-		const targetSong = this.pickRandomSong();
-    console.log("MUSIC-LOG", `Selected song ${targetSong.name} (${targetSong.id}) for room ${room.roomUniqueId}.`);
-		const choices = this.pickChoices(targetSong);
+		const targetSong = this.pickRandomSong([], room);
+		console.log("MUSIC-LOG", `Selected song ${targetSong.name} (${targetSong.id}) for room ${room.roomUniqueId}.`);
+		const choices = this.pickChoices(targetSong, room);
     console.log("MUSIC-LOG", `Choices for room ${room.roomUniqueId}: ${choices.map((c) => c.name).join(", ")}`);
 		const audioPath = this.findSongAudioFile(targetSong.id);
     console.log("MUSIC-LOG", `Audio path for song ${targetSong.name} (${targetSong.id}): ${audioPath}`);
