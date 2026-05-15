@@ -98,6 +98,23 @@ function Game({ lobbyData = {} }) {
   const songCoverUrlRef = useRef("");
   const dingAudioRef = useRef(null);
 
+  const sendMusicReady = () => {
+    if (!lobbyData?.roomUniqueId || readySentRef.current) {
+      return;
+    }
+
+    console.log("GAME-LOG", "Sending music-ready to server for room:", lobbyData.roomUniqueId);
+    readySentRef.current = true;
+    socket.send({
+      type: "music-ready",
+      data: {
+        roomUniqueId: lobbyData.roomUniqueId,
+        uniqueId: getCookie("uniqueId") || "",
+        inviteCode: lobbyData.inviteCode || "",
+      },
+    });
+  };
+
   const base64ToUint8Array = (base64) => {
     const binaryString = window.atob(base64);
     const buffer = new Uint8Array(binaryString.length);
@@ -200,16 +217,7 @@ function Game({ lobbyData = {} }) {
       return undefined;
     }
 
-    console.log("GAME-LOG", "Sending music-ready to server for room:", lobbyData.roomUniqueId);
-    readySentRef.current = true;
-    socket.send({
-      type: "music-ready",
-      data: {
-        roomUniqueId: lobbyData.roomUniqueId,
-        uniqueId: getCookie("uniqueId") || "",
-        inviteCode: lobbyData.inviteCode || "",
-      },
-    });
+    sendMusicReady();
 
     return undefined;
   }, [lobbyData?.roomUniqueId, lobbyData?.inviteCode]);
@@ -310,16 +318,9 @@ function Game({ lobbyData = {} }) {
       clearSongCoverUrl();
       setCorrectChoiceId("");
 
-      // Re-arm and send music-ready for this new round
-      readySentRef.current = true;
-      socket.send({
-        type: "music-ready",
-        data: {
-          roomUniqueId: lobbyData.roomUniqueId,
-          uniqueId: getCookie("uniqueId") || "",
-          inviteCode: lobbyData.inviteCode || "",
-        },
-      });
+      // Re-arm and send music-ready for this new round.
+      readySentRef.current = false;
+      sendMusicReady();
     };
 
     socket.addListener("music-start", handleMusicStart);
@@ -368,7 +369,7 @@ function Game({ lobbyData = {} }) {
         });
       }, 500);
     }
-  }, [roundEnded, pointsVisible, roundReadySent, lobbyData?.roomUniqueId]);
+  }, [roundEnded, pointsVisible, roundReadySent]);
 
   const handleGuess = (e) => {
     if (guessed !== "0") return;

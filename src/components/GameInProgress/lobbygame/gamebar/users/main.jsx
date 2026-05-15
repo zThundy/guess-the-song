@@ -7,11 +7,24 @@ import { getCookie } from 'helpers/cookies'
 
 function User({ lobbyData }) {
   const users = useMemo(() => {
+    console.log("Calculating users with points from lobbyData", lobbyData);
     const userId = getCookie('uniqueId');
-    return (lobbyData.users || []).map((user) => ({
+    const list = (lobbyData.users || []).map((user) => ({
       ...user,
       self: String(user.uniqueId) === String(userId),
     }));
+
+    // sort by points desc, then by username asc for tie-breaker
+    list.sort((a, b) => {
+      const pa = Number(a?.points || 0);
+      const pb = Number(b?.points || 0);
+      if (pb !== pa) return pb - pa;
+      const na = String(a?.username || '').toLowerCase();
+      const nb = String(b?.username || '').toLowerCase();
+      return na.localeCompare(nb);
+    });
+
+    return list;
   }, [lobbyData]);
 
   return (

@@ -21,7 +21,7 @@ function LobbyGame( ) {
   const roomUniqueIdRef = useRef(String(location.state?.id || location.state?.data?.roomUniqueId || ""));
   const animationIntervalRef = useRef(null);
   const redirectTimeoutRef = useRef(null);
-  const DEFAULT_LEADERBOARD_SECONDS = 30; // default display duration
+  const DEFAULT_LEADERBOARD_SECONDS = 10; // default display duration
   const leaderboardDisplaySeconds = Math.max(0, Number(location.state?.displaySeconds ?? location.state?.data?.displaySeconds ?? DEFAULT_LEADERBOARD_SECONDS));
 
   useEffect(() => {

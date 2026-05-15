@@ -8,7 +8,17 @@ function GameBar({ lobbyData }) {
   const [gameBarData, setGameBarData] = useState(lobbyData || {});
 
   useEffect(() => {
+    console.log("Received new lobbyData, updating gameBarData", lobbyData);
     setGameBarData(lobbyData || {});
+
+    // reset all players points to 0 when new lobby data is received (e.g. new game started)
+    setGameBarData(prev => ({
+      ...prev,
+      users: (lobbyData?.users || []).map(u => ({
+        ...u,
+        points: 0,
+      })),
+    }));
   }, [lobbyData]);
 
   useEffect(() => {
@@ -24,18 +34,6 @@ function GameBar({ lobbyData }) {
         const usersPointsMap = {};
         usersPoints.forEach(up => {
           usersPointsMap[String(up.uniqueId)] = up.points;
-        });
-
-        // Ensure numeric comparison and stable tie-breaker by username when points equal
-        usersPoints.sort((a, b) => {
-          const pa = Number(a?.points || 0);
-          const pb = Number(b?.points || 0);
-          if (pb !== pa) return pb - pa;
-
-          // tie-breaker: try to use username from current prev.users, fallback to uniqueId
-          const ua = ((prev.users || []).find(u => String(u.uniqueId) === String(a.uniqueId)) || {}).username || String(a.uniqueId || '');
-          const ub = ((prev.users || []).find(u => String(u.uniqueId) === String(b.uniqueId)) || {}).username || String(b.uniqueId || '');
-          return String(ua).localeCompare(String(ub));
         });
 
         return {
