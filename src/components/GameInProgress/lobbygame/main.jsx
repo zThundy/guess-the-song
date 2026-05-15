@@ -269,10 +269,6 @@ function LobbyGame( ) {
                 <div className={classes.leaderboardEmpty}>Nessun punteggio disponibile.</div>
               )}
             </div>
-
-            <div className={classes.finaleFooter}>
-              {leaderboardReady ? "Ritorno al menu in corso..." : "Calcolo del risultato in corso..."}
-            </div>
           </motion.div>
         </motion.div>
       ) : null}
