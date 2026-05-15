@@ -31,6 +31,7 @@ type StreamSession = {
 	randomStartByte: number;
 	countdownReadyUsers?: Set<string>;
 	readyUsers: Set<string>;
+	readyTimeout?: ReturnType<typeof setTimeout>;
 	started: boolean;
 	streamId: string;
 };
@@ -278,32 +279,52 @@ class MusicStreamer {
 		try {
 			const data = message?.data;
 			if (!data?.roomUniqueId || !data?.uniqueId) {
+				console.error("MUSIC-LOG", "Invalid music-ready message data:", data);
 				return;
 			}
 
 			const session = this.sessions.get(data.roomUniqueId);
 			if (!session || session.started) {
+				console.error("MUSIC-LOG", `Session not found or already started for room ${data.roomUniqueId}`);
 				return;
 			}
 
 			const roomUser = session.room.users.find((user) => user.uniqueId === data.uniqueId);
 			if (!roomUser) {
+				console.error("MUSIC-LOG", `User ${data.uniqueId} not found in room ${data.roomUniqueId}`);
 				return;
 			}
 
 			session.readyUsers.add(String(data.uniqueId));
+			const startStreamingNow = () => {
+				if (session.readyTimeout) {
+					clearTimeout(session.readyTimeout);
+					session.readyTimeout = undefined;
+				}
 
-			if (session.readyUsers.size >= session.room.users.length) {
-				// all players reported music-ready; run countdown then stream
 				void (async () => {
 					try {
+						console.log("MUSIC-LOG", `All players ready for room ${data.roomUniqueId}. Starting countdown and streaming.`);
 						await this.runCountdown(session);
-						// after countdown (or timeout), begin streaming
 						await this.beginStreaming(session);
 					} catch (e: any) {
 						console.error("MUSIC-LOG", `Error during countdown/streaming: ${e.message}`);
 					}
 				})();
+			};
+
+			if (session.readyUsers.size >= session.room.users.length) {
+				// all players reported music-ready; run countdown then stream
+				startStreamingNow();
+			} else if (!session.readyTimeout) {
+				// Fallback: do not let one stale/slow client stall the entire match forever.
+				session.readyTimeout = setTimeout(() => {
+					if (session.started) {
+						return;
+					}
+					console.warn("MUSIC-LOG", `Ready timeout reached for room ${data.roomUniqueId}; continuing with ${session.readyUsers.size}/${session.room.users.length} ready players.`);
+					startStreamingNow();
+				}, 5000);
 			}
 		} catch (error: any) {
 			console.error("MUSIC-LOG", `Error handling music-ready: ${error.message}`);

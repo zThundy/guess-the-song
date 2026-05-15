@@ -37,10 +37,9 @@ export default class Room {
     public answerMinPoints: number = 10;
     public answerDecayPerSecond: number = 12;
     private roomPingUsersInterval: ReturnType<typeof setInterval> | null = null;
+    private isFirstGuessSubmitted: boolean = false;
 
     constructor() { }
-
-    // destructor to initialize the room with data
 
     public async initRoom(data: RoomInstance): Promise<void> {
         if (!hasProperty(data, 'roomUniqueId')) throw new Error('Invalid room id while initializing room.');
@@ -356,7 +355,12 @@ export default class Room {
         const safePlaybackMs = Math.max(0, Number(playbackMs || 0));
         const elapsedSeconds = safePlaybackMs / 1000;
         const rawPoints = this.answerBasePoints - Math.floor(elapsedSeconds * this.answerDecayPerSecond);
-        const points = Math.max(this.answerMinPoints, rawPoints);
+        let bonusPoints = 0;
+        if (!this.isFirstGuessSubmitted) {
+            bonusPoints = 20;
+            this.isFirstGuessSubmitted = true;
+        }
+        const points = Math.max(this.answerMinPoints, rawPoints) + bonusPoints;
         console.log(`[ROOM-MANAGER] Calculated points=${points} for room ${this.roomUniqueId} at playbackMs=${safePlaybackMs}.`);
         return points;
     }
@@ -396,18 +400,14 @@ export default class Room {
     }
 
     private advanceRound() {
-        // Called when all clients are ready for the next round
         try {
-            // Increment round counter
+            this.isFirstGuessSubmitted = false;
             this.currentRound = Number(this.currentRound || 0) + 1;
             console.log(`[ROOM-MANAGER] All players ready. Advancing to round ${this.currentRound} for room ${this.roomUniqueId}.`);
 
             if (this.currentRound < Number(this.rounds || 0)) {
-                // start next round
                 console.log(`[ROOM-MANAGER] Starting round ${this.currentRound} for room ${this.roomUniqueId}`);
-                const session = MusicStreamer.start(this);
-
-                // notify participants a new round is starting
+                MusicStreamer.start(this);
                 const recipientIds = this.users.map(u => String(u.uniqueId));
                 try {
                     WSWrapper.sendToUsers({ route: "room", type: 'round-start', data: { roomUniqueId: this.roomUniqueId, room: this.get() } }, recipientIds);
@@ -415,7 +415,6 @@ export default class Room {
                     WSWrapper.send({ route: "room", type: 'round-start', data: { roomUniqueId: this.roomUniqueId, room: this.get() } });
                 }
             } else {
-                // reached final round -> end game
                 console.log(`[ROOM-MANAGER] Reached final round (${this.currentRound}/${this.rounds}) for room ${this.roomUniqueId}. Ending game.`);
                 this.endGame();
             }
@@ -513,10 +512,6 @@ export default class Room {
         }
     }
 
-    /**
-     * Persist all users' current in-room points to the database.
-     * Call this at the end of the match to save totals to the user records.
-     */
     public finalizeScores(): void {
         try {
             this.users.forEach((u) => {
