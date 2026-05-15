@@ -361,6 +361,7 @@ export default class Room {
         if (!this.isFirstGuessSubmitted) {
             bonusPoints = 20;
             this.isFirstGuessSubmitted = true;
+            console.log(`[ROOM-MANAGER] First guess submitted for room ${this.roomUniqueId}, awarding bonus points.`);
         }
         const points = Math.max(this.answerMinPoints, rawPoints) + bonusPoints;
         console.log(`[ROOM-MANAGER] Calculated points=${points} for room ${this.roomUniqueId} at playbackMs=${safePlaybackMs}.`);
@@ -642,8 +643,6 @@ export default class Room {
 
     // game section
     start(): boolean {
-        // TODO: Dev only. Remove "&& false"
-        // if (this.users.length < 2) {
         if (this.users.length < 2) {
             console.error(`[ROOM-MANAGER] Not enough players to start the game.`);
             return false;
