@@ -1,7 +1,9 @@
 import router, { Request, Response } from "express";
+import path from "path";
+import fs from "fs";
 
 const createRouter = router();
-const musicManifest = require("../../music/manifest.json");
+const musicManifestPath: string = path.join(__dirname, "..", "..", "music", "manifest.json");
 
 createRouter.use((req: Request, res: Response, next) => {
   console.log(`Account route: ${req.method} ${req.path}`);
@@ -19,6 +21,19 @@ interface Genre {
   icon?: string;
   allowedCategory: string[];
 }
+
+let musicManifest: any[] = [];
+const updateManifest = () => {
+  try {
+    const manifestData = fs.readFileSync(musicManifestPath, "utf-8");
+    musicManifest = JSON.parse(manifestData);
+    console.log("MUSIC-LOG", `Music manifest updated. Now has ${musicManifest.length} songs.`);
+  } catch (err: any) {
+    console.error("MUSIC-LOG", `Error reading music manifest: ${err.message}`);
+  }
+};
+
+updateManifest();
 
 // {
 //   name: "Rock",
@@ -75,6 +90,7 @@ interface Genre {
 // },
 
 createRouter.get("/genres", (req: Request, res: Response) => {
+  updateManifest();
   // res.status(404).json({ key: "CREATE_ERROR_LOAD_GENRES", message: "Genres not found" })
 
   // make a distinct list of genres from the manifest and use the category from the manifest
@@ -99,6 +115,7 @@ const capitalizeFirstLetter = (string: string) => {
 }
 
 createRouter.get("/categories", (req: Request, res: Response) => {
+  updateManifest();
   // res.status(404).json({ key: "CREATE_ERROR_LOAD_CATEGORIES", message: "Categories not found" })
 
   // make a distinct list of categories from the manifest
