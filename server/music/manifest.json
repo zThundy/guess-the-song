@@ -97,5 +97,14 @@
     "category": "music",
     "year": 2017,
     "genres": ["Pop", "Electronic"]
+  },
+  {
+    "id": "12",
+    "name": "Count to Three",
+    "artist": "The Chalkeaters, The Stupendium, Ellen McLain",
+    "album": "Count to Three",
+    "category": "music",
+    "year": 2021,
+    "genres": ["Electro Swing"]
   }
 ]
