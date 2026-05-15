@@ -6,7 +6,9 @@
     "album": "Let's Groove",
     "category": "music",
     "year": 1981,
-    "genres": ["Classic"]
+    "genres": [
+      "Classic"
+    ]
   },
   {
     "id": "2",
@@ -15,7 +17,10 @@
     "album": "Trolls (Original Motion Picture Soundtrack)",
     "category": "music",
     "year": 2016,
-    "genres": ["Pop", "Electronic"]
+    "genres": [
+      "Pop",
+      "Electronic"
+    ]
   },
   {
     "id": "3",
@@ -24,7 +29,10 @@
     "album": "The Rhythm of the Night",
     "category": "music",
     "year": 1993,
-    "genres": ["Dance", "Electronic"]
+    "genres": [
+      "Dance",
+      "Electronic"
+    ]
   },
   {
     "id": "4",
@@ -33,7 +41,10 @@
     "album": "Troublemaker",
     "category": "music",
     "year": 2012,
-    "genres": ["Dance", "Electronic"]
+    "genres": [
+      "Dance",
+      "Electronic"
+    ]
   },
   {
     "id": "5",
@@ -42,7 +53,9 @@
     "album": "Beauty Behind the Madness",
     "category": "music",
     "year": 2015,
-    "genres": ["Soul"]
+    "genres": [
+      "Soul"
+    ]
   },
   {
     "id": "6",
@@ -51,7 +64,9 @@
     "album": "Making Mirrors",
     "category": "music",
     "year": 2011,
-    "genres": ["Pop"]
+    "genres": [
+      "Pop"
+    ]
   },
   {
     "id": "7",
@@ -60,7 +75,9 @@
     "album": "Some Nights",
     "category": "music",
     "year": 2011,
-    "genres": ["Pop"]
+    "genres": [
+      "Pop"
+    ]
   },
   {
     "id": "8",
@@ -69,7 +86,10 @@
     "album": "Kiss",
     "category": "music",
     "year": 2011,
-    "genres": ["Electronic", "Pop"]
+    "genres": [
+      "Electronic",
+      "Pop"
+    ]
   },
   {
     "id": "9",
@@ -78,7 +98,10 @@
     "album": "Unapologetic",
     "category": "music",
     "year": 2012,
-    "genres": ["Pop", "Soul"]
+    "genres": [
+      "Pop",
+      "Soul"
+    ]
   },
   {
     "id": "10",
@@ -87,7 +110,11 @@
     "album": "Uptown Special",
     "category": "music",
     "year": 2014,
-    "genres": ["Pop", "Soul", "Electronic"]
+    "genres": [
+      "Pop",
+      "Soul",
+      "Electronic"
+    ]
   },
   {
     "id": "11",
@@ -96,7 +123,10 @@
     "album": "Faster Car",
     "category": "music",
     "year": 2017,
-    "genres": ["Pop", "Electronic"]
+    "genres": [
+      "Pop",
+      "Electronic"
+    ]
   },
   {
     "id": "12",
@@ -105,6 +135,316 @@
     "album": "Count to Three",
     "category": "music",
     "year": 2021,
-    "genres": ["Electro Swing"]
+    "genres": [
+      "Electro Swing"
+    ]
+  },
+  {
+    "id": "13",
+    "name": "Ficsit Inc.",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "14",
+    "name": "MASSAGE-2(AB) b",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "15",
+    "name": "Pygmalion Effect",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "16",
+    "name": "Northern Forest",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "17",
+    "name": "Dispersion",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "18",
+    "name": "Peltzman Effect",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "19",
+    "name": "Grass Fields",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "20",
+    "name": "Silva",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "21",
+    "name": "Zeigarnik Effect",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "22",
+    "name": "Dune Desert",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "23",
+    "name": "Caverns",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "24",
+    "name": "Fan Effect",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "25",
+    "name": "Rocky Desert",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "26",
+    "name": "Sirocco",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "27",
+    "name": "Dunning-Kruger Effect",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "28",
+    "name": "Blue Crater",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "29",
+    "name": "Small Caves",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "30",
+    "name": "C-Parks Effect",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "31",
+    "name": "Perilous Caves",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "32",
+    "name": "Pink Forest",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "33",
+    "name": "Ringelmann Effect",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "34",
+    "name": "Erosion",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "35",
+    "name": "Crespi Effect",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "36",
+    "name": "Tier 1",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "37",
+    "name": "Nostalgium",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "38",
+    "name": "Hyperfocus",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "39",
+    "name": "Menew",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
+  },
+  {
+    "id": "40",
+    "name": "De-orbit",
+    "artist": "Dream Thing",
+    "album": "Satisfactory OST",
+    "category": "videogames",
+    "genres": [
+      "Soundtrack"
+    ],
+    "year": 2024
   }
 ]
