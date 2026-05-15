@@ -1,4 +1,5 @@
 .container {
+  position: relative;
   background-color: white;
   width: 98%;
   height: 100%;
@@ -11,4 +12,182 @@
   z-index: 4;
   overflow: auto;
   justify-content: space-between;
+}
+
+.finaleOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(16, 16, 24, 0.88), rgba(34, 24, 12, 0.88));
+  backdrop-filter: blur(10px);
+}
+
+.finaleCard {
+  width: min(48rem, 100%);
+  max-height: 100%;
+  overflow: auto;
+  border-radius: 1.4rem;
+  padding: 1.5rem;
+  color: #fef6ea;
+  background: linear-gradient(180deg, rgba(255, 184, 92, 0.12), rgba(255, 255, 255, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+.finaleKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .35rem .75rem;
+  margin-bottom: .75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+.finaleTitle {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1;
+}
+
+.finaleSubtitle {
+  margin: .75rem 0 1.25rem 0;
+  font-size: 1rem;
+  color: rgba(254, 246, 234, 0.82);
+}
+
+.leaderboardList {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.leaderboardEmpty {
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  text-align: center;
+  color: rgba(254, 246, 234, 0.82);
+}
+
+.leaderboardRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.leaderboardRowSelf {
+  background: rgba(255, 176, 90, 0.18);
+  border-color: rgba(255, 194, 115, 0.35);
+}
+
+.leaderboardRank {
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border-radius: .9rem;
+  background: rgba(255, 255, 255, 0.1);
+  font-weight: 900;
+}
+
+.leaderboardPlayer {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  min-width: 0;
+}
+
+.leaderboardAvatar,
+.leaderboardAvatarFallback {
+  width: 3.5rem;
+  height: 3.5rem;
+  flex: 0 0 3.5rem;
+  border-radius: 999px;
+  object-fit: cover;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-weight: 900;
+}
+
+.leaderboardPlayerMeta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.leaderboardName {
+  font-size: 1.1rem;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leaderboardDelta {
+  font-size: .92rem;
+  color: rgba(254, 246, 234, 0.78);
+}
+
+.leaderboardScore {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .1rem;
+  text-align: right;
+}
+
+.leaderboardScoreLabel {
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: rgba(254, 246, 234, 0.72);
+}
+
+.leaderboardScoreValue {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.leaderboardScoreHint {
+  font-size: .88rem;
+  color: rgba(254, 246, 234, 0.72);
+}
+
+.finaleFooter {
+  margin-top: 1.25rem;
+  font-size: .95rem;
+  color: rgba(254, 246, 234, 0.78);
+  text-align: center;
+}
+
+@media screen and (max-width: 800px) {
+  .leaderboardRow {
+    grid-template-columns: auto 1fr;
+  }
+
+  .leaderboardScore {
+    grid-column: 1 / -1;
+    align-items: flex-start;
+    text-align: left;
+    padding-left: 4rem;
+  }
 }

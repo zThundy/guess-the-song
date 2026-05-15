@@ -426,17 +426,38 @@ export default class Room {
 
     private endGame() {
         try {
+            const usersSnapshot = [...this.users];
+            const finalLeaderboard = usersSnapshot
+                .map((u) => {
+                    const uniqueId = String(u.uniqueId || u.getColumn("uniqueId") || "");
+                    const pointsBefore = Number(u.points || 0);
+                    const roomPoints = Number(this.roomPoints[uniqueId] || 0);
+
+                    return {
+                        uniqueId,
+                        username: u.username,
+                        userImage: u.userImage,
+                        pointsBefore,
+                        roomPoints,
+                        pointsAfter: pointsBefore + roomPoints,
+                    };
+                })
+                .sort((a, b) => {
+                    if (b.pointsAfter !== a.pointsAfter) return b.pointsAfter - a.pointsAfter;
+                    if (b.roomPoints !== a.roomPoints) return b.roomPoints - a.roomPoints;
+                    return String(a.username || "").localeCompare(String(b.username || ""));
+                });
+
             // finalize and persist scores
             this.finalizeScores();
 
-            const usersSnapshot = [...this.users];
             const recipientIds = usersSnapshot.map(u => String(u.uniqueId));
 
             // notify participants that game is over before room cleanup
             try {
-                WSWrapper.sendToUsers({ route: "room", type: 'game-end', data: { room: this.get() } }, recipientIds);
+                WSWrapper.sendToUsers({ route: "room", type: 'game-end', data: { room: this.get(), leaderboard: finalLeaderboard } }, recipientIds);
             } catch (e) {
-                WSWrapper.send({ route: "room", type: 'game-end', data: { room: this.get() } });
+                WSWrapper.send({ route: "room", type: 'game-end', data: { room: this.get(), leaderboard: finalLeaderboard } });
             }
 
             // force all room players to leave the room view client-side
