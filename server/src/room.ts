@@ -643,6 +643,7 @@ export default class Room {
 
     // game section
     start(): boolean {
+        console.log(`[ROOM-MANAGER] Start requested for room ${this.roomUniqueId}. (Users: ${this.users.length}, Started: ${this.started})`);
         if (this.users.length < 2) {
             console.error(`[ROOM-MANAGER] Not enough players to start the game.`);
             return false;
