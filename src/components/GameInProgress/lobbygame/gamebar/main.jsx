@@ -26,7 +26,17 @@ function GameBar({ lobbyData }) {
           usersPointsMap[String(up.uniqueId)] = up.points;
         });
 
-        usersPoints.sort((a, b) => b.points - a.points);
+        // Ensure numeric comparison and stable tie-breaker by username when points equal
+        usersPoints.sort((a, b) => {
+          const pa = Number(a?.points || 0);
+          const pb = Number(b?.points || 0);
+          if (pb !== pa) return pb - pa;
+
+          // tie-breaker: try to use username from current prev.users, fallback to uniqueId
+          const ua = ((prev.users || []).find(u => String(u.uniqueId) === String(a.uniqueId)) || {}).username || String(a.uniqueId || '');
+          const ub = ((prev.users || []).find(u => String(u.uniqueId) === String(b.uniqueId)) || {}).username || String(b.uniqueId || '');
+          return String(ua).localeCompare(String(ub));
+        });
 
         return {
           ...prev,
