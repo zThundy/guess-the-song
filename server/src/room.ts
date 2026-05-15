@@ -277,8 +277,9 @@ export default class Room {
                     this.maxPlayers = 8;
                 }
 
+                this.rounds = Number(this.rounds);
                 if (!this.rounds || this.rounds === 0 || this.rounds > 20 || this.rounds < 2 || typeof this.rounds !== 'number') {
-                    console.warn(`[ROOM-MANAGER] Invalid rounds input for room ${this.roomUniqueId}, setting to 5. (Current: ${this.rounds})`);
+                    console.warn(`[ROOM-MANAGER] Invalid rounds input for room ${this.roomUniqueId}, setting to 5. (Current: ${this.rounds}. Type was ${typeof this.rounds})`);
                     this.rounds = 5;
                 }
 
@@ -643,7 +644,7 @@ export default class Room {
     start(): boolean {
         // TODO: Dev only. Remove "&& false"
         // if (this.users.length < 2) {
-        if (this.users.length < 2 && false) {
+        if (this.users.length < 2) {
             console.error(`[ROOM-MANAGER] Not enough players to start the game.`);
             return false;
         }
