@@ -30,6 +30,7 @@ export default class Room {
     public roomPoints: { [uniqueId: string]: number } = {};
     // tracks which users are ready for the next round
     public roundReadyUsers: Set<string> = new Set();
+    public submittedAnswerUsers: Set<string> = new Set();
     public currentSongId: string = '';
     public currentSongName: string = '';
     public songStartedAt: number = 0;
@@ -368,12 +369,26 @@ export default class Room {
     public submitAnswer(user: User, answer: string, playbackMs: number): { correct: boolean; pointsAwarded: number; correctAnswer: string; correctSongId: string } {
         const normalizedAnswer = String(answer || '').trim().toLowerCase();
         const normalizedCorrect = String(this.currentSongName || '').trim().toLowerCase();
+
+        const uid = String(user.uniqueId || user.getColumn("uniqueId") || '');
+        if (this.submittedAnswerUsers.has(uid)) {
+            console.warn(`[ROOM-MANAGER] User ${user.username} (${uid}) attempted multiple answers in room ${this.roomUniqueId}. Ignoring.`);
+            return {
+                correct: false,
+                pointsAwarded: 0,
+                correctAnswer: this.currentSongName,
+                correctSongId: this.currentSongId,
+            };
+        }
+
+        // mark this user as having submitted an answer for the current round
+        this.submittedAnswerUsers.add(uid);
+
         const correct = normalizedAnswer.length > 0 && normalizedCorrect.length > 0 && normalizedAnswer === normalizedCorrect;
         const pointsAwarded = correct ? this.calculateAnswerPoints(playbackMs) : 0;
 
         if (correct) {
             // Update room-scoped points map for this user
-            const uid = String(user.uniqueId || user.getColumn("uniqueId") || '');
             const prev = Number(this.roomPoints[uid] || 0);
             const newPoints = prev + pointsAwarded;
             this.roomPoints[uid] = newPoints;
@@ -402,6 +417,7 @@ export default class Room {
     private advanceRound() {
         try {
             this.isFirstGuessSubmitted = false;
+            this.submittedAnswerUsers.clear();
             this.currentRound = Number(this.currentRound || 0) + 1;
             console.log(`[ROOM-MANAGER] All players ready. Advancing to round ${this.currentRound} for room ${this.roomUniqueId}.`);
 
@@ -495,6 +511,7 @@ export default class Room {
             this.users = [];
             this.roomPoints = {};
             this.roundReadyUsers.clear();
+            this.submittedAnswerUsers.clear();
             this.clearCurrentSong();
 
             // stop heartbeat timer for this room
@@ -637,6 +654,7 @@ export default class Room {
         this.update({ column: "started", value: true })
         this.currentRound = 0;
         this.roundReadyUsers.clear();
+        this.submittedAnswerUsers.clear();
         console.log(`[ROOM-MANAGER] Starting game in room ${this.roomUniqueId}`);
         MusicStreamer.start(this);
         WSWrapper.send({ route: "room", type: 'game-start', data: { room: this.get() } });
