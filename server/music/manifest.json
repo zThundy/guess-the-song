@@ -6,7 +6,7 @@
     "album": "Let's Groove",
     "category": "music",
     "year": 1981,
-    "genres": ["Funk", "Disco", "Classic Soul", "Classic"]
+    "genres": ["Classic"]
   },
   {
     "id": "2",
@@ -15,7 +15,7 @@
     "album": "Trolls (Original Motion Picture Soundtrack)",
     "category": "music",
     "year": 2016,
-    "genres": ["Soul music", "Ambient", "Pop", "Classic Soul", "West Coast Hip-Hop", "Dance Pop", "Disco-pop", "House", "Techno", "Teen Pop"]
+    "genres": ["Pop", "Electronic"]
   },
   {
     "id": "3",
@@ -33,7 +33,7 @@
     "album": "Troublemaker",
     "category": "music",
     "year": 2012,
-    "genres": ["Electropop", "Pop", "Vocal/Easy Listening", "Dance Pop", "Teen Pop"]
+    "genres": ["Dance", "Electronic"]
   },
   {
     "id": "5",
@@ -42,7 +42,7 @@
     "album": "Beauty Behind the Madness",
     "category": "music",
     "year": 2015,
-    "genres": ["R&B", "Soul"]
+    "genres": ["Soul"]
   },
   {
     "id": "6",
@@ -51,7 +51,7 @@
     "album": "Making Mirrors",
     "category": "music",
     "year": 2011,
-    "genres": ["Indie Pop", "Alternative Rock", "Art Pop", "Pop"]
+    "genres": ["Pop"]
   },
   {
     "id": "7",
@@ -60,7 +60,7 @@
     "album": "Some Nights",
     "category": "music",
     "year": 2011,
-    "genres": ["Indie Pop", "Alternative Rock", "Pop"]
+    "genres": ["Pop"]
   },
   {
     "id": "8",
@@ -69,7 +69,7 @@
     "album": "Kiss",
     "category": "music",
     "year": 2011,
-    "genres": ["Dance Pop", "Teen Pop", "Electropop", "Pop"]
+    "genres": ["Electronic", "Pop"]
   },
   {
     "id": "9",
@@ -78,7 +78,7 @@
     "album": "Unapologetic",
     "category": "music",
     "year": 2012,
-    "genres": ["Pop", "R&B", "Soul"]
+    "genres": ["Pop", "Soul"]
   },
   {
     "id": "10",
@@ -87,6 +87,15 @@
     "album": "Uptown Special",
     "category": "music",
     "year": 2014,
-    "genres": ["Funk", "Soul", "Pop", "Dance Pop", "Electropop", "Disco", "Funk Pop"]
+    "genres": ["Pop", "Soul", "Electronic"]
+  },
+  {
+    "id": "11",
+    "name": "Faster Car",
+    "artist": "Loving Caliber",
+    "album": "Faster Car",
+    "category": "music",
+    "year": 2017,
+    "genres": ["Pop", "Electronic"]
   }
 ]
