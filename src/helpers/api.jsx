@@ -1,5 +1,6 @@
 const CURRENT_DOMAIN = window.location.hostname;
-const BASE_URL = `https://${CURRENT_DOMAIN}/:8443`;
+console.log(`[API] Using base URL with domain: ${CURRENT_DOMAIN}`);
+const BASE_URL = `https://${CURRENT_DOMAIN}:8443`;
 import { getCookie } from 'helpers/cookies';
 
 // Generic GET and POST helpers. All other functions should use these two.

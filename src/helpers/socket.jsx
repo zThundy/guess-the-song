@@ -37,6 +37,7 @@ class WSWrapper {
         try {
             this._log('Connecting...');
             this.currentDomain = window.location.hostname;
+            console.log(`[WEBSOCKET] Attempting to connect to WebSocket at domain: ${this.currentDomain}`);
             this.connection = new WebSocket(`wss://${this.currentDomain}:8443`, ["sg-protocol"]);
             // this.connection = new WebSocket('wss://localhost:8443');
 
