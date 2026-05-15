@@ -7,6 +7,7 @@ import { Box, Button, LinearProgress, Slider, styled, Typography } from "@mui/ma
 import api from "helpers/api";
 import { getCookie } from "helpers/cookies";
 import socket from "helpers/socket";
+import { t } from "i18next";
 
 const StyledVolumeContainer = styled(Box)(({ theme }) => ({
   width: "50%",
@@ -579,7 +580,7 @@ function Game({ lobbyData = {} }) {
 
         <StyledVolumeContainer>
           <Typography variant="body2" sx={{ mb: 1 }}>
-            Volume: {volume}%
+            {t("VOLUME", [volume])}
           </Typography>
           <Slider
             disableSwap

@@ -66,5 +66,13 @@
   "USERNAME_PLACEHOLDER": "Type a username",
   "USERNAME_UPDATED": "Username updated",
   "WELCOME": "Welcome",
-  "YOU": "You"
+  "YOU": "You",
+  "NETWORK_ERROR": "Network error. Please check your connection and try again.",
+  "VOLUME": "Volume: {{0}}%",
+  "END_GAME_TITLE": "End of the game",
+  "LEADERBOARD": "Leaderboard",
+  "LEADERBOARD_SUBTITLE": "Room points are added to the global total.",
+  "LEADERBOARD_DELTA": "+{{0}} room points",
+  "LEADERBOARD_SCORE_LABEL": "Global amount",
+  "LEADERBOARD_EMPTY": "No scores available."
 }

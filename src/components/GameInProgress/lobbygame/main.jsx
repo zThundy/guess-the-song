@@ -6,6 +6,7 @@ import Game from "./game/main.jsx";
 import { useEffect, useRef, useState } from "react";
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from "react-router-dom";
+import { t } from "i18next";
 
 import { getCookie, setCookie } from "helpers/cookies";
 import socket from "helpers/socket";
@@ -230,9 +231,9 @@ function LobbyGame( ) {
             animate={{ scale: 1, y: 0 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
           >
-            <div className={classes.finaleKicker}>Fine partita</div>
-            <h2 className={classes.finaleTitle}>Leaderboard</h2>
-            <p className={classes.finaleSubtitle}>I punti della stanza vengono aggiunti al totale globale.</p>
+            <div className={classes.finaleKicker}>{t("END_GAME_TITLE")}</div>
+            <h2 className={classes.finaleTitle}>{t("LEADERBOARD")}</h2>
+            <p className={classes.finaleSubtitle}>{t("LEADERBOARD_SUBTITLE")}</p>
 
             <div className={classes.leaderboardList}>
               {leaderboardRows.length > 0 ? leaderboardRows.map((entry, index) => {
@@ -254,19 +255,19 @@ function LobbyGame( ) {
 
                       <div className={classes.leaderboardPlayerMeta}>
                         <span className={classes.leaderboardName}>{entry.username}</span>
-                        <span className={classes.leaderboardDelta}>+{entry.roomPoints} punti stanza</span>
+                        <span className={classes.leaderboardDelta}>{t("LEADERBOARD_DELTA", [entry.roomPoints])}</span>
                       </div>
                     </div>
 
                     <div className={classes.leaderboardScore}>
-                      <span className={classes.leaderboardScoreLabel}>Totale globale</span>
+                      <span className={classes.leaderboardScoreLabel}>{t("LEADERBOARD_SCORE_LABEL")}</span>
                       <span className={classes.leaderboardScoreValue}>{entry.animatedPoints}</span>
                       <span className={classes.leaderboardScoreHint}>{entry.pointsBefore} + {entry.roomPoints}</span>
                     </div>
                   </div>
                 );
               }) : (
-                <div className={classes.leaderboardEmpty}>Nessun punteggio disponibile.</div>
+                <div className={classes.leaderboardEmpty}>{t("LEADERBOARD_EMPTY")}</div>
               )}
             </div>
           </motion.div>

@@ -66,5 +66,13 @@
   "USERNAME_PLACEHOLDER": "Digita un nome utente",
   "USERNAME_UPDATED": "Nome utente aggiornato",
   "WELCOME": "Benvenuto",
-  "YOU": "Tu"
+  "YOU": "Tu",
+  "NETWORK_ERROR": "Errore di rete. Controlla la tua connessione e riprova.",
+  "VOLUME": "Volume: {{0}}%",
+  "END_GAME_TITLE": "Fine della partita",
+  "LEADERBOARD": "Classifica",
+  "LEADERBOARD_SUBTITLE": "I punti della stanza vengono aggiunti al totale globale.",
+  "LEADERBOARD_DELTA": "+{{0}} punti stanza",
+  "LEADERBOARD_SCORE_LABEL": "Totale globale",
+  "LEADERBOARD_EMPTY": "Nessun punteggio disponibile."
 }

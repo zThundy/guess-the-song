@@ -16,9 +16,6 @@ function List({ showList, currentLang, setLang }) {
 
   const handleChange = (e) => {
     setLang(e.target.value);
-    const currentLocation = window.location.href;
-    const loc = currentLocation.split("?")[0];
-    window.location.replace(loc + "?lng=" + e.target.value);
   };
 
   return (
@@ -75,6 +72,10 @@ export default function Language({ }) {
     setLang(lang);
     setCookie("i18next", lang, 365);
     i18n.changeLanguage(lang);
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("lng", lang);
+    window.history.replaceState({}, "", `${url.pathname}?${url.searchParams.toString()}${url.hash}`);
   };
 
   return (
