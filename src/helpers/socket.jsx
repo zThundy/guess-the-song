@@ -38,8 +38,12 @@ class WSWrapper {
             this._log('Connecting...');
             this.currentDomain = window.location.hostname;
             console.log(`[WEBSOCKET] Attempting to connect to WebSocket at url: ${this.currentDomain}`);
-            this.connection = new WebSocket(`wss://${this.currentDomain}/socket`, ["sg-protocol"]);
-            // this.connection = new WebSocket('wss://localhost:8443');
+            if (process.env.NODE_ENV === 'development') {
+                this._log('Running in development mode. Connecting to wss://localhost:8443');
+                this.connection = new WebSocket('wss://localhost:8443', ["sg-protocol"]);
+            } else {
+                this.connection = new WebSocket(`wss://${this.currentDomain}/socket`, ["sg-protocol"]);
+            }
 
             this.connection.onopen = (ws, event) => {
                 this._log(`Connected.`);
