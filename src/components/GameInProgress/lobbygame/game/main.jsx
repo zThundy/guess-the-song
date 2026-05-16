@@ -125,6 +125,18 @@ function Game({ lobbyData = {} }) {
     return buffer;
   };
 
+  // Local shuffle helper to randomize choices received from server
+  const shuffleArray = (arr) => {
+    const a = Array.isArray(arr) ? [...arr] : [];
+    for (let i = a.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = a[i];
+      a[i] = a[j];
+      a[j] = tmp;
+    }
+    return a;
+  };
+
   const schedulePlayback = (startAt) => {
     if (!audioRef.current || !objectUrlRef.current) return;
 
@@ -239,10 +251,14 @@ function Game({ lobbyData = {} }) {
       setRoundReadySent(false);
       clearSongCoverUrl();
       setCorrectChoiceId("");
-      setChoices((r.data.choiceNames || []).map((name, index) => ({
-        id: r.data.choiceIds?.[index] || String(index + 1),
+      // Map incoming names/ids into choice objects, then shuffle locally
+      const incomingNames = r.data.choiceNames || [];
+      const incomingIds = r.data.choiceIds || [];
+      const mappedChoices = incomingNames.map((name, index) => ({
+        id: incomingIds?.[index] || String(index + 1),
         name,
-      })));
+      }));
+      setChoices(shuffleArray(mappedChoices));
 
       if (objectUrlRef.current) {
         schedulePlayback(r.data.startAt);
