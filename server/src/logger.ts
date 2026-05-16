@@ -169,6 +169,11 @@ function log(...args: any[]): void {
             writeLog("MUSIC", true, ...args);
             return;
         }
+        if (first === "MANIFEST-LOG") {
+            args = args.slice(1);
+            writeLog("MANIFEST", true, ...args);
+            return;
+        }
         if (first === "SOCKET-LOG") {
             args = args.slice(1);
             writeLog("SOCKET", true, ...args);
