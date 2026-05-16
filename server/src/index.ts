@@ -56,14 +56,12 @@ import accountRouter from "./routes/account";
 import roomsRouter from "./routes/rooms";
 import createRouter from "./routes/create";
 import musicRouter from "./routes/music";
-import socketRouter from "./routes/socket";
 
 try {
     app.use('/account', accountRouter);
     app.use('/rooms', roomsRouter);
     app.use("/create", createRouter);
     app.use("/music", musicRouter);
-    app.use('/socket', socketRouter);
 } catch (e: any) {
     console.error(`Error in routes: ${e.message}`);
 }
