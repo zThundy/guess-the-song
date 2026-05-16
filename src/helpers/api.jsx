@@ -2,7 +2,7 @@ const CURRENT_DOMAIN = window.location.hostname;
 console.log(`[API] Using base URL with domain: ${CURRENT_DOMAIN}`);
 let BASE_URL = `https://${CURRENT_DOMAIN}/api`;
 if (process.env.NODE_ENV === 'development') {
-  BASE_URL = 'http://localhost:8443';
+  BASE_URL = 'https://localhost:8443';
   console.warn(`[API] Running in development mode. Setting baseUrl to ${BASE_URL}`);
 }
 import { getCookie } from 'helpers/cookies';
