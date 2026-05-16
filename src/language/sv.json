@@ -74,5 +74,7 @@
   "LEADERBOARD_SUBTITLE": "Rumspoäng läggs till i den globala totalen.",
   "LEADERBOARD_DELTA": "+{{0}} rumspoäng",
   "LEADERBOARD_SCORE_LABEL": "Global summa",
-  "LEADERBOARD_EMPTY": "Inga poäng tillgängliga."
+  "LEADERBOARD_EMPTY": "Inga poäng tillgängliga.",
+  "POINTS": "poäng",
+  "ROUND": "Runda {{0}}/{{1}}"
 }

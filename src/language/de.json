@@ -74,5 +74,7 @@
   "LEADERBOARD_SUBTITLE": "Punkte aus dem Raum werden zur Gesamtwertung hinzugefügt.",
   "LEADERBOARD_DELTA": "+{{0}} Raum-Punkte",
   "LEADERBOARD_SCORE_LABEL": "Gesamtpunktzahl",
-  "LEADERBOARD_EMPTY": "Keine Punkte verfügbar."
+  "LEADERBOARD_EMPTY": "Keine Punkte verfügbar.",
+  "POINTS": "Punkte",
+  "ROUND": "Runde {{0}}/{{1}}"
 }

@@ -74,5 +74,7 @@
   "LEADERBOARD_SUBTITLE": "Room points are added to the global total.",
   "LEADERBOARD_DELTA": "+{{0}} room points",
   "LEADERBOARD_SCORE_LABEL": "Global amount",
-  "LEADERBOARD_EMPTY": "No scores available."
+  "LEADERBOARD_EMPTY": "No scores available.",
+  "POINTS": "points",
+  "ROUND": "Round {{0}}/{{1}}"
 }

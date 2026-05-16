@@ -74,5 +74,7 @@
   "LEADERBOARD_SUBTITLE": "I punti della stanza vengono aggiunti al totale globale.",
   "LEADERBOARD_DELTA": "+{{0}} punti stanza",
   "LEADERBOARD_SCORE_LABEL": "Totale globale",
-  "LEADERBOARD_EMPTY": "Nessun punteggio disponibile."
+  "LEADERBOARD_EMPTY": "Nessun punteggio disponibile.",
+  "POINTS": "punti",
+  "ROUND": "Round {{0}}/{{1}}"
 }

@@ -74,5 +74,7 @@
   "LEADERBOARD_SUBTITLE": "방 포인트는 전체 점수에 추가됩니다.",
   "LEADERBOARD_DELTA": "+{{0}} 방 포인트",
   "LEADERBOARD_SCORE_LABEL": "전체 점수",
-  "LEADERBOARD_EMPTY": "사용 가능한 점수가 없습니다."
+  "LEADERBOARD_EMPTY": "사용 가능한 점수가 없습니다.",
+  "POINTS": "포인트",
+  "ROUND": "라운드 {{0}}/{{1}}"
 }

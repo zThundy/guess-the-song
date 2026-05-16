@@ -74,5 +74,7 @@
   "LEADERBOARD_SUBTITLE": "房间积分将计入总分。",
   "LEADERBOARD_DELTA": "+{{0}} 房间积分",
   "LEADERBOARD_SCORE_LABEL": "总积分",
-  "LEADERBOARD_EMPTY": "暂无可用分数。"
+  "LEADERBOARD_EMPTY": "暂无可用分数。",
+  "POINTS": "分数",
+  "ROUND": "回合 {{0}}/{{1}}"
 }

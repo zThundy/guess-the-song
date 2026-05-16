@@ -577,7 +577,7 @@ function Game({ lobbyData = {} }) {
     <div className={classes.container}>
       {pointsVisible ? (
         <div className={classes.pointsOverlay + " " + (pointsExiting ? classes.pointsOverlayExit : "")}>
-          <div className={classes.pointsText + " " + (pointsExiting ? classes.pointsTextExit : "")}>+{pointsAnimatedValue} points</div>
+          <div className={classes.pointsText + " " + (pointsExiting ? classes.pointsTextExit : "")}>+{pointsAnimatedValue} {t("POINTS")}</div>
         </div>
       ) : null}
       {countdownVisible ? (

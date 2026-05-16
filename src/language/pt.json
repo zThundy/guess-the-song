@@ -74,5 +74,7 @@
   "LEADERBOARD_SUBTITLE": "Os pontos da sala são adicionados ao total global.",
   "LEADERBOARD_DELTA": "+{{0}} pontos da sala",
   "LEADERBOARD_SCORE_LABEL": "Total global",
-  "LEADERBOARD_EMPTY": "Nenhuma pontuação disponível."
+  "LEADERBOARD_EMPTY": "Nenhuma pontuação disponível.",
+  "POINTS": "pontos",
+  "ROUND": "Ronda {{0}}/{{1}}"
 }
